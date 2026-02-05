@@ -1,26 +1,57 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Wisteria Properties Palette */
+  --w-deep-dark: #000000;
+  --w-primary-dark: #1B1E28;
+  --w-light-bg: #F5F4F8;
+  --w-brand: #7A01B8;
+  --w-white: #FFFFFF;
+  --w-insights: #234F68;
+  --w-muted: #53587A;
+  --w-professional: #1F4C6B;
+  --w-badge: #5A5BFF;
+  --w-soft-bg: #F7F7F9;
+  
+  /* Overlays */
+  --w-overlay-brand: #7A01B880;
+  --w-overlay-glass: #FFFFFF80;
+
+  /* Standard mappings for compatibility if needed */
+  --background: var(--w-light-bg);
+  --foreground: var(--w-primary-dark);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-w-deep-dark: var(--w-deep-dark);
+  --color-w-primary-dark: var(--w-primary-dark);
+  --color-w-light-bg: var(--w-light-bg);
+  --color-w-brand: var(--w-brand);
+  --color-w-white: var(--w-white);
+  --color-w-insights: var(--w-insights);
+  --color-w-muted: var(--w-muted);
+  --color-w-professional: var(--w-professional);
+  --color-w-badge: var(--w-badge);
+  --color-w-soft-bg: var(--w-soft-bg);
+  --color-w-overlay-brand: var(--w-overlay-brand);
+  --color-w-overlay-glass: var(--w-overlay-glass);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: var(--w-light-bg);
+  color: var(--w-primary-dark);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Custom Utilities */
+.bg-gradient-cta {
+  background: radial-gradient(circle, #FD5F4A 0%, #F249A4 100%);
+}
+
+.glass-card {
+  background-color: var(--w-overlay-glass);
+  backdrop-filter: blur(10px);
 }
