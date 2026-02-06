@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .hero-gradient {
+    background: radial-gradient(circle at top right, rgba(112, 59, 247, 0.15), transparent 60%);
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Material Symbols - Filled variant */
+.material-symbols-outlined.fill-1 {
+  font-variation-settings: 'FILL' 1;
+}
