@@ -1,128 +1,78 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
-import { useState } from "react";
-import AuthModal from "./AuthModal";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { useState } from 'react'
+import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs'
 
 export default function Navbar() {
-    const [isOpen, setIsOpen] = useState(false);
-    const [authModalOpen, setAuthModalOpen] = useState(false);
-    const [initialAuthView, setInitialAuthView] = useState<"signin" | "signup">("signin");
-
-    const { user } = useUser();
-
-
-
-    const openAuth = (view: "signin" | "signup") => {
-        setInitialAuthView(view);
-        setAuthModalOpen(true);
-        setIsOpen(false);
-    }
-
-    const navLinks = [
-        { href: "/buy", label: "Buy" },
-        { href: "/rent", label: "Rent" },
-        { href: "/commercial", label: "Commercial" },
-        { href: "/pg", label: "PG" },
-        { href: "/projects", label: "Projects" },
-        { href: "/agents", label: "Agents" },
-        { href: "/blog", label: "Blog" },
-    ];
+    const [showBanner, setShowBanner] = useState(true)
+    const { isSignedIn } = useUser()
 
     return (
         <>
-            <header
-                className="relative w-full bg-w-primary-dark/90 backdrop-blur-md border-b border-white/10 shadow-lg text-white"
-            >
-                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 group">
-                        {/* Placeholder Icon */}
-                        <div className="size-8 bg-w-brand rounded-lg flex items-center justify-center text-white font-bold group-hover:scale-105 transition-transform">W</div>
-                        <span className="text-xl font-bold tracking-tight">Wisteria Properties</span>
-                    </Link>
-
-                    {/* Desktop Menu */}
-                    <nav className="hidden md:flex items-center gap-8">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.label}
-                                href={link.href}
-                                className="text-sm font-medium text-white/70 hover:text-white transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-w-brand after:transition-all hover:after:w-full"
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
-                    </nav>
-
-                    {/* Right Actions */}
-                    <div className="hidden md:flex items-center gap-4">
-                        <SignedOut>
-                            <button
-                                onClick={() => openAuth("signin")}
-                                className="text-sm font-medium text-white/80 hover:text-white transition-colors px-4 py-2 hover:bg-white/5 rounded-full"
-                            >
-                                Login
-                            </button>
-                            <button
-                                onClick={() => openAuth("signup")}
-                                className="text-sm font-bold bg-white text-w-primary-dark px-5 py-2 rounded-full hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-                            >
-                                Register
-                            </button>
-                        </SignedOut>
-
-                        <SignedIn>
-                            <UserButton afterSignOutUrl="/" />
-                        </SignedIn>
-                    </div>
-
-                    {/* Mobile Menu Toggle */}
+            {/* Top Banner */}
+            {showBanner && (
+                <div className="bg-card-dark border-b border-border-dark py-3 px-4 text-center text-sm font-medium relative">
+                    <span className="text-white/80">✨ Discover Your Dream Property with Wisteria Properties</span>
+                    <a className="ml-2 underline text-white hover:text-primary transition-colors" href="#">
+                        Learn More
+                    </a>
                     <button
-                        className="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
-                        onClick={() => setIsOpen(!isOpen)}
+                        onClick={() => setShowBanner(false)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white"
                     >
-                        {isOpen ? <X size={24} /> : <Menu size={24} />}
+                        <span className="material-symbols-outlined text-sm">close</span>
                     </button>
                 </div>
+            )}
 
-                {/* Mobile Navigation */}
-                {isOpen && (
-                    <div className="md:hidden bg-w-primary-dark/95 backdrop-blur-xl border-t border-white/10 p-6 absolute w-full left-0 shadow-2xl animate-in slide-in-from-top-2">
-                        <div className="flex flex-col space-y-4">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.label}
-                                    href={link.href}
-                                    className="text-lg font-medium text-white/90 hover:text-white py-2 border-b border-white/5"
-                                    onClick={() => setIsOpen(false)}
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
-                            <div className="flex flex-col gap-3 mt-4">
-                                <SignedOut>
-                                    <button
-                                        onClick={() => openAuth("signin")}
-                                        className="text-left text-lg font-medium text-white/90 py-2"
-                                    >
-                                        Login
-                                    </button>
-                                    <button
-                                        onClick={() => openAuth("signup")}
-                                        className="text-center text-lg font-bold bg-white text-w-primary-dark py-3 rounded-xl shadow-lg mt-2"
-                                    >
-                                        Register
-                                    </button>
-                                </SignedOut>
-                            </div>
+            {/* Navigation */}
+            <nav className="sticky top-0 z-50 bg-background-dark/80 backdrop-blur-md border-b border-border-dark py-4">
+                <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+                    {/* Logo */}
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                            <span className="material-symbols-outlined text-white text-xl">real_estate_agent</span>
                         </div>
+                        <span className="text-xl font-bold tracking-tight">Wisteria Properties</span>
                     </div>
-                )}
-            </header>
-            <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} initialView={initialAuthView} />
+
+                    {/* Desktop Menu */}
+                    <div className="hidden md:flex items-center gap-1 bg-card-dark p-1 rounded-full border border-border-dark">
+                        <a className="px-6 py-2 rounded-full bg-[#1A1A1A] text-sm font-medium shadow-sm" href="#">
+                            Home
+                        </a>
+                        <a className="px-6 py-2 rounded-full hover:bg-white/10 text-sm font-medium text-gray-400" href="#">
+                            About Us
+                        </a>
+                        <a className="px-6 py-2 rounded-full hover:bg-white/10 text-sm font-medium text-gray-400" href="#">
+                            Properties
+                        </a>
+                        <a className="px-6 py-2 rounded-full hover:bg-white/10 text-sm font-medium text-gray-400" href="#">
+                            Services
+                        </a>
+                    </div>
+
+                    {/* Auth Buttons */}
+                    <div className="flex items-center gap-3">
+                        {isSignedIn ? (
+                            <UserButton afterSignOutUrl="/" />
+                        ) : (
+                            <>
+                                <SignInButton mode="modal">
+                                    <button className="bg-card-dark border border-border-dark px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-white/5 transition-colors">
+                                        Sign In
+                                    </button>
+                                </SignInButton>
+                                <SignUpButton mode="modal">
+                                    <button className="bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
+                                        Sign Up
+                                    </button>
+                                </SignUpButton>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </nav>
         </>
-    );
+    )
 }

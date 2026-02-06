@@ -1,57 +1,62 @@
 @import "tailwindcss";
 
-:root {
-  /* Wisteria Properties Palette */
-  --w-deep-dark: #000000;
-  --w-primary-dark: #1B1E28;
-  --w-light-bg: #F5F4F8;
-  --w-brand: #7A01B8;
-  --w-white: #FFFFFF;
-  --w-insights: #234F68;
-  --w-muted: #53587A;
-  --w-professional: #1F4C6B;
-  --w-badge: #5A5BFF;
-  --w-soft-bg: #F7F7F9;
-  
-  /* Overlays */
-  --w-overlay-brand: #7A01B880;
-  --w-overlay-glass: #FFFFFF80;
-
-  /* Standard mappings for compatibility if needed */
-  --background: var(--w-light-bg);
-  --foreground: var(--w-primary-dark);
+/* SF Pro Display Font */
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/SFPRODISPLAYREGULAR.OTF') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
-@theme inline {
-  --color-w-deep-dark: var(--w-deep-dark);
-  --color-w-primary-dark: var(--w-primary-dark);
-  --color-w-light-bg: var(--w-light-bg);
-  --color-w-brand: var(--w-brand);
-  --color-w-white: var(--w-white);
-  --color-w-insights: var(--w-insights);
-  --color-w-muted: var(--w-muted);
-  --color-w-professional: var(--w-professional);
-  --color-w-badge: var(--w-badge);
-  --color-w-soft-bg: var(--w-soft-bg);
-  --color-w-overlay-brand: var(--w-overlay-brand);
-  --color-w-overlay-glass: var(--w-overlay-glass);
-
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/SFPRODISPLAYMEDIUM.OTF') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
 }
 
-body {
-  background: var(--w-light-bg);
-  color: var(--w-primary-dark);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/SFPRODISPLAYBOLD.OTF') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
-/* Custom Utilities */
-.bg-gradient-cta {
-  background: radial-gradient(circle, #FD5F4A 0%, #F249A4 100%);
+@theme {
+  /* Estatein Color Palette */
+  --color-primary: #703BF7;
+  --color-background-light: #FFFFFF;
+  --color-background-dark: #0B0B0B;
+  --color-card-dark: #141414;
+  --color-border-dark: #262626;
+
+  /* Font Family */
+  --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+  /* Border Radius */
+  --radius-DEFAULT: 12px;
 }
 
-.glass-card {
-  background-color: var(--w-overlay-glass);
-  backdrop-filter: blur(10px);
+@layer base {
+  body {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .hero-gradient {
+    background: radial-gradient(circle at top right, rgba(112, 59, 247, 0.15), transparent 60%);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Material Symbols - Filled variant */
+.material-symbols-outlined.fill-1 {
+  font-variation-settings: 'FILL' 1;
 }

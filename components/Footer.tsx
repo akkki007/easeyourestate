@@ -1,88 +1,119 @@
-"use client";
-
-import Link from "next/link";
-import { Facebook, Twitter, Instagram, Linkedin, Send } from "lucide-react";
-
 export default function Footer() {
+    const footerLinks = {
+        home: ['Hero Section', 'Features', 'Properties', 'Testimonials'],
+        about: ['Our Story', 'Our Works', 'How It Works', 'Our Team'],
+        properties: ['Portfolio', 'Categories'],
+        services: ['Valuation', 'Marketing', 'Negotiation', 'Property Management'],
+    }
+
     return (
-        <footer className="bg-w-deep-dark pt-20 pb-10 text-white">
+        <footer className="bg-card-dark pt-24 pb-12">
             <div className="max-w-7xl mx-auto px-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-                    {/* Column 1: About & Logo */}
-                    <div>
-                        <div className="flex items-center gap-2 mb-6">
-                            <div className="size-8 bg-w-brand rounded-lg flex items-center justify-center text-white font-bold">W</div>
-                            <h2 className="text-white text-xl font-bold tracking-tight">Wisteria Properties</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-20">
+                    {/* Logo and Newsletter */}
+                    <div className="lg:col-span-2">
+                        <div className="flex items-center gap-2 mb-8">
+                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                                <span className="material-symbols-outlined text-white text-xl">real_estate_agent</span>
+                            </div>
+                            <span className="text-xl font-bold tracking-tight">Wisteria Properties</span>
                         </div>
-                        <p className="text-gray-400 text-sm leading-relaxed mb-8">
-                            The world&apos;s leading marketplace for high-end real estate, offering unparalleled access to signature homes and investment opportunities.
-                        </p>
-                        <div className="flex gap-4">
-                            <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-w-brand hover:text-white transition-all text-gray-400">
-                                <Facebook className="w-5 h-5" />
-                            </a>
-                            <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-w-brand hover:text-white transition-all text-gray-400">
-                                <Twitter className="w-5 h-5" />
-                            </a>
-                            <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-w-brand hover:text-white transition-all text-gray-400">
-                                <Instagram className="w-5 h-5" />
-                            </a>
-                            <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-w-brand hover:text-white transition-all text-gray-400">
-                                <Linkedin className="w-5 h-5" />
-                            </a>
-                        </div>
-                    </div>
 
-                    {/* Column 2: Quick Links */}
-                    <div>
-                        <h4 className="font-bold mb-6 text-white text-lg">Quick Links</h4>
-                        <ul className="space-y-4 text-sm text-gray-400">
-                            <li><Link className="hover:text-w-brand transition-colors" href="/buy">Buy Property</Link></li>
-                            <li><Link className="hover:text-w-brand transition-colors" href="/rent">Rent Property</Link></li>
-                            <li><Link className="hover:text-w-brand transition-colors" href="/commercial">Commercial</Link></li>
-                            <li><Link className="hover:text-w-brand transition-colors" href="/projects">New Projects</Link></li>
-                            <li><Link className="hover:text-w-brand transition-colors" href="/agents">Find Agents</Link></li>
-                        </ul>
-                    </div>
-
-                    {/* Column 3: Support */}
-                    <div>
-                        <h4 className="font-bold mb-6 text-white text-lg">Support</h4>
-                        <ul className="space-y-4 text-sm text-gray-400">
-                            <li><Link className="hover:text-w-brand transition-colors" href="#">Help Center</Link></li>
-                            <li><Link className="hover:text-w-brand transition-colors" href="#">Legal & Privacy</Link></li>
-                            <li><Link className="hover:text-w-brand transition-colors" href="#">Terms of Service</Link></li>
-                            <li><Link className="hover:text-w-brand transition-colors" href="#">Report a Problem</Link></li>
-                            <li><Link className="hover:text-w-brand transition-colors" href="#">Contact Us</Link></li>
-                        </ul>
-                    </div>
-
-                    {/* Column 4: Newsletter */}
-                    <div>
-                        <h4 className="font-bold mb-6 text-white text-lg">Newsletter</h4>
-                        <p className="text-sm text-gray-400 mb-6">Subscribe to our newsletter for the latest market insights and exclusive listings.</p>
-                        <div className="flex group">
+                        {/* Newsletter Input */}
+                        <div className="relative max-w-sm mb-8">
+                            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                mail
+                            </span>
                             <input
-                                className="w-full rounded-l-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm p-3 outline-none focus:border-w-brand transition-all"
-                                placeholder="Email address"
+                                className="w-full bg-[#1A1A1A] border border-border-dark rounded-2xl py-4 pl-12 pr-12 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                placeholder="Enter Your Email"
                                 type="email"
                             />
-                            <button className="bg-w-brand text-white px-5 rounded-r-lg hover:bg-opacity-90 transition-colors">
-                                <Send className="w-4 h-4" />
+                            <button className="absolute right-4 top-1/2 -translate-y-1/2 text-primary">
+                                <span className="material-symbols-outlined">send</span>
                             </button>
                         </div>
                     </div>
+
+                    {/* Home Links */}
+                    <div>
+                        <h4 className="font-bold mb-6 text-gray-500 uppercase tracking-widest text-xs">Home</h4>
+                        <ul className="space-y-4 text-sm font-medium">
+                            {footerLinks.home.map((link, index) => (
+                                <li key={index}>
+                                    <a className="text-gray-400 hover:text-primary transition-colors" href="#">{link}</a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* About Us Links */}
+                    <div>
+                        <h4 className="font-bold mb-6 text-gray-500 uppercase tracking-widest text-xs">About Us</h4>
+                        <ul className="space-y-4 text-sm font-medium">
+                            {footerLinks.about.map((link, index) => (
+                                <li key={index}>
+                                    <a className="text-gray-400 hover:text-primary transition-colors" href="#">{link}</a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Properties Links */}
+                    <div>
+                        <h4 className="font-bold mb-6 text-gray-500 uppercase tracking-widest text-xs">Properties</h4>
+                        <ul className="space-y-4 text-sm font-medium">
+                            {footerLinks.properties.map((link, index) => (
+                                <li key={index}>
+                                    <a className="text-gray-400 hover:text-primary transition-colors" href="#">{link}</a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Services Links */}
+                    <div>
+                        <h4 className="font-bold mb-6 text-gray-500 uppercase tracking-widest text-xs">Services</h4>
+                        <ul className="space-y-4 text-sm font-medium">
+                            {footerLinks.services.map((link, index) => (
+                                <li key={index}>
+                                    <a className="text-gray-400 hover:text-primary transition-colors" href="#">{link}</a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
 
-                <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
-                    <p>© 2026 Wisteria Properties. All rights reserved.</p>
-                    <div className="flex gap-8">
-                        <Link className="hover:text-white transition-colors" href="#">Privacy Policy</Link>
-                        <Link className="hover:text-white transition-colors" href="#">Terms of Service</Link>
-                        <Link className="hover:text-white transition-colors" href="#">Cookie Policy</Link>
+                {/* Bottom Bar */}
+                <div className="pt-8 border-t border-border-dark flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex gap-8 text-sm font-medium">
+                        <span className="text-gray-500">© 2024 Wisteria Properties. All Rights Reserved.</span>
+                        <a className="text-gray-400 hover:text-primary transition-colors" href="#">Terms &amp; Conditions</a>
+                    </div>
+
+                    {/* Social Links */}
+                    <div className="flex gap-4">
+                        <a
+                            className="w-10 h-10 rounded-full bg-background-dark border border-border-dark flex items-center justify-center hover:bg-primary hover:text-white transition-all"
+                            href="#"
+                        >
+                            <span className="material-symbols-outlined text-sm">share</span>
+                        </a>
+                        <a
+                            className="w-10 h-10 rounded-full bg-background-dark border border-border-dark flex items-center justify-center hover:bg-primary hover:text-white transition-all"
+                            href="#"
+                        >
+                            <span className="material-symbols-outlined text-sm">language</span>
+                        </a>
+                        <a
+                            className="w-10 h-10 rounded-full bg-background-dark border border-border-dark flex items-center justify-center hover:bg-primary hover:text-white transition-all"
+                            href="#"
+                        >
+                            <span className="material-symbols-outlined text-sm">mail</span>
+                        </a>
                     </div>
                 </div>
             </div>
         </footer>
-    );
+    )
 }
