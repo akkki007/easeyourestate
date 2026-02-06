@@ -3,7 +3,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Wisteria Properties - Your Dream Property Awaits',
+  title: 'easeyourestate.ai - Your Dream Property Awaits',
   description: 'Your journey to finding the perfect property begins here.',
 }
 

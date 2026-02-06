@@ -16,7 +16,7 @@ export default function Footer() {
                             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                                 <span className="material-symbols-outlined text-white text-xl">real_estate_agent</span>
                             </div>
-                            <span className="text-xl font-bold tracking-tight">Wisteria Properties</span>
+                            <span className="text-xl font-bold tracking-tight">easeyourestate.ai</span>
                         </div>
 
                         {/* Newsletter Input */}
@@ -87,7 +87,7 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="pt-8 border-t border-border-dark flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="flex gap-8 text-sm font-medium">
-                        <span className="text-gray-500">© 2024 Wisteria Properties. All Rights Reserved.</span>
+                        <span className="text-gray-500">© 2024 easeyourestate.ai. All Rights Reserved.</span>
                         <a className="text-gray-400 hover:text-primary transition-colors" href="#">Terms &amp; Conditions</a>
                     </div>
 

@@ -7,7 +7,7 @@ export default function Hero() {
                 {/* Left Content */}
                 <div className="z-10">
                     <h1 className="text-5xl lg:text-6xl font-bold leading-[1.15] mb-6 text-balance">
-                        Discover Your Dream Property with Wisteria Properties
+                        Discover Your Dream Property with easeyourestate.ai
                     </h1>
                     <p className="text-lg text-gray-400 mb-10 max-w-xl">
                         Your journey to finding the perfect property begins here. Explore our listings to find the home that matches your dreams.

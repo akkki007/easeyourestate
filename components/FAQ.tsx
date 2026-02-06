@@ -1,7 +1,7 @@
 export default function FAQ() {
     const faqs = [
         {
-            question: 'How do I search for properties on Wisteria Properties?',
+            question: 'How do I search for properties on easeyourestate.ai?',
             answer: 'Learn how to use our user-friendly search tools to find properties that match your criteria.',
         },
         {
@@ -9,7 +9,7 @@ export default function FAQ() {
             answer: 'Find out about the necessary documentation for listing your property with us safely.',
         },
         {
-            question: 'How can I contact a Wisteria Properties agent?',
+            question: 'How can I contact a easeyourestate.ai agent?',
             answer: 'Discover the different ways you can get in touch with our experienced agents directly.',
         },
     ]
@@ -27,7 +27,7 @@ export default function FAQ() {
                         </div>
                         <h2 className="text-4xl font-bold mb-4">Frequently Asked Questions</h2>
                         <p className="text-gray-400 max-w-2xl">
-                            Find answers to common questions about Wisteria Properties' services, property listings, and the real estate process.
+                            Find answers to common questions about easeyourestate.ai' services, property listings, and the real estate process.
                         </p>
                     </div>
                     <button className="hidden md:block px-6 py-3 border border-border-dark bg-card-dark rounded-xl text-sm font-medium hover:bg-white/5">

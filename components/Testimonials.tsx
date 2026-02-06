@@ -3,7 +3,7 @@ export default function Testimonials() {
         {
             rating: 5,
             title: 'Exceptional Service!',
-            text: "Our experience with Wisteria Properties was outstanding. Their team's dedication and professionalism made finding our dream home a breeze. Highly recommended!",
+            text: "Our experience with easeyourestate.ai was outstanding. Their team's dedication and professionalism made finding our dream home a breeze. Highly recommended!",
             author: 'Wade Warren',
             location: 'USA, California',
             avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUinRZNj1PYzW64AM1urC2YL0kjPNOp8SqjhEzqFZ9qSpBNGW5JXcELtYX91kW6FYAdEUAFSaZI_sRXA-c7nWdS7CgP5f3fuKcBRuqn9UGeQ0Fem6MtlVMnYImOryLgyz3yWdLlc3nZkuJVtg63DYcRcmyD2LYedNFoU8Hxa2h8im1PXWP4kwzeeETbXuuWfby56lBLQYFoAGsi3cvdd2gBtrPChfzSPpsQGhUe_vTP8nTMbdA25UWNJkID5jmLu7hptqXooX38_vE',
@@ -11,7 +11,7 @@ export default function Testimonials() {
         {
             rating: 5,
             title: 'Efficient and Reliable',
-            text: 'Wisteria Properties provided us with top-notch service. They helped us sell our property quickly and at a great price. We couldn\'t be happier with the results.',
+            text: 'easeyourestate.ai provided us with top-notch service. They helped us sell our property quickly and at a great price. We couldn\'t be happier with the results.',
             author: 'Emelie Thomson',
             location: 'USA, Florida',
             avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDHYuicjBPs_SkarG0dUcKsFZbymlX5b_BOnop2u1YgNFOEP6Prma0pfJ4peT6obL9KUKUIm7cczYFgyX5gN5Q5QehydfoyjpWcpBTZvM4pcLtngQraDokrenQao0RwiH6Qyk6rMoOB3imq7mrhYTS0jSBCuCKzjtSwfsgSDDd5391XQ6NZCmoMzErUU64feJr-j0tgo6NHs1S1GXQqd148BT4wAY-YqKHjoZvRDLMMSYN9iIgwhihxUShISgJa1Fd1Af3oPfkXA8W7',
@@ -19,7 +19,7 @@ export default function Testimonials() {
         {
             rating: 5,
             title: 'Trusted Advisors',
-            text: 'The Wisteria Properties team guided us through the entire buying process. Their knowledge and commitment to our needs were impressive. Thank you for your support!',
+            text: 'The easeyourestate.ai team guided us through the entire buying process. Their knowledge and commitment to our needs were impressive. Thank you for your support!',
             author: 'John Mans',
             location: 'USA, Nevada',
             avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Z4h7XyH-16m0535FXuxslKR_B1xmjnus_y7P3GvwPJ0mG30yUofHeNWI6CJScp-lAXGJD6U4_pSrrcZt38k5u4yYET2tNSea-ON-LY7gxwX2oBK-N8NeNvRGERF3lzVBMQ4TC_Z_VJVF0K03VJxx4PD6nrM34W--4Sy32PA2MAauSlPyELbHfX4CuYjIoPqKlIl2a3un5AgyO1fMNTQb3fIe9UtEaqXu7fkv1jUjPjClQLEUJOaWN5I1egvHG5NIzcVdkXTvoLvV',
@@ -39,7 +39,7 @@ export default function Testimonials() {
                         </div>
                         <h2 className="text-4xl font-bold mb-4">What Our Clients Say</h2>
                         <p className="text-gray-400 max-w-2xl">
-                            Read the success stories and heartfelt testimonials from our valued clients. Discover why they chose Wisteria Properties.
+                            Read the success stories and heartfelt testimonials from our valued clients. Discover why they chose easeyourestate.ai.
                         </p>
                     </div>
                     <button className="hidden md:block px-6 py-3 border border-border-dark bg-card-dark rounded-xl text-sm font-medium hover:bg-white/5">

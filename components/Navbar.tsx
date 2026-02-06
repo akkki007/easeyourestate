@@ -12,7 +12,7 @@ export default function Navbar() {
             {/* Top Banner */}
             {showBanner && (
                 <div className="bg-card-dark border-b border-border-dark py-3 px-4 text-center text-sm font-medium relative">
-                    <span className="text-white/80">✨ Discover Your Dream Property with Wisteria Properties</span>
+                    <span className="text-white/80">✨ Discover Your Dream Property with easeyourestate.ai</span>
                     <a className="ml-2 underline text-white hover:text-primary transition-colors" href="#">
                         Learn More
                     </a>
@@ -33,7 +33,7 @@ export default function Navbar() {
                         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                             <span className="material-symbols-outlined text-white text-xl">real_estate_agent</span>
                         </div>
-                        <span className="text-xl font-bold tracking-tight">Wisteria Properties</span>
+                        <span className="text-xl font-bold tracking-tight">easeyourestate.ai</span>
                     </div>
 
                     {/* Desktop Menu */}

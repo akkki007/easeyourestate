@@ -9,7 +9,7 @@ export default function CTA() {
                             Start Your Real Estate Journey Today
                         </h2>
                         <p className="text-lg text-gray-500 dark:text-gray-400">
-                            Your dream property is just a click away. Whether you're looking for a new home, a strategic investment, or expert real estate advice, Wisteria Properties is here to assist you every step of the way.
+                            Your dream property is just a click away. Whether you're looking for a new home, a strategic investment, or expert real estate advice, easeyourestate.ai is here to assist you every step of the way.
                         </p>
                     </div>
                     <button className="whitespace-nowrap bg-primary text-white px-10 py-5 rounded-2xl font-bold text-lg hover:shadow-lg hover:shadow-primary/20 transition-all transform hover:-translate-y-1">
