@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import SectionHeader from './SectionHeader'
+import Pagination from './Pagination'
 
 export default function Properties() {
     const properties = [
@@ -40,22 +42,11 @@ export default function Properties() {
         <section className="py-24 bg-background-dark">
             <div className="max-w-7xl mx-auto px-6">
                 {/* Section Header */}
-                <div className="flex justify-between items-end mb-12">
-                    <div>
-                        <div className="flex gap-1 mb-4">
-                            <span className="w-2 h-2 rounded-full bg-primary/40"></span>
-                            <span className="w-2 h-2 rounded-full bg-primary"></span>
-                            <span className="w-2 h-2 rounded-full bg-primary/40"></span>
-                        </div>
-                        <h2 className="text-4xl font-bold mb-4">Featured Properties</h2>
-                        <p className="text-gray-400 max-w-2xl">
-                            Explore our handpicked selection of featured properties. Each listing offers a glimpse into exceptional homes and investments.
-                        </p>
-                    </div>
-                    <button className="hidden md:block px-6 py-3 border border-border-dark bg-card-dark rounded-xl text-sm font-medium hover:bg-white/5">
-                        View All Properties
-                    </button>
-                </div>
+                <SectionHeader
+                    title="Featured Properties"
+                    description="Explore our handpicked selection of featured properties. Each listing offers a glimpse into exceptional homes and investments."
+                    buttonText="View All Properties"
+                />
 
                 {/* Property Cards */}
                 <div className="grid md:grid-cols-3 gap-8">
@@ -105,19 +96,10 @@ export default function Properties() {
                 </div>
 
                 {/* Pagination */}
-                <div className="mt-12 pt-12 border-t border-border-dark flex items-center justify-between">
-                    <span className="text-sm font-medium">
-                        01 <span className="text-gray-500">of 60</span>
-                    </span>
-                    <div className="flex gap-4">
-                        <button className="w-12 h-12 rounded-full border border-border-dark flex items-center justify-center hover:bg-white/5">
-                            <span className="material-symbols-outlined">arrow_back</span>
-                        </button>
-                        <button className="w-12 h-12 rounded-full border border-border-dark flex items-center justify-center hover:bg-white/5">
-                            <span className="material-symbols-outlined">arrow_forward</span>
-                        </button>
-                    </div>
-                </div>
+                <Pagination
+                    currentPage={1}
+                    totalPages={60}
+                />
             </div>
         </section>
     )

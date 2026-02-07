@@ -1,0 +1,146 @@
+"use client";
+
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
+import ProgressIndicator from "@/components/onboarding/ProgressIndicator";
+import WelcomeStep from "@/components/onboarding/WelcomeStep";
+import RoleSelection, { UserRole } from "@/components/onboarding/RoleSelection";
+import RoleInfoForm from "@/components/onboarding/RoleInfoForm";
+import CompletionStep from "@/components/onboarding/CompletionStep";
+
+type OnboardingStep = "welcome" | "role" | "info" | "complete";
+
+export default function OnboardingPage() {
+    const { user, isLoaded } = useUser();
+    const router = useRouter();
+    const [currentStep, setCurrentStep] = useState<OnboardingStep>("welcome");
+    const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+
+    useEffect(() => {
+        if (!isLoaded) return;
+
+        // Redirect to home if not logged in
+        if (!user) {
+            router.push("/sign-in");
+            return;
+        }
+
+        // Redirect to home if already onboarded
+        if (user.unsafeMetadata?.onboarded) {
+            router.push("/");
+            return;
+        }
+    }, [isLoaded, user, router]);
+
+    if (!isLoaded || !user) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-background-dark">
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                    <p className="text-lg font-medium text-grey-40">Loading...</p>
+                </div>
+            </div>
+        );
+    }
+
+    const steps = ["Welcome", "Choose Role", "Your Info", "Complete"];
+    const stepIndex = {
+        welcome: 0,
+        role: 1,
+        info: 2,
+        complete: 3,
+    };
+
+    const handleNextFromWelcome = () => {
+        setCurrentStep("role");
+    };
+
+    const handleRoleSelect = (role: UserRole) => {
+        setSelectedRole(role);
+        // Auto-advance to info step
+        setTimeout(() => setCurrentStep("info"), 300);
+    };
+
+    const handleBackFromInfo = () => {
+        setCurrentStep("role");
+    };
+
+    const handleInfoComplete = () => {
+        setCurrentStep("complete");
+    };
+
+    const handleComplete = async () => {
+        // Update user metadata to mark as onboarded
+        try {
+            await user.update({
+                unsafeMetadata: {
+                    role: selectedRole,
+                    onboarded: true,
+                },
+            });
+            // Reload the user to ensure the session has the updated metadata
+            await user.reload();
+
+            // Set a cookie for the middleware to read immediately
+            document.cookie = "onboarded=true; path=/; max-age=31536000"; // 1 year
+
+            // Give Clerk an additional moment to sync
+            await new Promise(resolve => setTimeout(resolve, 300));
+        } catch (error) {
+            console.error("Failed to complete onboarding:", error);
+        } finally {
+            // Use hard redirect to ensure Clerk session is fully refreshed
+            window.location.href = "/";
+        }
+    };
+
+
+    const userName = user.firstName || "there";
+
+    return (
+        <div className="min-h-screen bg-background-dark text-white">
+            <div className="container mx-auto px-4 py-8 md:py-12">
+                {/* Progress Indicator - Hide on welcome step */}
+                {currentStep !== "welcome" && (
+                    <ProgressIndicator
+                        currentStep={stepIndex[currentStep]}
+                        totalSteps={steps.length}
+                        steps={steps}
+                    />
+                )}
+
+                {/* Step Content */}
+                <div className="mt-8">
+                    {currentStep === "welcome" && (
+                        <WelcomeStep userName={userName} onNext={handleNextFromWelcome} />
+                    )}
+
+                    {currentStep === "role" && (
+                        <RoleSelection
+                            selectedRole={selectedRole}
+                            onSelectRole={handleRoleSelect}
+                        />
+                    )}
+
+                    {currentStep === "info" && selectedRole && (
+                        <RoleInfoForm
+                            role={selectedRole}
+                            onComplete={handleInfoComplete}
+                            onBack={handleBackFromInfo}
+                        />
+                    )}
+
+                    {currentStep === "complete" && selectedRole && (
+                        <CompletionStep
+                            userName={userName}
+                            role={selectedRole}
+                            onComplete={handleComplete}
+                        />
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}

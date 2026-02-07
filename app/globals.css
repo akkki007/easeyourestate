@@ -32,6 +32,10 @@
   --color-background-dark: #0B0B0B;
   --color-card-dark: #141414;
   --color-border-dark: #262626;
+  --color-grey-08: #141414;
+  --color-grey-15: #262626;
+  --color-grey-30: #4D4D4D;
+  --color-grey-40: #666666;
 
   /* Font Family */
   --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -54,9 +58,111 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Onboarding Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.6s ease-out;
+  }
+
+  .animate-check {
+    animation: drawCheck 0.6s ease-out 0.2s both;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out backwards;
+  }
+
+  .animate-float-1 {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-float-2 {
+    animation: float 4s ease-in-out infinite 0.5s;
+  }
+
+  .animate-float-3 {
+    animation: float 3.5s ease-in-out infinite 1s;
+  }
 }
 
 /* Material Symbols - Filled variant */
 .material-symbols-outlined.fill-1 {
   font-variation-settings: 'FILL' 1;
+}
+
+/* Keyframe Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drawCheck {
+  from {
+    stroke-dashoffset: 100;
+    stroke-dasharray: 100;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+    stroke-dasharray: 100;
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.3;
+  }
+
+  25% {
+    transform: translate(10px, -20px) rotate(90deg);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: translate(-10px, -40px) rotate(180deg);
+    opacity: 0.9;
+  }
+
+  75% {
+    transform: translate(-20px, -20px) rotate(270deg);
+    opacity: 0.6;
+  }
 }
