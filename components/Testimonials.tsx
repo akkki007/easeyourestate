@@ -1,3 +1,6 @@
+import SectionHeader from './SectionHeader'
+import Pagination from './Pagination'
+
 export default function Testimonials() {
     const testimonials = [
         {
@@ -30,22 +33,11 @@ export default function Testimonials() {
         <section className="py-24 bg-[#0F0F0F]">
             <div className="max-w-7xl mx-auto px-6">
                 {/* Section Header */}
-                <div className="flex justify-between items-end mb-12">
-                    <div>
-                        <div className="flex gap-1 mb-4">
-                            <span className="w-2 h-2 rounded-full bg-primary/40"></span>
-                            <span className="w-2 h-2 rounded-full bg-primary"></span>
-                            <span className="w-2 h-2 rounded-full bg-primary/40"></span>
-                        </div>
-                        <h2 className="text-4xl font-bold mb-4">What Our Clients Say</h2>
-                        <p className="text-gray-400 max-w-2xl">
-                            Read the success stories and heartfelt testimonials from our valued clients. Discover why they chose Wisteria Properties.
-                        </p>
-                    </div>
-                    <button className="hidden md:block px-6 py-3 border border-border-dark bg-card-dark rounded-xl text-sm font-medium hover:bg-white/5">
-                        View All Testimonials
-                    </button>
-                </div>
+                <SectionHeader
+                    title="What Our Clients Say"
+                    description="Read the success stories and heartfelt testimonials from our valued clients. Discover why they chose Wisteria Properties."
+                    buttonText="View All Testimonials"
+                />
 
                 {/* Testimonial Cards */}
                 <div className="grid md:grid-cols-3 gap-8">
@@ -83,19 +75,10 @@ export default function Testimonials() {
                 </div>
 
                 {/* Pagination */}
-                <div className="mt-12 pt-12 border-t border-border-dark flex items-center justify-between">
-                    <span className="text-sm font-medium">
-                        01 <span className="text-gray-500">of 10</span>
-                    </span>
-                    <div className="flex gap-4">
-                        <button className="w-12 h-12 rounded-full border border-border-dark flex items-center justify-center hover:bg-white/5">
-                            <span className="material-symbols-outlined">arrow_back</span>
-                        </button>
-                        <button className="w-12 h-12 rounded-full border border-border-dark flex items-center justify-center hover:bg-white/5">
-                            <span className="material-symbols-outlined">arrow_forward</span>
-                        </button>
-                    </div>
-                </div>
+                <Pagination
+                    currentPage={1}
+                    totalPages={10}
+                />
             </div>
         </section>
     )
