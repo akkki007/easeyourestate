@@ -4,9 +4,11 @@ import { NextResponse } from 'next/server'
 const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',
   '/sign-up(.*)',
+  '/demoone',
+  '/signup',
+  '/sso-callback',
   '/',
 ])
-
 
 const isOnboardingRoute = createRouteMatcher(['/onboarding'])
 
@@ -15,7 +17,7 @@ export default clerkMiddleware(async (auth, request) => {
 
   // If not signed in and trying to access protected route, allow Clerk to handle
   if (!userId && !isPublicRoute(request)) {
-    return NextResponse.redirect(new URL('/sign-in', request.url))
+    return NextResponse.redirect(new URL('/demoone', request.url))
   }
 
   // If signed in
@@ -30,10 +32,13 @@ export default clerkMiddleware(async (auth, request) => {
       return NextResponse.redirect(new URL('/onboarding', request.url))
     }
 
-    // If user is onboarded and trying to access onboarding page, redirect to home
+    // If user is onboarded and trying to access onboarding page, redirect to dashboard
     if (isOnboarded && isOnboardingRoute(request)) {
-      return NextResponse.redirect(new URL('/', request.url))
+      return NextResponse.redirect(new URL('/dashboard', request.url))
     }
+
+    // Do NOT redirect "/" to dashboard — landing page (/) is for everyone.
+    // Sign-in and sign-up redirect URLs handle sending users to dashboard or onboarding.
   }
 
   return NextResponse.next()

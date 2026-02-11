@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider signUpForceRedirectUrl="/onboarding">
       <html lang="en" className="dark" suppressHydrationWarning>
         <head>
           <link
