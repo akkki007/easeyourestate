@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs'
+import Link from 'next/link'
+import { UserButton, useUser } from '@clerk/nextjs'
 
 export default function Navbar() {
     const [showBanner, setShowBanner] = useState(true)
@@ -55,19 +56,26 @@ export default function Navbar() {
                     {/* Auth Buttons */}
                     <div className="flex items-center gap-3">
                         {isSignedIn ? (
-                            <UserButton afterSignOutUrl="/" />
+                            <>
+                                <Link href="/dashboard">
+                                    <button className="bg-card-dark border border-border-dark px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-white/5 transition-colors">
+                                        Dashboard
+                                    </button>
+                                </Link>
+                                <UserButton afterSignOutUrl="/" />
+                            </>
                         ) : (
                             <>
-                                <SignInButton mode="modal">
+                                <Link href="/demoone">
                                     <button className="bg-card-dark border border-border-dark px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-white/5 transition-colors">
                                         Sign In
                                     </button>
-                                </SignInButton>
-                                <SignUpButton mode="modal">
+                                </Link>
+                                <Link href="/signup">
                                     <button className="bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
                                         Sign Up
                                     </button>
-                                </SignUpButton>
+                                </Link>
                             </>
                         )}
                     </div>
