@@ -55,12 +55,12 @@ export default function RoleSelection({
     onSelectRole,
 }: RoleSelectionProps) {
     return (
-        <div className="w-full max-w-4xl mx-auto animate-fade-in">
+        <div className="w-full max-w-2xl mx-auto animate-fade-in">
             <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#0B1E3A]">
                     Choose Your Role
                 </h2>
-                <p className="text-lg text-grey-40">
+                <p className="text-lg text-slate-600">
                     Select the option that best describes you
                 </p>
             </div>
@@ -74,25 +74,22 @@ export default function RoleSelection({
                             animationDelay: `${index * 100}ms`,
                         }}
                         className={`
-              group relative p-8 rounded-2xl border-2 text-left
+              group relative p-6 rounded-lg border-2 text-left
               transition-all duration-300 hover:scale-[1.02]
               animate-slide-up
               ${selectedRole === role.id
-                                ? "bg-primary/10 border-primary shadow-[0_0_30px_rgba(112,59,247,0.3)]"
-                                : "bg-card-dark border-border-dark hover:border-primary/50 hover:shadow-[0_0_20px_rgba(112,59,247,0.15)]"
+                                ? "bg-blue-50 border-[#0066CC] shadow-md"
+                                : "bg-white border-slate-200 hover:border-[#0066CC]/50 hover:shadow-md"
                             }
             `}
                     >
-                        {/* Gradient Overlay on Hover */}
-                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
                         {/* Icon */}
                         <div
                             className={`
-                relative mb-4 p-3 rounded-xl w-fit transition-all duration-300
+                relative mb-4 p-3 rounded-lg w-fit transition-all duration-300
                 ${selectedRole === role.id
-                                    ? "bg-primary text-white shadow-lg"
-                                    : "bg-grey-15 text-grey-40 group-hover:bg-primary/20 group-hover:text-primary group-hover:scale-110"
+                                    ? "bg-[#0066CC] text-white shadow-md"
+                                    : "bg-slate-100 text-slate-600 group-hover:bg-blue-100 group-hover:text-[#0066CC] group-hover:scale-110"
                                 }
               `}
                         >
@@ -100,19 +97,19 @@ export default function RoleSelection({
                         </div>
 
                         {/* Title */}
-                        <h3 className="relative text-xl font-bold mb-2 transition-colors duration-300">
+                        <h3 className="relative text-lg font-bold mb-2 text-[#0B1E3A] transition-colors duration-300">
                             {role.title}
                         </h3>
 
                         {/* Description */}
-                        <p className="relative text-grey-40 group-hover:text-grey-30 transition-colors duration-300">
+                        <p className="relative text-slate-600 group-hover:text-slate-700 transition-colors duration-300 text-sm">
                             {role.description}
                         </p>
 
                         {/* Selected Indicator with Animation */}
                         {selectedRole === role.id && (
                             <div className="absolute top-4 right-4 animate-scale-in">
-                                <div className="bg-primary rounded-full p-1 shadow-lg">
+                                <div className="bg-[#0066CC] rounded-full p-1 shadow-md">
                                     <svg
                                         className="w-5 h-5 text-white"
                                         fill="none"
@@ -127,11 +124,6 @@ export default function RoleSelection({
                                 </div>
                             </div>
                         )}
-
-                        {/* Shimmer Effect on Hover */}
-                        <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
-                            <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-                        </div>
                     </button>
                 ))}
             </div>

@@ -14,9 +14,9 @@ export default function ProgressIndicator({
     return (
         <div className="w-full max-w-2xl mx-auto mb-12">
             {/* Progress Bar */}
-            <div className="relative h-1 bg-border-dark rounded-full overflow-hidden mb-8">
+            <div className="relative h-1 bg-slate-200 rounded-full overflow-hidden mb-8">
                 <div
-                    className="absolute top-0 left-0 h-full bg-primary transition-all duration-500 ease-out"
+                    className="absolute top-0 left-0 h-full bg-[#0066CC] transition-all duration-500 ease-out"
                     style={{ width: `${(currentStep / totalSteps) * 100}%` }}
                 />
             </div>
@@ -35,10 +35,10 @@ export default function ProgressIndicator({
                 w-10 h-10 rounded-full border-2 flex items-center justify-center
                 transition-all duration-300 relative z-10
                 ${index < currentStep
-                                    ? "bg-primary border-primary"
+                                    ? "bg-[#0066CC] border-[#0066CC]"
                                     : index === currentStep
-                                        ? "bg-primary/20 border-primary shadow-[0_0_20px_rgba(112,59,247,0.4)]"
-                                        : "bg-card-dark border-border-dark"
+                                        ? "bg-blue-50 border-[#0066CC] shadow-sm"
+                                        : "bg-white border-slate-300"
                                 }
               `}
                         >
@@ -56,7 +56,7 @@ export default function ProgressIndicator({
                                 </svg>
                             ) : (
                                 <span
-                                    className={`text-sm font-medium ${index === currentStep ? "text-primary" : "text-grey-40"
+                                    className={`text-sm font-medium ${index === currentStep ? "text-[#0066CC]" : "text-slate-400"
                                         }`}
                                 >
                                     {index + 1}
@@ -69,8 +69,8 @@ export default function ProgressIndicator({
                             className={`
                 text-xs font-medium text-center transition-colors duration-300
                 ${index <= currentStep
-                                    ? "text-white"
-                                    : "text-grey-40"
+                                    ? "text-[#0B1E3A]"
+                                    : "text-slate-400"
                                 }
               `}
                         >

@@ -47,16 +47,16 @@ export default function CompletionStep({
             </div>
 
             {/* Success Message */}
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-[#0B1E3A]">
                 All Set, {userName}! 🎉
             </h1>
 
-            <p className="text-lg md:text-xl text-grey-40 max-w-2xl mb-2">
+            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mb-2">
                 Your profile has been set up as a{" "}
-                <span className="text-primary font-semibold">{getRoleTitle()}</span>
+                <span className="text-[#0066CC] font-semibold">{getRoleTitle()}</span>
             </p>
 
-            <p className="text-lg text-grey-40 max-w-2xl mb-12">
+            <p className="text-lg text-slate-600 max-w-2xl mb-12">
                 You're ready to explore amazing properties on Wisteria Properties
             </p>
 
@@ -64,8 +64,8 @@ export default function CompletionStep({
             <button
                 onClick={onComplete}
                 className="
-          group px-8 py-4 bg-primary rounded-xl font-semibold text-lg
-          transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(112,59,247,0.5)]
+          group px-8 py-4 bg-[#0066CC] text-white rounded-lg font-semibold text-lg
+          transition-all duration-300 hover:scale-105 hover:shadow-lg
         "
             >
                 <span className="flex items-center gap-2">
@@ -86,10 +86,10 @@ export default function CompletionStep({
 
             {/* Decorative Confetti Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-                <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary rounded-full animate-float-1" />
+                <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#0066CC] rounded-full animate-float-1" />
                 <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-green-500 rounded-full animate-float-2" />
-                <div className="absolute bottom-1/3 left-1/3 w-2 h-2 bg-purple-500 rounded-full animate-float-3" />
-                <div className="absolute bottom-1/4 right-1/3 w-3 h-3 bg-primary rounded-full animate-float-1" />
+                <div className="absolute bottom-1/3 left-1/3 w-2 h-2 bg-[#7C5CFF] rounded-full animate-float-3" />
+                <div className="absolute bottom-1/4 right-1/3 w-3 h-3 bg-[#0066CC] rounded-full animate-float-1" />
             </div>
         </div>
     );

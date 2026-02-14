@@ -9,6 +9,7 @@ import WelcomeStep from "@/components/onboarding/WelcomeStep";
 import RoleSelection, { UserRole } from "@/components/onboarding/RoleSelection";
 import RoleInfoForm from "@/components/onboarding/RoleInfoForm";
 import CompletionStep from "@/components/onboarding/CompletionStep";
+import { Pupil, EyeBall } from "@/components/ui/animated-characters-login-page";
 
 type OnboardingStep = "welcome" | "role" | "info" | "complete";
 
@@ -52,10 +53,10 @@ export default function OnboardingPage() {
 
     if (!isLoaded) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-background-dark">
+            <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-[#0B1E3A] to-[#0B1E3A]">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                    <p className="text-lg font-medium text-grey-40">Loading...</p>
+                    <Loader2 className="h-10 w-10 animate-spin text-[#0066CC]" />
+                    <p className="text-lg font-medium text-white/60">Loading...</p>
                 </div>
             </div>
         );
@@ -64,10 +65,10 @@ export default function OnboardingPage() {
     // Still waiting for user (grace period) or no user after grace
     if (!user) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-background-dark">
+            <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-[#0B1E3A] to-[#0B1E3A]">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                    <p className="text-lg font-medium text-grey-40">Loading your account...</p>
+                    <Loader2 className="h-10 w-10 animate-spin text-[#0066CC]" />
+                    <p className="text-lg font-medium text-white/60">Loading your account...</p>
                 </div>
             </div>
         );
@@ -129,45 +130,95 @@ export default function OnboardingPage() {
     const userName = user.firstName || "there";
 
     return (
-        <div className="min-h-screen bg-background-dark text-white">
-            <div className="container mx-auto px-4 py-8 md:py-12">
-                {/* Progress Indicator - Hide on welcome step */}
-                {currentStep !== "welcome" && (
-                    <ProgressIndicator
-                        currentStep={stepIndex[currentStep]}
-                        totalSteps={steps.length}
-                        steps={steps}
-                    />
-                )}
+        <div className="min-h-screen flex bg-white">
+            {/* Left Sidebar with Animated Characters */}
+            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-b from-[#0B1E3A] to-[#0B1E3A] relative overflow-hidden items-center justify-center">
+                {/* Animated Characters */}
+                <div className="relative w-full h-full flex items-center justify-center">
+                    {/* Character 1 - Purple */}
+                    <div className="absolute w-24 h-24 rounded-full bg-[#7C5CFF]/30 blur-xl animate-pulse" style={{ top: "15%", left: "10%" }} />
+                    
+                    {/* Character 2 - Teal */}
+                    <div className="absolute w-32 h-32 rounded-full bg-[#2EC4B6]/20 blur-2xl animate-pulse" style={{ top: "50%", right: "5%", animationDelay: "0.5s" }} />
+                    
+                    {/* Character 3 - Orange */}
+                    <div className="absolute w-28 h-28 rounded-full bg-[#F4A261]/25 blur-xl animate-pulse" style={{ bottom: "15%", left: "20%", animationDelay: "1s" }} />
+                    
+                    {/* Character 4 - Yellow */}
+                    <div className="absolute w-24 h-24 rounded-full bg-[#E9C46A]/30 blur-xl animate-pulse" style={{ bottom: "10%", right: "15%", animationDelay: "1.5s" }} />
 
-                {/* Step Content */}
-                <div className="mt-8">
-                    {currentStep === "welcome" && (
-                        <WelcomeStep userName={userName} onNext={handleNextFromWelcome} />
-                    )}
+                    {/* Main Mascot/Center Element */}
+                    <div className="absolute flex items-center justify-center">
+                        <div className="w-48 h-48 rounded-full flex items-center justify-center relative">
+                            {/* Eyes Container */}
+                            <div className="absolute flex gap-12">
+                                {/* Left Eye */}
+                                <EyeBall
+                                    size={48}
+                                    pupilSize={16}
+                                    eyeColor="white"
+                                    pupilColor="#7C5CFF"
+                                />
+                                {/* Right Eye */}
+                                <EyeBall
+                                    size={48}
+                                    pupilSize={16}
+                                    eyeColor="white"
+                                    pupilColor="#2EC4B6"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    {currentStep === "role" && (
-                        <RoleSelection
-                            selectedRole={selectedRole}
-                            onSelectRole={handleRoleSelect}
+                {/* Decorative Text */}
+                <div className="absolute bottom-8 text-center">
+                    <p className="text-white/40 text-sm font-medium">Wisteria Properties</p>
+                    <p className="text-white/30 text-xs mt-1">Your Real Estate Partner</p>
+                </div>
+            </div>
+
+            {/* Right Content Area */}
+            <div className="w-full lg:w-1/2 flex flex-col">
+                <div className="flex-1 overflow-auto flex flex-col items-center justify-center px-6 md:px-12 py-8">
+                    {/* Progress Indicator - Hide on welcome step */}
+                    {currentStep !== "welcome" && (
+                        <ProgressIndicator
+                            currentStep={stepIndex[currentStep]}
+                            totalSteps={steps.length}
+                            steps={steps}
                         />
                     )}
 
-                    {currentStep === "info" && selectedRole && (
-                        <RoleInfoForm
-                            role={selectedRole}
-                            onComplete={handleInfoComplete}
-                            onBack={handleBackFromInfo}
-                        />
-                    )}
+                    {/* Step Content Container */}
+                    <div className={`w-full max-w-2xl ${currentStep !== "welcome" ? "mt-8" : ""}`}>
+                        {currentStep === "welcome" && (
+                            <WelcomeStep userName={userName} onNext={handleNextFromWelcome} />
+                        )}
 
-                    {currentStep === "complete" && selectedRole && (
-                        <CompletionStep
-                            userName={userName}
-                            role={selectedRole}
-                            onComplete={handleComplete}
-                        />
-                    )}
+                        {currentStep === "role" && (
+                            <RoleSelection
+                                selectedRole={selectedRole}
+                                onSelectRole={handleRoleSelect}
+                            />
+                        )}
+
+                        {currentStep === "info" && selectedRole && (
+                            <RoleInfoForm
+                                role={selectedRole}
+                                onComplete={handleInfoComplete}
+                                onBack={handleBackFromInfo}
+                            />
+                        )}
+
+                        {currentStep === "complete" && selectedRole && (
+                            <CompletionStep
+                                userName={userName}
+                                role={selectedRole}
+                                onComplete={handleComplete}
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

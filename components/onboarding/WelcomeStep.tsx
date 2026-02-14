@@ -10,8 +10,8 @@ export default function WelcomeStep({ userName, onNext }: WelcomeStepProps) {
         <div className="flex flex-col items-center justify-center min-h-[500px] text-center animate-fade-in">
             {/* Animated Logo/Icon */}
             <div className="mb-8 relative">
-                <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-                <div className="relative bg-gradient-to-br from-primary to-purple-500 rounded-full p-8">
+                <div className="absolute inset-0 bg-[#0066CC]/10 rounded-full blur-3xl animate-pulse" />
+                <div className="relative bg-gradient-to-br from-[#0066CC] to-[#0052A3] rounded-full p-8">
                     <svg
                         className="w-16 h-16 text-white"
                         fill="none"
@@ -27,14 +27,14 @@ export default function WelcomeStep({ userName, onNext }: WelcomeStepProps) {
             </div>
 
             {/* Welcome Text */}
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-[#0B1E3A]">
                 Welcome to Wisteria Properties
                 {userName && (
-                    <span className="block text-primary mt-2">{userName}!</span>
+                    <span className="block text-[#0066CC] mt-2">{userName}!</span>
                 )}
             </h1>
 
-            <p className="text-lg md:text-xl text-grey-40 max-w-2xl mb-12 leading-relaxed">
+            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mb-12 leading-relaxed">
                 Let's get you set up in just a few steps. We'll personalize your
                 experience to help you find exactly what you're looking for.
             </p>
@@ -43,8 +43,8 @@ export default function WelcomeStep({ userName, onNext }: WelcomeStepProps) {
             <button
                 onClick={onNext}
                 className="
-          group relative px-8 py-4 bg-primary rounded-xl font-semibold text-lg
-          transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(112,59,247,0.5)]
+          group relative px-8 py-4 bg-[#0066CC] text-white rounded-xl font-semibold text-lg
+          transition-all duration-300 hover:scale-105 hover:shadow-lg
           overflow-hidden
         "
             >
@@ -64,13 +64,13 @@ export default function WelcomeStep({ userName, onNext }: WelcomeStepProps) {
                 </span>
 
                 {/* Animated Background */}
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0052A3] to-[#0066CC] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
 
             {/* Decorative Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#0066CC]/5 rounded-full blur-3xl" />
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#7C5CFF]/5 rounded-full blur-3xl" />
             </div>
         </div>
     );
