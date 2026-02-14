@@ -201,8 +201,8 @@ export default function RoleInfoForm({ role, onComplete, onBack }: RoleInfoFormP
     return (
         <div className="w-full max-w-2xl mx-auto animate-fade-in">
             <div className="text-center mb-8">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">{getTitle()}</h2>
-                <p className="text-lg text-grey-40">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#0B1E3A]">{getTitle()}</h2>
+                <p className="text-lg text-slate-600">
                     Help us personalize your experience
                 </p>
             </div>
@@ -216,11 +216,11 @@ export default function RoleInfoForm({ role, onComplete, onBack }: RoleInfoFormP
                         type="button"
                         onClick={onBack}
                         className="
-              flex-1 px-6 py-3 rounded-xl font-semibold
-              bg-card-dark border-2 border-border-dark
-              hover:border-primary/50 hover:bg-card-dark/50
+              flex-1 px-6 py-3 rounded-lg font-semibold
+              bg-white border-2 border-slate-300
+              hover:border-[#0066CC] hover:bg-blue-50
               transition-all duration-300 hover:scale-[1.02]
-              flex items-center justify-center gap-2
+              flex items-center justify-center gap-2 text-slate-700
             "
                     >
                         <svg
@@ -239,8 +239,8 @@ export default function RoleInfoForm({ role, onComplete, onBack }: RoleInfoFormP
                     <button
                         type="submit"
                         className="
-              group flex-1 px-6 py-3 rounded-xl font-semibold
-              bg-primary hover:shadow-[0_0_30px_rgba(112,59,247,0.5)]
+              group flex-1 px-6 py-3 rounded-lg font-semibold
+              bg-[#0066CC] text-white hover:shadow-lg
               transition-all duration-300 hover:scale-[1.02]
               relative overflow-hidden
               flex items-center justify-center gap-2
@@ -259,7 +259,7 @@ export default function RoleInfoForm({ role, onComplete, onBack }: RoleInfoFormP
                             <path d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
                         {/* Animated gradient background */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#0052A3] to-[#0066CC] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </button>
                 </div>
             </form>
@@ -290,9 +290,9 @@ function FormField({
 }: FormFieldProps) {
     return (
         <div className="space-y-2 animate-fade-in">
-            <label htmlFor={name} className="block text-sm font-medium text-grey-40">
+            <label htmlFor={name} className="block text-sm font-medium text-slate-700">
                 {label}
-                {required && <span className="text-primary ml-1">*</span>}
+                {required && <span className="text-[#0066CC] ml-1">*</span>}
             </label>
             {type === "text" ? (
                 <div className="relative group">
@@ -305,16 +305,15 @@ function FormField({
                         placeholder={placeholder}
                         required={required}
                         className="
-              w-full px-4 py-3 rounded-xl
-              bg-card-dark border-2 border-border-dark
-              focus:border-primary focus:outline-none
-              focus:shadow-[0_0_20px_rgba(112,59,247,0.2)]
+              w-full px-4 py-3 rounded-lg
+              bg-white border-2 border-slate-200
+              focus:border-[#0066CC] focus:outline-none
+              focus:shadow-sm
               transition-all duration-300
-              placeholder:text-grey-40
+              placeholder:text-slate-400
+              text-slate-900
             "
                     />
-                    {/* Focus glow effect */}
-                    <div className="absolute inset-0 rounded-xl bg-primary/5 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 </div>
             ) : (
                 <div className="relative group">
@@ -325,12 +324,13 @@ function FormField({
                         onChange={(e) => onChange(e.target.value)}
                         required={required}
                         className="
-              w-full px-4 py-3 rounded-xl
-              bg-card-dark border-2 border-border-dark
-              focus:border-primary focus:outline-none
-              focus:shadow-[0_0_20px_rgba(112,59,247,0.2)]
+              w-full px-4 py-3 rounded-lg
+              bg-white border-2 border-slate-200
+              focus:border-[#0066CC] focus:outline-none
+              focus:shadow-sm
               transition-all duration-300
               cursor-pointer appearance-none
+              text-slate-900
             "
                     >
                         {options?.map((option) => (
@@ -342,7 +342,7 @@ function FormField({
                     {/* Custom dropdown arrow */}
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                         <svg
-                            className="w-5 h-5 text-grey-40 group-focus-within:text-primary transition-colors duration-300"
+                            className="w-5 h-5 text-slate-400 group-focus-within:text-[#0066CC] transition-colors duration-300"
                             fill="none"
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -353,8 +353,6 @@ function FormField({
                             <path d="M19 9l-7 7-7-7" />
                         </svg>
                     </div>
-                    {/* Focus glow effect */}
-                    <div className="absolute inset-0 rounded-xl bg-primary/5 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 </div>
             )}
         </div>
