@@ -19,13 +19,13 @@ export default function Features() {
     ]
 
     return (
-        <section className="bg-background-dark py-4">
+        <section className="bg-bg-secondary py-4">
             <div className="max-w-7xl mx-auto px-6">
-                <div className="grid md:grid-cols-4 border border-border-dark rounded-3xl overflow-hidden bg-card-dark">
+                <div className="grid md:grid-cols-4 border border-border rounded-3xl overflow-hidden bg-surface-elevated">
                     {features.map((feature, index) => (
                         <div
                             key={index}
-                            className={`p-8 hover:bg-white/5 transition-colors group cursor-pointer ${index < features.length - 1 ? 'border-r border-border-dark' : ''
+                            className={`p-8 hover:bg-hover transition-colors group cursor-pointer ${index < features.length - 1 ? 'border-r border-border' : ''
                                 }`}
                         >
                             <div className="flex justify-between items-start mb-6">

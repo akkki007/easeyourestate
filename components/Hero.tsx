@@ -6,36 +6,36 @@ export default function Hero() {
             <div className="max-w-7xl mx-auto px-6 pt-16 pb-24 grid lg:grid-cols-2 gap-12 items-center">
                 {/* Left Content */}
                 <div className="z-10">
-                    <h1 className="text-5xl lg:text-6xl font-bold leading-[1.15] mb-6 text-balance">
-                        Discover Your Dream Property with Wisteria Properties
-                    </h1>
+                    <h1 className="text-5xl tracking-tighter leading-none lg:text-6xl font-bold leading-[1.15] mb-6 text-balance">
+                        Discover Your Dream Property with easeyourestate Properties
+                    </h1>   
                     <p className="text-lg text-gray-400 mb-10 max-w-xl">
                         Your journey to finding the perfect property begins here. Explore our listings to find the home that matches your dreams.
                     </p>
 
                     {/* CTA Buttons */}
                     <div className="flex flex-wrap gap-4 mb-12">
-                        <button className="px-8 py-4 bg-primary text-white font-medium rounded-xl hover:opacity-90 transition-opacity">
+                        <button className="px-8 py-4 rounded-xl font-medium bg-accent text-white shadow-md hover:bg-accent-hover hover:shadow-lg transition-colors">
                             Browse Properties
                         </button>
-                        <button className="px-8 py-4 border border-border-dark bg-card-dark font-medium rounded-xl hover:bg-white/5 transition-colors">
+                        <button className="px-8 py-4 rounded-xl font-medium border border-border bg-surface text-primary hover:bg-hover transition-colors">
                             Learn More
                         </button>
                     </div>
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-3 gap-4">
-                        <div className="bg-card-dark border border-border-dark p-6 rounded-2xl">
+                        <div className="theme-card p-6 rounded-2xl">
                             <div className="text-3xl font-bold mb-1">200+</div>
-                            <div className="text-sm text-gray-400">Happy Customers</div>
+                            <div className="text-sm text-secondary">Happy Customers</div>
                         </div>
-                        <div className="bg-card-dark border border-border-dark p-6 rounded-2xl">
+                        <div className="theme-card p-6 rounded-2xl">
                             <div className="text-3xl font-bold mb-1">10k+</div>
-                            <div className="text-sm text-gray-400">Properties For Clients</div>
+                            <div className="text-sm text-secondary">Properties For Clients</div>
                         </div>
-                        <div className="bg-card-dark border border-border-dark p-6 rounded-2xl">
+                        <div className="theme-card p-6 rounded-2xl">
                             <div className="text-3xl font-bold mb-1">16+</div>
-                            <div className="text-sm text-gray-400">Years of Experience</div>
+                            <div className="text-sm text-secondary">Years of Experience</div>
                         </div>
                     </div>
                 </div>
