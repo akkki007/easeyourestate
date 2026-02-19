@@ -188,7 +188,7 @@ function SignUpPage() {
             <div className="size-8 rounded-lg bg-blue-500/20 border border-blue-400/30 flex items-center justify-center">
               <span className="material-symbols-outlined text-blue-400 text-xl">real_estate_agent</span>
             </div>
-            <span className="text-white">Wisteria Properties</span>
+            <span className="text-white">easeyourestate Properties</span>
           </div>
         </div>
 

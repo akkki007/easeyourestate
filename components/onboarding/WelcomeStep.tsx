@@ -7,17 +7,16 @@ interface WelcomeStepProps {
 
 export default function WelcomeStep({ userName, onNext }: WelcomeStepProps) {
     return (
-        <div className="flex flex-col items-center justify-center min-h-[500px] text-center animate-fade-in">
-            {/* Animated Logo/Icon */}
-            <div className="mb-8 relative">
-                <div className="absolute inset-0 bg-[#0066CC]/10 rounded-full blur-3xl animate-pulse" />
-                <div className="relative bg-gradient-to-br from-[#0066CC] to-[#0052A3] rounded-full p-8">
+        <div className="flex flex-col items-center justify-center min-h-[480px] text-center px-4">
+            {/* Minimal Icon */}
+            <div className="mb-10">
+                <div className="w-20 h-20 rounded-2xl bg-accent flex items-center justify-center shadow-lg">
                     <svg
-                        className="w-16 h-16 text-white"
+                        className="w-10 h-10 text-white"
                         fill="none"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth="2"
+                        strokeWidth="1.5"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                     >
@@ -27,51 +26,51 @@ export default function WelcomeStep({ userName, onNext }: WelcomeStepProps) {
             </div>
 
             {/* Welcome Text */}
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-[#0B1E3A]">
-                Welcome to Wisteria Properties
+            <div className="space-y-4 mb-10">
+                <p className="text-sm font-medium tracking-widest text-tertiary uppercase">
+                    Welcome to
+                </p>
+                <h1 className="text-3xl md:text-4xl font-semibold text-primary tracking-tight">
+                    easeyourestate Properties
+                </h1>
                 {userName && (
-                    <span className="block text-[#0066CC] mt-2">{userName}!</span>
+                    <p className="text-lg text-secondary">
+                        Hello, <span className="font-medium text-primary">{userName}</span>
+                    </p>
                 )}
-            </h1>
+            </div>
 
-            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mb-12 leading-relaxed">
-                Let's get you set up in just a few steps. We'll personalize your
-                experience to help you find exactly what you're looking for.
+            <p className="text-base text-secondary max-w-md mb-12 leading-relaxed">
+                Let's personalize your experience. This will only take a moment.
             </p>
 
             {/* CTA Button */}
             <button
                 onClick={onNext}
                 className="
-          group relative px-8 py-4 bg-[#0066CC] text-white rounded-xl font-semibold text-lg
-          transition-all duration-300 hover:scale-105 hover:shadow-lg
-          overflow-hidden
-        "
+                    group inline-flex items-center gap-3 px-8 py-4
+                    bg-accent text-white rounded-full font-medium
+                    transition-all duration-200
+                    hover:bg-accent-hover hover:shadow-xl hover:shadow-accent/20
+                    active:scale-[0.98]
+                "
             >
-                <span className="relative z-10 flex items-center gap-2">
-                    Get Started
-                    <svg
-                        className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                </span>
-
-                {/* Animated Background */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0052A3] to-[#0066CC] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                Get Started
+                <svg
+                    className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path d="M9 5l7 7-7 7" />
+                </svg>
             </button>
 
-            {/* Decorative Elements */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#0066CC]/5 rounded-full blur-3xl" />
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#7C5CFF]/5 rounded-full blur-3xl" />
-            </div>
+            {/* Subtle accent line */}
+            <div className="mt-16 w-12 h-px bg-border" />
         </div>
     );
 }

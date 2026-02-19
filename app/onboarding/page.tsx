@@ -21,6 +21,7 @@ export default function OnboardingPage() {
     const router = useRouter();
     const [currentStep, setCurrentStep] = useState<OnboardingStep>("welcome");
     const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+    const [onboardingFormData, setOnboardingFormData] = useState<Record<string, string>>({});
     const graceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const hasCheckedAuthRef = useRef(false);
 
@@ -96,32 +97,37 @@ export default function OnboardingPage() {
         setCurrentStep("role");
     };
 
-    const handleInfoComplete = () => {
+    const handleInfoComplete = (formData: Record<string, string>) => {
+        setOnboardingFormData(formData);
         setCurrentStep("complete");
     };
 
     const handleComplete = async () => {
-        // Update user metadata to mark as onboarded
         try {
+            // Sync role + onboarding form data to MongoDB (user may already exist via Clerk webhook)
+            await fetch("/api/users/me/onboarding", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    role: selectedRole,
+                    onboardingData: onboardingFormData,
+                }),
+            });
+
+            // Update Clerk metadata to mark as onboarded
             await user.update({
                 unsafeMetadata: {
                     role: selectedRole,
                     onboarded: true,
                 },
             });
-            // Reload the user to ensure the session has the updated metadata
             await user.reload();
 
-            // Set a cookie for the middleware to read immediately
-            document.cookie = "onboarded=true; path=/; max-age=31536000"; // 1 year
-
-            // Give Clerk an additional moment to sync
-            await new Promise(resolve => setTimeout(resolve, 300));
+            document.cookie = "onboarded=true; path=/; max-age=31536000";
+            await new Promise((resolve) => setTimeout(resolve, 300));
         } catch (error) {
             console.error("Failed to complete onboarding:", error);
         } finally {
-            // Use hard redirect to ensure Clerk session is fully refreshed
-            // and user is taken to their dashboard after completing onboarding
             window.location.href = "/dashboard";
         }
     };
@@ -173,7 +179,7 @@ export default function OnboardingPage() {
 
                 {/* Decorative Text */}
                 <div className="absolute bottom-8 text-center">
-                    <p className="text-white/40 text-sm font-medium">Wisteria Properties</p>
+                    <p className="text-white/40 text-sm font-medium">easeyourestate Properties</p>
                     <p className="text-white/30 text-xs mt-1">Your Real Estate Partner</p>
                 </div>
             </div>
