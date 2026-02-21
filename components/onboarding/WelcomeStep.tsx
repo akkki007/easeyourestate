@@ -7,10 +7,14 @@ interface WelcomeStepProps {
 
 export default function WelcomeStep({ userName, onNext }: WelcomeStepProps) {
     return (
-        <div className="flex flex-col items-center justify-center min-h-[480px] text-center px-4">
-            {/* Minimal Icon */}
-            <div className="mb-10">
-                <div className="w-20 h-20 rounded-2xl bg-accent flex items-center justify-center shadow-lg">
+        <div className="relative flex flex-col items-center justify-center min-h-[480px] text-center px-4">
+            {/* Background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-accent/10 rounded-3xl pointer-events-none" />
+
+            {/* Icon with glow effect */}
+            <div className="relative mb-10">
+                <div className="absolute inset-0 bg-accent/20 rounded-2xl blur-xl" />
+                <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-accent to-accent-hover flex items-center justify-center shadow-lg shadow-accent/30">
                     <svg
                         className="w-10 h-10 text-white"
                         fill="none"
@@ -26,38 +30,37 @@ export default function WelcomeStep({ userName, onNext }: WelcomeStepProps) {
             </div>
 
             {/* Welcome Text */}
-            <div className="space-y-4 mb-10">
+            <div className="relative space-y-4 mb-10">
                 <p className="text-sm font-medium tracking-widest text-tertiary uppercase">
                     Welcome to
                 </p>
                 <h1 className="text-3xl md:text-4xl font-semibold text-primary tracking-tight">
-                    easeyourestate Properties
+                    <span className="bg-gradient-to-r from-accent to-accent-hover bg-clip-text text-transparent">
+                        Easeyourestate
+                    </span>{" "}
+                    Properties
                 </h1>
                 {userName && (
                     <p className="text-lg text-secondary">
-                        Hello, <span className="font-medium text-primary">{userName}</span>
+                        Hello, <span className="font-medium text-accent">{userName}</span>
                     </p>
                 )}
             </div>
-
-            <p className="text-base text-secondary max-w-md mb-12 leading-relaxed">
-                Let's personalize your experience. This will only take a moment.
-            </p>
 
             {/* CTA Button */}
             <button
                 onClick={onNext}
                 className="
                     group inline-flex items-center gap-3 px-8 py-4
-                    bg-accent text-white rounded-full font-medium
-                    transition-all duration-200
-                    hover:bg-accent-hover hover:shadow-xl hover:shadow-accent/20
+                    bg-gradient-to-r from-accent to-accent-hover text-white rounded-full font-medium
+                    transition-all duration-300
+                    hover:shadow-xl hover:shadow-accent/30 hover:scale-[1.02]
                     active:scale-[0.98]
                 "
             >
                 Get Started
                 <svg
-                    className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                    className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -69,8 +72,12 @@ export default function WelcomeStep({ userName, onNext }: WelcomeStepProps) {
                 </svg>
             </button>
 
-            {/* Subtle accent line */}
-            <div className="mt-16 w-12 h-px bg-border" />
+            {/* Subtle accent dots */}
+            <div className="mt-16 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-accent/30" />
+                <div className="w-2 h-2 rounded-full bg-accent/50" />
+                <div className="w-2 h-2 rounded-full bg-accent" />
+            </div>
         </div>
     );
 }

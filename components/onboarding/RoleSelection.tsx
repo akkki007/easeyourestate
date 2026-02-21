@@ -66,16 +66,17 @@ export default function RoleSelection({
             </div>
 
             <div className="space-y-3">
-                {roles.map((role) => (
+                {roles.map((role, index) => (
                     <button
                         key={role.id}
                         onClick={() => onSelectRole(role.id)}
+                        style={{ animationDelay: `${index * 75}ms` }}
                         className={`
                             group w-full p-5 rounded-2xl border text-left
-                            transition-all duration-200
+                            transition-all duration-300 animate-slide-up
                             ${selectedRole === role.id
-                                ? "bg-accent border-accent"
-                                : "bg-card border-border hover:border-accent/50 hover:bg-hover"
+                                ? "bg-gradient-to-r from-accent to-accent-hover border-accent shadow-lg shadow-accent/20"
+                                : "bg-card border-border hover:border-accent/40 hover:bg-hover hover:shadow-md"
                             }
                         `}
                     >
@@ -84,10 +85,10 @@ export default function RoleSelection({
                             <div
                                 className={`
                                     w-12 h-12 rounded-xl flex items-center justify-center
-                                    transition-colors duration-200
+                                    transition-all duration-300
                                     ${selectedRole === role.id
-                                        ? "bg-white/10 text-white"
-                                        : "bg-hover text-secondary group-hover:bg-active"
+                                        ? "bg-white/20 text-white"
+                                        : "bg-accent/10 text-accent group-hover:bg-accent/20"
                                     }
                                 `}
                             >
@@ -105,7 +106,7 @@ export default function RoleSelection({
                                 </h3>
                                 <p className={`
                                     text-sm transition-colors duration-200
-                                    ${selectedRole === role.id ? "text-white/70" : "text-secondary"}
+                                    ${selectedRole === role.id ? "text-white/80" : "text-secondary"}
                                 `}>
                                     {role.description}
                                 </p>
@@ -113,16 +114,16 @@ export default function RoleSelection({
 
                             {/* Indicator */}
                             <div className={`
-                                w-5 h-5 rounded-full border-2 flex items-center justify-center
-                                transition-all duration-200
+                                w-6 h-6 rounded-full border-2 flex items-center justify-center
+                                transition-all duration-300
                                 ${selectedRole === role.id
-                                    ? "bg-white border-white"
+                                    ? "bg-white border-white scale-110"
                                     : "border-border group-hover:border-accent/50"
                                 }
                             `}>
                                 {selectedRole === role.id && (
                                     <svg
-                                        className="w-3 h-3 text-accent"
+                                        className="w-3.5 h-3.5 text-accent"
                                         fill="none"
                                         strokeLinecap="round"
                                         strokeLinejoin="round"

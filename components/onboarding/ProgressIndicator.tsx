@@ -14,9 +14,9 @@ export default function ProgressIndicator({
     return (
         <div className="w-full max-w-md mx-auto mb-12 px-4">
             {/* Progress Bar */}
-            <div className="relative h-1 bg-hover rounded-full overflow-hidden mb-6">
+            <div className="relative h-1.5 bg-border rounded-full overflow-hidden mb-6">
                 <div
-                    className="absolute top-0 left-0 h-full bg-accent rounded-full transition-all duration-500 ease-out"
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-accent to-accent-hover rounded-full transition-all duration-500 ease-out"
                     style={{ width: `${(currentStep / totalSteps) * 100}%` }}
                 />
             </div>
@@ -31,13 +31,13 @@ export default function ProgressIndicator({
                         {/* Step Number */}
                         <div
                             className={`
-                                w-8 h-8 rounded-full flex items-center justify-center mb-2
+                                w-9 h-9 rounded-full flex items-center justify-center mb-2
                                 text-sm font-medium transition-all duration-300
                                 ${index < currentStep
-                                    ? "bg-accent text-white"
+                                    ? "bg-gradient-to-br from-accent to-accent-hover text-white shadow-md shadow-accent/20"
                                     : index === currentStep
-                                        ? "bg-accent text-white"
-                                        : "bg-hover text-tertiary"
+                                        ? "bg-gradient-to-br from-accent to-accent-hover text-white shadow-md shadow-accent/20 ring-4 ring-accent/20"
+                                        : "bg-card border border-border text-tertiary"
                                 }
                             `}
                         >

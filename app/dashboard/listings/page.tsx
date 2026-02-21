@@ -120,9 +120,10 @@ export default function ListingsPage() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {listings.map((listing) => (
-              <div
+              <Link
                 key={listing.id}
-                className="bg-card rounded-2xl border border-border overflow-hidden hover:border-border-hover transition-colors"
+                href={`/property/${listing.slug}`}
+                className="bg-card rounded-2xl border border-border overflow-hidden hover:border-border-hover hover:shadow-lg transition-all cursor-pointer block"
               >
                 <div className="aspect-[4/3] bg-hover relative">
                   {listing.media?.primary ? (
@@ -158,7 +159,7 @@ export default function ListingsPage() {
                     {listing.propertyType.replace(/_/g, " ")} · {listing.category}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

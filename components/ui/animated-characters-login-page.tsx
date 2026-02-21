@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSignIn } from "@clerk/nextjs";
+import { useSignIn, useAuth } from "@clerk/nextjs";
 import type { EmailCodeFactor } from "@clerk/types";
 import { cn } from "@/lib/utils";
 
@@ -181,6 +181,7 @@ export const EyeBall = ({
 
 function LoginPage() {
   const { isLoaded, signIn, setActive } = useSignIn();
+  const { isSignedIn } = useAuth();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -200,6 +201,13 @@ function LoginPage() {
   const blackRef = useRef<HTMLDivElement>(null);
   const yellowRef = useRef<HTMLDivElement>(null);
   const orangeRef = useRef<HTMLDivElement>(null);
+
+  // Redirect to dashboard if user is already signed in
+  useEffect(() => {
+    if (isSignedIn) {
+      router.push("/dashboard");
+    }
+  }, [isSignedIn, router]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -378,6 +386,11 @@ function LoginPage() {
 
   const handleGoogleSignIn = () => {
     if (!isLoaded) return;
+    // If already signed in, redirect to dashboard instead of attempting OAuth
+    if (isSignedIn) {
+      router.push("/dashboard");
+      return;
+    }
     signIn.authenticateWithRedirect({
       strategy: "oauth_google",
       redirectUrl: "/sso-callback",
