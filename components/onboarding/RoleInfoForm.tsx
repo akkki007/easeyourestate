@@ -3,11 +3,9 @@
 import { useState } from "react";
 import { UserRole } from "./RoleSelection";
 
-export type OnboardingFormData = Record<string, string>;
-
 interface RoleInfoFormProps {
     role: UserRole;
-    onComplete: (formData: OnboardingFormData) => void;
+    onComplete: () => void;
     onBack: () => void;
 }
 
@@ -16,7 +14,7 @@ export default function RoleInfoForm({ role, onComplete, onBack }: RoleInfoFormP
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onComplete(formData);
+        onComplete();
     };
 
     const handleChange = (field: string, value: string) => {
@@ -113,7 +111,7 @@ export default function RoleInfoForm({ role, onComplete, onBack }: RoleInfoFormP
                 return (
                     <>
                         <FormField
-                            label="Agency / Company Name"
+                            label="Agency/Company Name"
                             name="agencyName"
                             type="text"
                             placeholder="Your agency or company name"
@@ -190,55 +188,43 @@ export default function RoleInfoForm({ role, onComplete, onBack }: RoleInfoFormP
     const getTitle = () => {
         switch (role) {
             case "buyer":
-                return "Your requirements";
+                return "Tell us about your requirements";
             case "owner":
-                return "About your property";
+                return "Tell us about your property";
             case "agent":
-                return "About your practice";
+                return "Tell us about your practice";
             case "builder":
-                return "About your projects";
+                return "Tell us about your projects";
         }
     };
 
     return (
-        <div className="w-full max-w-lg mx-auto px-4">
-            <div className="text-center mb-10">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent/10 mb-4">
-                    <svg className="w-6 h-6 text-accent" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" stroke="currentColor">
-                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </div>
-                <h2 className="text-2xl md:text-3xl font-semibold text-primary tracking-tight mb-3">
-                    {getTitle()}
-                </h2>
-                <p className="text-secondary">
+        <div className="w-full max-w-2xl mx-auto animate-fade-in">
+            <div className="text-center mb-8">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#0B1E3A]">{getTitle()}</h2>
+                <p className="text-lg text-slate-600">
                     Help us personalize your experience
                 </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="p-6 rounded-2xl bg-card border border-border">
-                    <div className="space-y-5">
-                        {renderForm()}
-                    </div>
-                </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+                {renderForm()}
 
                 {/* Action Buttons */}
-                <div className="flex gap-3 pt-4">
+                <div className="flex gap-4 pt-6">
                     <button
                         type="button"
                         onClick={onBack}
                         className="
-                            flex-1 px-6 py-3.5 rounded-full font-medium
-                            bg-card border border-border text-secondary
-                            transition-all duration-300
-                            hover:bg-hover hover:text-primary hover:border-accent/30
-                            active:scale-[0.98]
-                            flex items-center justify-center gap-2
-                        "
+              flex-1 px-6 py-3 rounded-lg font-semibold
+              bg-white border-2 border-slate-300
+              hover:border-[#0066CC] hover:bg-blue-50
+              transition-all duration-300 hover:scale-[1.02]
+              flex items-center justify-center gap-2 text-slate-700
+            "
                     >
                         <svg
-                            className="w-4 h-4"
+                            className="w-5 h-5"
                             fill="none"
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -253,17 +239,16 @@ export default function RoleInfoForm({ role, onComplete, onBack }: RoleInfoFormP
                     <button
                         type="submit"
                         className="
-                            group flex-1 px-6 py-3.5 rounded-full font-medium
-                            bg-gradient-to-r from-accent to-accent-hover text-white
-                            transition-all duration-300
-                            hover:shadow-lg hover:shadow-accent/30 hover:scale-[1.02]
-                            active:scale-[0.98]
-                            flex items-center justify-center gap-2
-                        "
+              group flex-1 px-6 py-3 rounded-lg font-semibold
+              bg-[#0066CC] text-white hover:shadow-lg
+              transition-all duration-300 hover:scale-[1.02]
+              relative overflow-hidden
+              flex items-center justify-center gap-2
+            "
                     >
-                        Continue
+                        <span className="relative z-10">Continue</span>
                         <svg
-                            className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                            className="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
                             fill="none"
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -271,8 +256,10 @@ export default function RoleInfoForm({ role, onComplete, onBack }: RoleInfoFormP
                             viewBox="0 0 24 24"
                             stroke="currentColor"
                         >
-                            <path d="M9 5l7 7-7 7" />
+                            <path d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
+                        {/* Animated gradient background */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#0052A3] to-[#0066CC] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </button>
                 </div>
             </form>
@@ -302,32 +289,34 @@ function FormField({
     required,
 }: FormFieldProps) {
     return (
-        <div className="space-y-2">
-            <label htmlFor={name} className="block text-sm font-medium text-primary">
+        <div className="space-y-2 animate-fade-in">
+            <label htmlFor={name} className="block text-sm font-medium text-slate-700">
                 {label}
-                {required && <span className="text-accent ml-1">*</span>}
+                {required && <span className="text-[#0066CC] ml-1">*</span>}
             </label>
             {type === "text" ? (
-                <input
-                    type="text"
-                    id={name}
-                    name={name}
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    placeholder={placeholder}
-                    required={required}
-                    className="
-                        w-full px-4 py-3.5 rounded-xl
-                        bg-bg border border-border
-                        focus:bg-surface focus:border-accent focus:outline-none
-                        focus:ring-4 focus:ring-accent/10
-                        transition-all duration-200
-                        placeholder:text-tertiary
-                        text-primary
-                    "
-                />
+                <div className="relative group">
+                    <input
+                        type="text"
+                        id={name}
+                        name={name}
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
+                        placeholder={placeholder}
+                        required={required}
+                        className="
+              w-full px-4 py-3 rounded-lg
+              bg-white border-2 border-slate-200
+              focus:border-[#0066CC] focus:outline-none
+              focus:shadow-sm
+              transition-all duration-300
+              placeholder:text-slate-400
+              text-slate-900
+            "
+                    />
+                </div>
             ) : (
-                <div className="relative">
+                <div className="relative group">
                     <select
                         id={name}
                         name={name}
@@ -335,24 +324,25 @@ function FormField({
                         onChange={(e) => onChange(e.target.value)}
                         required={required}
                         className="
-                            w-full px-4 py-3.5 rounded-xl
-                            bg-bg border border-border
-                            focus:bg-surface focus:border-accent focus:outline-none
-                            focus:ring-4 focus:ring-accent/10
-                            transition-all duration-200
-                            cursor-pointer appearance-none
-                            text-primary
-                        "
+              w-full px-4 py-3 rounded-lg
+              bg-white border-2 border-slate-200
+              focus:border-[#0066CC] focus:outline-none
+              focus:shadow-sm
+              transition-all duration-300
+              cursor-pointer appearance-none
+              text-slate-900
+            "
                     >
                         {options?.map((option) => (
-                            <option key={option.value} value={option.value} className="bg-card text-primary">
+                            <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>
                         ))}
                     </select>
+                    {/* Custom dropdown arrow */}
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                         <svg
-                            className="w-4 h-4 text-secondary"
+                            className="w-5 h-5 text-slate-400 group-focus-within:text-[#0066CC] transition-colors duration-300"
                             fill="none"
                             strokeLinecap="round"
                             strokeLinejoin="round"

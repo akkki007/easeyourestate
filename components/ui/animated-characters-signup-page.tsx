@@ -3,14 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSignUp, useAuth } from "@clerk/nextjs";
+import { useSignUp } from "@clerk/nextjs";
 import { Pupil, EyeBall } from "./animated-characters-login-page";
 
 type ClerkErrorShape = { errors?: Array<{ longMessage?: string }>; message?: string };
 
 function SignUpPage() {
   const { isLoaded, signUp, setActive } = useSignUp();
-  const { isSignedIn } = useAuth();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -32,13 +31,6 @@ function SignUpPage() {
   const blackRef = useRef<HTMLDivElement>(null);
   const yellowRef = useRef<HTMLDivElement>(null);
   const orangeRef = useRef<HTMLDivElement>(null);
-
-  // Redirect to dashboard if user is already signed in
-  useEffect(() => {
-    if (isSignedIn) {
-      router.push("/dashboard");
-    }
-  }, [isSignedIn, router]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -180,11 +172,6 @@ function SignUpPage() {
 
   const handleGoogleSignUp = () => {
     if (!isLoaded) return;
-    // If already signed in, redirect to dashboard instead of attempting OAuth
-    if (isSignedIn) {
-      router.push("/dashboard");
-      return;
-    }
     signUp.authenticateWithRedirect({
       strategy: "oauth_google",
       redirectUrl: "/sso-callback",
@@ -201,7 +188,7 @@ function SignUpPage() {
             <div className="size-8 rounded-lg bg-blue-500/20 border border-blue-400/30 flex items-center justify-center">
               <span className="material-symbols-outlined text-blue-400 text-xl">real_estate_agent</span>
             </div>
-            <span className="text-white">easeyourestate Properties</span>
+            <span className="text-white">Wisteria Properties</span>
           </div>
         </div>
 
