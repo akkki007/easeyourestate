@@ -14,36 +14,30 @@ export default function CompletionStep({
     const getRoleTitle = () => {
         switch (role) {
             case "buyer":
-                return "Buyer / Tenant";
+                return "Buyer/Tenant";
             case "owner":
                 return "Property Owner";
             case "agent":
-                return "Agent / Broker";
+                return "Agent/Broker";
             case "builder":
-                return "Builder / Developer";
+                return "Builder/Developer";
             default:
                 return "User";
         }
     };
 
     return (
-        <div className="relative flex flex-col items-center justify-center min-h-[480px] text-center px-4">
-            {/* Background decoration */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-success/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-accent/10 rounded-full blur-3xl" />
-            </div>
-
-            {/* Success Icon */}
-            <div className="relative mb-10">
-                <div className="absolute inset-0 bg-success/20 rounded-full blur-xl scale-150" />
-                <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-success to-emerald-600 flex items-center justify-center shadow-lg shadow-success/30">
+        <div className="flex flex-col items-center justify-center min-h-[500px] text-center animate-fade-in">
+            {/* Success Animation */}
+            <div className="mb-8 relative">
+                <div className="absolute inset-0 bg-green-500/20 rounded-full blur-3xl animate-pulse" />
+                <div className="relative bg-gradient-to-br from-green-500 to-green-600 rounded-full p-8 animate-scale-in">
                     <svg
-                        className="w-12 h-12 text-white animate-check"
+                        className="w-16 h-16 text-white animate-check"
                         fill="none"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth="2.5"
+                        strokeWidth="3"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                     >
@@ -53,55 +47,50 @@ export default function CompletionStep({
             </div>
 
             {/* Success Message */}
-            <div className="relative space-y-4 mb-10">
-                <h1 className="text-3xl md:text-4xl font-semibold text-primary tracking-tight">
-                    You&apos;re all set!
-                </h1>
-                <p className="text-lg text-secondary max-w-md">
-                    Welcome aboard, <span className="font-semibold text-accent">{userName}</span>
-                </p>
-            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-[#0B1E3A]">
+                All Set, {userName}! 🎉
+            </h1>
 
-            {/* Role Badge */}
-            <div className="relative mb-12">
-                <span className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-card border border-border text-primary text-sm font-medium shadow-sm">
-                    <span className="flex h-2.5 w-2.5">
-                        <span className="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-success opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success" />
-                    </span>
-                    {getRoleTitle()}
-                </span>
-            </div>
+            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mb-2">
+                Your profile has been set up as a{" "}
+                <span className="text-[#0066CC] font-semibold">{getRoleTitle()}</span>
+            </p>
+
+            <p className="text-lg text-slate-600 max-w-2xl mb-12">
+                You're ready to explore amazing properties on Wisteria Properties
+            </p>
 
             {/* CTA Button */}
             <button
                 onClick={onComplete}
                 className="
-                    group inline-flex items-center gap-3 px-8 py-4
-                    bg-gradient-to-r from-accent to-accent-hover text-white rounded-full font-medium
-                    transition-all duration-300
-                    hover:shadow-xl hover:shadow-accent/30 hover:scale-[1.02]
-                    active:scale-[0.98]
-                "
+          group px-8 py-4 bg-[#0066CC] text-white rounded-lg font-semibold text-lg
+          transition-all duration-300 hover:scale-105 hover:shadow-lg
+        "
             >
-                Start Exploring
-                <svg
-                    className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path d="M9 5l7 7-7 7" />
-                </svg>
+                <span className="flex items-center gap-2">
+                    Start Exploring
+                    <svg
+                        className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </span>
             </button>
 
-            {/* Subtle accent */}
-            <p className="relative mt-16 text-sm text-secondary">
-                Ready to discover amazing properties
-            </p>
+            {/* Decorative Confetti Elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+                <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#0066CC] rounded-full animate-float-1" />
+                <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-green-500 rounded-full animate-float-2" />
+                <div className="absolute bottom-1/3 left-1/3 w-2 h-2 bg-[#7C5CFF] rounded-full animate-float-3" />
+                <div className="absolute bottom-1/4 right-1/3 w-3 h-3 bg-[#0066CC] rounded-full animate-float-1" />
+            </div>
         </div>
     );
 }
