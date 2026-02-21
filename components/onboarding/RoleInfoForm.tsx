@@ -203,6 +203,11 @@ export default function RoleInfoForm({ role, onComplete, onBack }: RoleInfoFormP
     return (
         <div className="w-full max-w-lg mx-auto px-4">
             <div className="text-center mb-10">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent/10 mb-4">
+                    <svg className="w-6 h-6 text-accent" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
                 <h2 className="text-2xl md:text-3xl font-semibold text-primary tracking-tight mb-3">
                     {getTitle()}
                 </h2>
@@ -212,18 +217,22 @@ export default function RoleInfoForm({ role, onComplete, onBack }: RoleInfoFormP
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-                {renderForm()}
+                <div className="p-6 rounded-2xl bg-card border border-border">
+                    <div className="space-y-5">
+                        {renderForm()}
+                    </div>
+                </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-3 pt-8">
+                <div className="flex gap-3 pt-4">
                     <button
                         type="button"
                         onClick={onBack}
                         className="
                             flex-1 px-6 py-3.5 rounded-full font-medium
-                            bg-hover text-secondary
-                            transition-all duration-200
-                            hover:bg-active hover:text-primary
+                            bg-card border border-border text-secondary
+                            transition-all duration-300
+                            hover:bg-hover hover:text-primary hover:border-accent/30
                             active:scale-[0.98]
                             flex items-center justify-center gap-2
                         "
@@ -244,17 +253,17 @@ export default function RoleInfoForm({ role, onComplete, onBack }: RoleInfoFormP
                     <button
                         type="submit"
                         className="
-                            flex-1 px-6 py-3.5 rounded-full font-medium
-                            bg-accent text-white
-                            transition-all duration-200
-                            hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/20
+                            group flex-1 px-6 py-3.5 rounded-full font-medium
+                            bg-gradient-to-r from-accent to-accent-hover text-white
+                            transition-all duration-300
+                            hover:shadow-lg hover:shadow-accent/30 hover:scale-[1.02]
                             active:scale-[0.98]
                             flex items-center justify-center gap-2
                         "
                     >
                         Continue
                         <svg
-                            className="w-4 h-4"
+                            className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5"
                             fill="none"
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -294,9 +303,9 @@ function FormField({
 }: FormFieldProps) {
     return (
         <div className="space-y-2">
-            <label htmlFor={name} className="block text-sm font-medium text-secondary">
+            <label htmlFor={name} className="block text-sm font-medium text-primary">
                 {label}
-                {required && <span className="text-tertiary ml-1">*</span>}
+                {required && <span className="text-accent ml-1">*</span>}
             </label>
             {type === "text" ? (
                 <input
@@ -309,7 +318,7 @@ function FormField({
                     required={required}
                     className="
                         w-full px-4 py-3.5 rounded-xl
-                        bg-input-bg border border-input-border
+                        bg-bg border border-border
                         focus:bg-surface focus:border-accent focus:outline-none
                         focus:ring-4 focus:ring-accent/10
                         transition-all duration-200
@@ -327,7 +336,7 @@ function FormField({
                         required={required}
                         className="
                             w-full px-4 py-3.5 rounded-xl
-                            bg-input-bg border border-input-border
+                            bg-bg border border-border
                             focus:bg-surface focus:border-accent focus:outline-none
                             focus:ring-4 focus:ring-accent/10
                             transition-all duration-200
@@ -336,14 +345,14 @@ function FormField({
                         "
                     >
                         {options?.map((option) => (
-                            <option key={option.value} value={option.value}>
+                            <option key={option.value} value={option.value} className="bg-card text-primary">
                                 {option.label}
                             </option>
                         ))}
                     </select>
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                         <svg
-                            className="w-4 h-4 text-tertiary"
+                            className="w-4 h-4 text-secondary"
                             fill="none"
                             strokeLinecap="round"
                             strokeLinejoin="round"
