@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI || `mongodb+srv://akshay:${process.env.MONGO_PASS}@products.pmse5.mongodb.net/?appName=Products`
+const MONGODB_URI = process.env.MONGODB_URI as string; //`mongodb+srv://akshay:${process.env.MONGO_PASS}@products.pmse5.mongodb.net/?appName=Products`
 
 if (!MONGODB_URI) {
   throw new Error("Please set MONGODB_URI in .env or use default local MongoDB");
 }
+console.log("Connected to MongoDB");
 
 interface MongooseCache {
   conn: typeof mongoose | null;
