@@ -1,22 +1,53 @@
+"use client";
+
+import { useState } from "react";
+import {
+  Search,
+  MapPin,
+  ChevronDown,
+  Building2,
+  CreditCard,
+  LogIn,
+  Menu,
+  Star,
+  Shield,
+  TrendingUp,
+  CheckCircle,
+  ArrowRight,
+  Phone,
+  Mail,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Truck,
+  Tag,
+  X,
+} from "lucide-react";
+
 export default function CTA() {
     return (
-        <section className="pb-24 px-6">
-            <div className="max-w-7xl mx-auto rounded-[40px] p-12 lg:p-20 relative overflow-hidden border border-border bg-surface-elevated">
-                <div className="absolute inset-0 bg-accent/5 blur-[80px]"></div>
-                <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
-                    <div className="max-w-2xl text-center lg:text-left">
-                        <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-                            Start Your Real Estate Journey Today
-                        </h2>
-                        <p className="text-lg text-gray-500 dark:text-gray-400">
-                            Your dream property is just a click away. Whether you're looking for a new home, a strategic investment, or expert real estate advice, easeyourestate Properties is here to assist you every step of the way.
-                        </p>
-                    </div>
-                    <button className="whitespace-nowrap bg-accent text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-md hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/30 transition-all transform hover:-translate-y-1">
-                        Explore Properties
-                    </button>
-                </div>
-            </div>
-        </section>
+        <section className="relative overflow-hidden py-20 bg-gradient-to-br from-purple-700 to-purple-900">
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="relative max-w-3xl mx-auto text-center px-4">
+          <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">
+            Do you know how much{" "}
+            <span className="underline decoration-purple-300">loan</span> you can get?
+          </h2>
+          <p className="text-purple-200 mb-8">
+            Get maximum home loan benefits with EaseYourEstate.ai. Check your eligibility in 2 minutes — no paperwork needed.
+          </p>
+          <button className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-purple-700 font-bold text-sm hover:bg-purple-50 transition-colors shadow-lg shadow-purple-900/20">
+            Check Eligibility
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </section>
     )
 }
