@@ -1,85 +1,82 @@
-import SectionHeader from './SectionHeader'
-import Pagination from './Pagination'
+"use client";
+
+import { useState } from "react";
+import {
+  Search,
+  MapPin,
+  ChevronDown,
+  Building2,
+  CreditCard,
+  LogIn,
+  Menu,
+  Star,
+  Shield,
+  TrendingUp,
+  CheckCircle,
+  ArrowRight,
+  Phone,
+  Mail,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Truck,
+  Tag,
+  X,
+} from "lucide-react";
 
 export default function Testimonials() {
-    const testimonials = [
-        {
-            rating: 5,
-            title: 'Exceptional Service!',
-            text: "Our experience with easeyourestate Properties was outstanding. Their team's dedication and professionalism made finding our dream home a breeze. Highly recommended!",
-            author: 'Wade Warren',
-            location: 'USA, California',
-            avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUinRZNj1PYzW64AM1urC2YL0kjPNOp8SqjhEzqFZ9qSpBNGW5JXcELtYX91kW6FYAdEUAFSaZI_sRXA-c7nWdS7CgP5f3fuKcBRuqn9UGeQ0Fem6MtlVMnYImOryLgyz3yWdLlc3nZkuJVtg63DYcRcmyD2LYedNFoU8Hxa2h8im1PXWP4kwzeeETbXuuWfby56lBLQYFoAGsi3cvdd2gBtrPChfzSPpsQGhUe_vTP8nTMbdA25UWNJkID5jmLu7hptqXooX38_vE',
-        },
-        {
-            rating: 5,
-            title: 'Efficient and Reliable',
-            text: 'easeyourestate Properties provided us with top-notch service. They helped us sell our property quickly and at a great price. We couldn\'t be happier with the results.',
-            author: 'Emelie Thomson',
-            location: 'USA, Florida',
-            avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDHYuicjBPs_SkarG0dUcKsFZbymlX5b_BOnop2u1YgNFOEP6Prma0pfJ4peT6obL9KUKUIm7cczYFgyX5gN5Q5QehydfoyjpWcpBTZvM4pcLtngQraDokrenQao0RwiH6Qyk6rMoOB3imq7mrhYTS0jSBCuCKzjtSwfsgSDDd5391XQ6NZCmoMzErUU64feJr-j0tgo6NHs1S1GXQqd148BT4wAY-YqKHjoZvRDLMMSYN9iIgwhihxUShISgJa1Fd1Af3oPfkXA8W7',
-        },
-        {
-            rating: 5,
-            title: 'Trusted Advisors',
-            text: 'The easeyourestate Properties team guided us through the entire buying process. Their knowledge and commitment to our needs were impressive. Thank you for your support!',
-            author: 'John Mans',
-            location: 'USA, Nevada',
-            avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Z4h7XyH-16m0535FXuxslKR_B1xmjnus_y7P3GvwPJ0mG30yUofHeNWI6CJScp-lAXGJD6U4_pSrrcZt38k5u4yYET2tNSea-ON-LY7gxwX2oBK-N8NeNvRGERF3lzVBMQ4TC_Z_VJVF0K03VJxx4PD6nrM34W--4Sy32PA2MAauSlPyELbHfX4CuYjIoPqKlIl2a3un5AgyO1fMNTQb3fIe9UtEaqXu7fkv1jUjPjClQLEUJOaWN5I1egvHG5NIzcVdkXTvoLvV',
-        },
-    ]
 
     return (
-        <section className="py-24 bg-bg-secondary">
-            <div className="max-w-7xl mx-auto px-6">
-                {/* Section Header */}
-                <SectionHeader
-                    title="What Our Clients Say"
-                    description="Read the success stories and heartfelt testimonials from our valued clients. Discover why they chose easeyourestate Properties."
-                    buttonText="View All Testimonials"
-                />
-
-                {/* Testimonial Cards */}
-                <div className="grid md:grid-cols-3 gap-8">
-                    {testimonials.map((testimonial, index) => (
-                        <div
-                            key={index}
-                            className="theme-card p-10 rounded-3xl"
-                        >
-                            {/* Star Rating */}
-                            <div className="flex gap-1 text-yellow-500 mb-8">
-                                {[...Array(testimonial.rating)].map((_, i) => (
-                                    <span key={i} className="material-symbols-outlined fill-1">star</span>
-                                ))}
-                            </div>
-
-                            <h4 className="text-xl font-bold mb-4">{testimonial.title}</h4>
-                            <p className="text-secondary mb-10 leading-relaxed">
-                                {testimonial.text}
-                            </p>
-
-                            {/* Author Info */}
-                            <div className="flex items-center gap-4">
-                                <img
-                                    alt={testimonial.author}
-                                    className="w-12 h-12 rounded-full"
-                                    src={testimonial.avatar}
-                                />
-                                <div>
-                                    <p className="font-bold">{testimonial.author}</p>
-                                    <p className="text-sm text-tertiary">{testimonial.location}</p>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+       <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-black text-gray-900">What Our Customers Say</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                name: "Priya Sharma",
+                city: "Bangalore",
+                rating: 5,
+                text: "Found my dream apartment in just 3 days — zero brokerage and a super smooth process. Highly recommend!",
+                avatar: "P",
+              },
+              {
+                name: "Arjun Mehta",
+                city: "Mumbai",
+                rating: 5,
+                text: "The AI matching feature is incredible. It shortlisted properties that matched exactly what I had in mind.",
+                avatar: "A",
+              },
+              {
+                name: "Kavya Reddy",
+                city: "Hyderabad",
+                rating: 5,
+                text: "Saved 1.5 months of rent on brokerage. The verified listings gave me real confidence while searching.",
+                avatar: "K",
+              },
+            ].map((t) => (
+              <div key={t.name} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-1 mb-3">
+                  {Array.from({ length: t.rating }).map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  ))}
                 </div>
-
-                {/* Pagination */}
-                <Pagination
-                    currentPage={1}
-                    totalPages={10}
-                />
-            </div>
-        </section>
+                <p className="text-gray-600 text-sm leading-relaxed mb-4">&quot;{t.text}&quot;</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                    {t.avatar}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-900 text-sm">{t.name}</div>
+                    <div className="text-xs text-gray-400">{t.city}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     )
 }
