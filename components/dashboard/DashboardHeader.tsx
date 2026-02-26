@@ -115,7 +115,10 @@ export default function DashboardHeader({
                 </button>
 
                 {/* Quick Add */}
-                <button className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors">
+                <button
+                    onClick={() => router.push("/dashboard/properties/new")}
+                    className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors"
+                >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                     </svg>

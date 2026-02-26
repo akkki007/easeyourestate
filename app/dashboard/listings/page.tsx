@@ -25,6 +25,7 @@ export default function ListingsPage() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const raw = localStorage.getItem("user");
@@ -34,14 +35,43 @@ export default function ListingsPage() {
   }, []);
 
   useEffect(() => {
-    const url = statusFilter ? `/api/properties/my-listings?status=${statusFilter}` : "/api/properties/my-listings";
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.listings) setListings(data.listings);
-      })
-      .catch(() => setListings([]))
-      .finally(() => setLoading(false));
+    const fetchListings = async () => {
+      setLoading(true);
+      setError(null);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setListings([]);
+        setError("You are not logged in. Please login again.");
+        setLoading(false);
+        return;
+      }
+
+      const url = statusFilter ? `/api/properties/my-listings?status=${statusFilter}` : "/api/properties/my-listings";
+
+      try {
+        const res = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          setListings([]);
+          setError(data.error || "Failed to load listings.");
+          return;
+        }
+
+        setListings(Array.isArray(data.listings) ? data.listings : []);
+      } catch {
+        setListings([]);
+        setError("Failed to load listings.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchListings();
   }, [statusFilter]);
 
   const userName = storedUser ? (typeof storedUser.name === "object" ? storedUser.name.first : storedUser.name) || "User" : "User";
@@ -105,6 +135,11 @@ export default function ListingsPage() {
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <Loader2 className="w-8 h-8 animate-spin text-accent" />
+          </div>
+        ) : error ? (
+          <div className="bg-card rounded-2xl border border-error/30 p-8 text-center">
+            <h3 className="text-lg font-semibold text-primary mb-2">Couldn&apos;t load listings</h3>
+            <p className="text-secondary text-sm">{error}</p>
           </div>
         ) : listings.length === 0 ? (
           <div className="bg-card rounded-2xl border border-border p-12 text-center">

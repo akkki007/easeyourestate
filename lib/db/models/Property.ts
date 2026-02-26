@@ -143,7 +143,6 @@ const propertySchema = new Schema(
   { timestamps: true }
 );
 
-propertySchema.index({ slug: 1 }, { unique: true });
 propertySchema.index({ "location.coordinates": "2dsphere" });
 propertySchema.index({ status: 1, purpose: 1, "location.city": 1 });
 propertySchema.index({ listedBy: 1, status: 1 });
