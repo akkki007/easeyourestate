@@ -50,6 +50,7 @@ const AMENITIES_LIST = [
   "power_backup", "lift", "security", "parking", "gym", "pool", "garden",
   "clubhouse", "play_area", "water_supply", "gas_pipeline", "internet",
 ];
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 
 export default function NewPropertyPage() {
   const router = useRouter();
@@ -63,6 +64,7 @@ export default function NewPropertyPage() {
     }
   }, []);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [purpose, setPurpose] = useState<string>("sell");
   const [category, setCategory] = useState<string>("residential");
@@ -93,6 +95,21 @@ export default function NewPropertyPage() {
   const [images, setImages] = useState<{ url: string; publicId: string }[]>([]);
   const [uploading, setUploading] = useState(false);
 
+  const getFieldClass = (field: string) =>
+    `w-full px-4 py-2.5 rounded-xl theme-input border focus:outline-none focus:ring-2 ${
+      fieldErrors[field] ? "border-error focus:ring-error/20" : "border-border focus:ring-accent/20"
+    }`;
+  const getCompactFieldClass = (field: string) => getFieldClass(field).replace("w-full ", "");
+
+  const clearFieldError = (field: string) => {
+    setFieldErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
   const toggleAmenity = (a: string) => {
     setAmenities((prev) => (prev.includes(a) ? prev.filter((x) => x !== a) : [...prev, a]));
   };
@@ -109,16 +126,33 @@ export default function NewPropertyPage() {
     setUploading(true);
     setError(null);
     for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file.type.startsWith("image/")) {
+        const message = "Only image files are allowed.";
+        setError(message);
+        setFieldErrors((prev) => ({ ...prev, images: message }));
+        toast.error(message);
+        break;
+      }
+      if (file.size > MAX_IMAGE_SIZE_BYTES) {
+        const message = "Each image must be 5MB or smaller.";
+        setError(message);
+        setFieldErrors((prev) => ({ ...prev, images: message }));
+        toast.error(message);
+        break;
+      }
       const formData = new FormData();
-      formData.append("file", files[i]);
+      formData.append("file", file);
       try {
         const res = await fetch("/api/upload", { method: "POST", body: formData });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Upload failed");
+        clearFieldError("images");
         setImages((prev) => [...prev, { url: data.url, publicId: data.publicId }]);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Upload failed";
         setError(message);
+        setFieldErrors((prev) => ({ ...prev, images: message }));
         toast.error(message);
         break;
       }
@@ -134,64 +168,132 @@ export default function NewPropertyPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    const amount = parseFloat(priceAmount);
-    if (!amount || amount <= 0) {
-      const message = "Enter a valid price.";
-      setError(message);
-      toast.error(message);
+    setFieldErrors({});
+
+    const amount = Number(priceAmount);
+    const maintenanceAmount = maintenance.trim() === "" ? undefined : Number(maintenance);
+    const depositAmount = deposit.trim() === "" ? undefined : Number(deposit);
+    const bedroomsCount = bedrooms.trim() === "" ? undefined : Number(bedrooms);
+    const bathroomsCount = bathrooms.trim() === "" ? undefined : Number(bathrooms);
+    const area = superBuiltUp.trim() === "" ? undefined : Number(superBuiltUp);
+    const latNum = lat.trim() === "" ? undefined : Number(lat);
+    const lngNum = lng.trim() === "" ? undefined : Number(lng);
+    const trimmedTitle = title.trim();
+    const trimmedDescription = description.trim();
+    const trimmedAddressLine1 = addressLine1.trim();
+    const trimmedAddressLine2 = addressLine2.trim();
+    const trimmedLandmark = landmark.trim();
+    const trimmedLocality = locality.trim();
+    const trimmedCity = city.trim();
+    const trimmedState = state.trim();
+    const sanitizedPincode = pincode.replace(/\D/g, "").slice(0, 6);
+
+    const nextErrors: Record<string, string> = {};
+
+    if (trimmedTitle.length < 10) nextErrors.title = "Title must be at least 10 characters.";
+    if (trimmedTitle.length > 200) nextErrors.title = "Title cannot exceed 200 characters.";
+
+    if (trimmedDescription.length < 50) nextErrors.description = "Description must be at least 50 characters.";
+    if (trimmedDescription.length > 5000) nextErrors.description = "Description cannot exceed 5000 characters.";
+
+    if (!Number.isFinite(amount) || amount <= 0) nextErrors.priceAmount = "Price must be greater than 0.";
+
+    if ((purpose === "rent" || purpose === "lease" || purpose === "pg") && maintenanceAmount !== undefined) {
+      if (!Number.isFinite(maintenanceAmount) || maintenanceAmount < 0) {
+        nextErrors.maintenance = "Maintenance must be 0 or more.";
+      }
+    }
+
+    if ((purpose === "rent" || purpose === "lease" || purpose === "pg") && depositAmount !== undefined) {
+      if (!Number.isFinite(depositAmount) || depositAmount < 0) {
+        nextErrors.deposit = "Deposit must be 0 or more.";
+      }
+    }
+
+    if (bedroomsCount !== undefined && (!Number.isInteger(bedroomsCount) || bedroomsCount < 0)) {
+      nextErrors.bedrooms = "Bedrooms must be a whole number (0 or more).";
+    }
+    if (bathroomsCount !== undefined && (!Number.isInteger(bathroomsCount) || bathroomsCount < 0)) {
+      nextErrors.bathrooms = "Bathrooms must be a whole number (0 or more).";
+    }
+    if (area !== undefined && (!Number.isFinite(area) || area <= 0)) {
+      nextErrors.superBuiltUp = "Super built-up area must be greater than 0.";
+    }
+    if (parkingCovered < 0 || !Number.isInteger(parkingCovered)) {
+      nextErrors.parkingCovered = "Covered parking must be a whole number (0 or more).";
+    }
+    if (parkingOpen < 0 || !Number.isInteger(parkingOpen)) {
+      nextErrors.parkingOpen = "Open parking must be a whole number (0 or more).";
+    }
+
+    if (trimmedAddressLine1.length < 5) {
+      nextErrors.addressLine1 = "Address line 1 must be at least 5 characters.";
+    }
+    if (!trimmedLocality) nextErrors.locality = "Locality is required.";
+    if (!trimmedCity) nextErrors.city = "City is required.";
+    if (!trimmedState) nextErrors.state = "State is required.";
+    if (!/^\d{6}$/.test(sanitizedPincode)) nextErrors.pincode = "Pincode must be exactly 6 digits.";
+
+    if ((latNum === undefined) !== (lngNum === undefined)) {
+      nextErrors.coordinates = "Provide both latitude and longitude together.";
+    }
+    if (latNum !== undefined && (!Number.isFinite(latNum) || latNum < -90 || latNum > 90)) {
+      nextErrors.lat = "Latitude must be between -90 and 90.";
+    }
+    if (lngNum !== undefined && (!Number.isFinite(lngNum) || lngNum < -180 || lngNum > 180)) {
+      nextErrors.lng = "Longitude must be between -180 and 180.";
+    }
+
+    if (images.length > 20) nextErrors.images = "Maximum 20 images allowed.";
+
+    if (Object.keys(nextErrors).length > 0) {
+      const firstMessage = Object.values(nextErrors)[0];
+      setFieldErrors(nextErrors);
+      setError(firstMessage);
+      toast.error(firstMessage);
       return;
     }
-    if (title.length < 10) {
-      const message = "Title must be at least 10 characters.";
-      setError(message);
-      toast.error(message);
-      return;
-    }
-    if (description.length < 50) {
-      const message = "Description must be at least 50 characters.";
-      setError(message);
-      toast.error(message);
-      return;
-    }
-    if (!addressLine1 || !locality || !city || !state || !pincode) {
-      const message = "Please fill address, locality, city, state and pincode.";
-      setError(message);
-      toast.error(message);
-      return;
-    }
-    const latNum = lat ? parseFloat(lat) : 0;
-    const lngNum = lng ? parseFloat(lng) : 0;
 
     setSubmitting(true);
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        const message = "You are not logged in. Please login again.";
+        setError(message);
+        toast.error(message);
+        setSubmitting(false);
+        router.push("/login");
+        return;
+      }
+
       const payload = {
         purpose,
         category,
         propertyType,
-        title,
-        description,
+        title: trimmedTitle,
+        description: trimmedDescription,
         price: {
           amount,
           currency: "INR",
           negotiable,
-          maintenance: maintenance ? parseFloat(maintenance) : undefined,
-          deposit: deposit ? parseFloat(deposit) : undefined,
+          maintenance: maintenanceAmount,
+          deposit: depositAmount,
         },
         specs: {
-          bedrooms: bedrooms ? parseInt(bedrooms, 10) : undefined,
-          bathrooms: bathrooms ? parseInt(bathrooms, 10) : undefined,
+          bedrooms: bedroomsCount,
+          bathrooms: bathroomsCount,
           furnishing,
           parking: { covered: parkingCovered, open: parkingOpen },
-          area: superBuiltUp ? { superBuiltUp: parseFloat(superBuiltUp), unit: "sqft" as const } : undefined,
+          area: area ? { superBuiltUp: area, unit: "sqft" as const } : undefined,
           possessionStatus,
         },
         location: {
-          address: { line1: addressLine1, line2: addressLine2 || undefined, landmark: landmark || undefined },
-          locality,
-          city,
-          state,
-          pincode: pincode.replace(/\D/g, "").slice(0, 6),
-          coordinates: { lat: latNum, lng: lngNum },
+          address: { line1: trimmedAddressLine1, line2: trimmedAddressLine2 || undefined, landmark: trimmedLandmark || undefined },
+          locality: trimmedLocality,
+          city: trimmedCity,
+          state: trimmedState,
+          pincode: sanitizedPincode,
+          coordinates: { lat: latNum ?? 0, lng: lngNum ?? 0 },
         },
         amenities,
         media: {
@@ -206,7 +308,10 @@ export default function NewPropertyPage() {
 
       const res = await fetch("/api/properties", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
       });
       const data = await res.json();
@@ -294,25 +399,35 @@ export default function NewPropertyPage() {
                 <input
                   type="text"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20"
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    clearFieldError("title");
+                    setError(null);
+                  }}
+                  className={getFieldClass("title")}
                   placeholder="e.g. Spacious 3BHK in gated society"
                   required
                   minLength={10}
                   maxLength={200}
                 />
+                <FieldError message={fieldErrors.title} />
               </div>
               <div>
                 <Label>Description (min 50 characters)</Label>
                 <textarea
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20 min-h-[120px] resize-y"
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                    clearFieldError("description");
+                    setError(null);
+                  }}
+                  className={`${getFieldClass("description")} min-h-[120px] resize-y`}
                   placeholder="Describe the property, highlights, nearby facilities..."
                   required
                   minLength={50}
                   maxLength={5000}
                 />
+                <FieldError message={fieldErrors.description} />
               </div>
             </div>
           </section>
@@ -325,12 +440,17 @@ export default function NewPropertyPage() {
                 <input
                   type="number"
                   value={priceAmount}
-                  onChange={(e) => setPriceAmount(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20"
+                  onChange={(e) => {
+                    setPriceAmount(e.target.value);
+                    clearFieldError("priceAmount");
+                    setError(null);
+                  }}
+                  className={getFieldClass("priceAmount")}
                   placeholder="e.g. 8500000"
                   min={1}
                   required
                 />
+                <FieldError message={fieldErrors.priceAmount} />
               </div>
               <div className="flex items-center gap-2 pt-8">
                 <input
@@ -349,20 +469,30 @@ export default function NewPropertyPage() {
                     <input
                       type="number"
                       value={maintenance}
-                      onChange={(e) => setMaintenance(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      onChange={(e) => {
+                        setMaintenance(e.target.value);
+                        clearFieldError("maintenance");
+                        setError(null);
+                      }}
+                      className={getFieldClass("maintenance")}
                       min={0}
                     />
+                    <FieldError message={fieldErrors.maintenance} />
                   </div>
                   <div>
                     <Label>Deposit (₹)</Label>
                     <input
                       type="number"
                       value={deposit}
-                      onChange={(e) => setDeposit(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      onChange={(e) => {
+                        setDeposit(e.target.value);
+                        clearFieldError("deposit");
+                        setError(null);
+                      }}
+                      className={getFieldClass("deposit")}
                       min={0}
                     />
+                    <FieldError message={fieldErrors.deposit} />
                   </div>
                 </>
               )}
@@ -377,21 +507,31 @@ export default function NewPropertyPage() {
                 <input
                   type="number"
                   value={bedrooms}
-                  onChange={(e) => setBedrooms(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20"
+                  onChange={(e) => {
+                    setBedrooms(e.target.value);
+                    clearFieldError("bedrooms");
+                    setError(null);
+                  }}
+                  className={getFieldClass("bedrooms")}
                   min={0}
                   placeholder="e.g. 3"
                 />
+                <FieldError message={fieldErrors.bedrooms} />
               </div>
               <div>
                 <Label>Bathrooms</Label>
                 <input
                   type="number"
                   value={bathrooms}
-                  onChange={(e) => setBathrooms(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20"
+                  onChange={(e) => {
+                    setBathrooms(e.target.value);
+                    clearFieldError("bathrooms");
+                    setError(null);
+                  }}
+                  className={getFieldClass("bathrooms")}
                   min={0}
                 />
+                <FieldError message={fieldErrors.bathrooms} />
               </div>
               <div>
                 <Label>Furnishing</Label>
@@ -414,11 +554,16 @@ export default function NewPropertyPage() {
                 <input
                   type="number"
                   value={superBuiltUp}
-                  onChange={(e) => setSuperBuiltUp(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20"
+                  onChange={(e) => {
+                    setSuperBuiltUp(e.target.value);
+                    clearFieldError("superBuiltUp");
+                    setError(null);
+                  }}
+                  className={getFieldClass("superBuiltUp")}
                   min={0}
                   placeholder="e.g. 1450"
                 />
+                <FieldError message={fieldErrors.superBuiltUp} />
               </div>
               <div>
                 <Label>Parking (covered / open)</Label>
@@ -426,20 +571,29 @@ export default function NewPropertyPage() {
                   <input
                     type="number"
                     value={parkingCovered}
-                    onChange={(e) => setParkingCovered(parseInt(e.target.value, 10) || 0)}
-                    className="w-24 px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    onChange={(e) => {
+                      setParkingCovered(parseInt(e.target.value, 10) || 0);
+                      clearFieldError("parkingCovered");
+                      setError(null);
+                    }}
+                    className={`w-24 ${getCompactFieldClass("parkingCovered")}`}
                     min={0}
                     placeholder="0"
                   />
                   <input
                     type="number"
                     value={parkingOpen}
-                    onChange={(e) => setParkingOpen(parseInt(e.target.value, 10) || 0)}
-                    className="w-24 px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    onChange={(e) => {
+                      setParkingOpen(parseInt(e.target.value, 10) || 0);
+                      clearFieldError("parkingOpen");
+                      setError(null);
+                    }}
+                    className={`w-24 ${getCompactFieldClass("parkingOpen")}`}
                     min={0}
                     placeholder="0"
                   />
                 </div>
+                <FieldError message={fieldErrors.parkingCovered || fieldErrors.parkingOpen} />
               </div>
             </div>
           </section>
@@ -452,10 +606,15 @@ export default function NewPropertyPage() {
                 <input
                   type="text"
                   value={addressLine1}
-                  onChange={(e) => setAddressLine1(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20"
+                  onChange={(e) => {
+                    setAddressLine1(e.target.value);
+                    clearFieldError("addressLine1");
+                    setError(null);
+                  }}
+                  className={getFieldClass("addressLine1")}
                   required
                 />
+                <FieldError message={fieldErrors.addressLine1} />
               </div>
               <div>
                 <Label>Address line 2</Label>
@@ -468,38 +627,102 @@ export default function NewPropertyPage() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Locality</Label>
-                  <input type="text" value={locality} onChange={(e) => setLocality(e.target.value)} className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20" required />
+                  <input
+                    type="text"
+                    value={locality}
+                    onChange={(e) => {
+                      setLocality(e.target.value);
+                      clearFieldError("locality");
+                      setError(null);
+                    }}
+                    className={getFieldClass("locality")}
+                    required
+                  />
+                  <FieldError message={fieldErrors.locality} />
                 </div>
                 <div>
                   <Label>City</Label>
-                  <input type="text" value={city} onChange={(e) => setCity(e.target.value)} className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20" required />
+                  <input
+                    type="text"
+                    value={city}
+                    onChange={(e) => {
+                      setCity(e.target.value);
+                      clearFieldError("city");
+                      setError(null);
+                    }}
+                    className={getFieldClass("city")}
+                    required
+                  />
+                  <FieldError message={fieldErrors.city} />
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <Label>State</Label>
-                  <input type="text" value={state} onChange={(e) => setState(e.target.value)} className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20" required />
+                  <input
+                    type="text"
+                    value={state}
+                    onChange={(e) => {
+                      setState(e.target.value);
+                      clearFieldError("state");
+                      setError(null);
+                    }}
+                    className={getFieldClass("state")}
+                    required
+                  />
+                  <FieldError message={fieldErrors.state} />
                 </div>
                 <div>
                   <Label>Pincode (6 digits)</Label>
                   <input
                     type="text"
                     value={pincode}
-                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    onChange={(e) => {
+                      setPincode(e.target.value.replace(/\D/g, "").slice(0, 6));
+                      clearFieldError("pincode");
+                      setError(null);
+                    }}
+                    className={getFieldClass("pincode")}
                     maxLength={6}
                     required
                   />
+                  <FieldError message={fieldErrors.pincode} />
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Latitude (optional)</Label>
-                  <input type="number" step="any" value={lat} onChange={(e) => setLat(e.target.value)} className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20" placeholder="e.g. 19.0760" />
+                  <input
+                    type="number"
+                    step="any"
+                    value={lat}
+                    onChange={(e) => {
+                      setLat(e.target.value);
+                      clearFieldError("lat");
+                      clearFieldError("coordinates");
+                      setError(null);
+                    }}
+                    className={getFieldClass("lat")}
+                    placeholder="e.g. 19.0760"
+                  />
+                  <FieldError message={fieldErrors.lat || fieldErrors.coordinates} />
                 </div>
                 <div>
                   <Label>Longitude (optional)</Label>
-                  <input type="number" step="any" value={lng} onChange={(e) => setLng(e.target.value)} className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20" placeholder="e.g. 72.8777" />
+                  <input
+                    type="number"
+                    step="any"
+                    value={lng}
+                    onChange={(e) => {
+                      setLng(e.target.value);
+                      clearFieldError("lng");
+                      clearFieldError("coordinates");
+                      setError(null);
+                    }}
+                    className={getFieldClass("lng")}
+                    placeholder="e.g. 72.8777"
+                  />
+                  <FieldError message={fieldErrors.lng || fieldErrors.coordinates} />
                 </div>
               </div>
             </div>
@@ -547,6 +770,7 @@ export default function NewPropertyPage() {
                 </label>
               )}
             </div>
+            <FieldError message={fieldErrors.images} />
           </section>
 
           <div className="flex gap-3">
@@ -574,4 +798,9 @@ export default function NewPropertyPage() {
 
 function Label({ children }: { children: React.ReactNode }) {
   return <label className="block text-sm font-medium text-secondary mb-1.5">{children}</label>;
+}
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="mt-1 text-xs text-error">{message}</p>;
 }

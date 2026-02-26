@@ -1,11 +1,11 @@
 import Home from "../page";
-import SignUp from "@/components/SignUp";
+import Login from "@/components/Login";
 
-export default function SignUpPage() {
+export default function LoginPage() {
   return (
     <main className="min-h-screen w-full">
       <Home />
-      <SignUp />
+      <Login />
     </main>
   );
 }
