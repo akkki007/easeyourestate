@@ -1,11 +1,11 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/db/connection";
 import User from "@/lib/db/models/User";
+import { requireAuth } from "@/lib/auth/auth";
 
-export async function POST(req: Request) {
-  const { userId } = await auth();
-  if (!userId) {
+export async function POST(req: NextRequest) {
+  const authUser = await requireAuth(req);
+  if (!authUser) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -23,8 +23,8 @@ export async function POST(req: Request) {
 
   await dbConnect();
 
-  let updated = await User.findOneAndUpdate(
-    { clerkId: userId },
+  const updated = await User.findByIdAndUpdate(
+    authUser._id,
     {
       role,
       ...(onboardingData && Object.keys(onboardingData).length > 0 ? { onboardingData } : {}),
@@ -33,20 +33,7 @@ export async function POST(req: Request) {
   );
 
   if (!updated) {
-    const clerkUser = await currentUser();
-    if (!clerkUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-    const primaryEmail = clerkUser.emailAddresses?.find((e) => e.id === clerkUser.primaryEmailAddressId)?.emailAddress
-      ?? clerkUser.emailAddresses?.[0]?.emailAddress ?? "";
-    updated = await User.create({
-      clerkId: userId,
-      email: primaryEmail,
-      name: { first: clerkUser.firstName ?? "", last: clerkUser.lastName ?? "" },
-      avatar: clerkUser.imageUrl ?? undefined,
-      role,
-      onboardingData: onboardingData ?? {},
-    });
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
   return NextResponse.json({ ok: true, user: { id: updated._id, role: updated.role } });

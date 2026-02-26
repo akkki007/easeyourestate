@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import { useUser } from "@clerk/nextjs";
 import { Loader2, Upload, X } from "lucide-react";
 
 const PURPOSE_OPTIONS = [
@@ -54,8 +53,15 @@ const AMENITIES_LIST = [
 
 export default function NewPropertyPage() {
   const router = useRouter();
-  const { user } = useUser();
+  const [storedUser, setStoredUser] = useState<{ _id: string; name: { first: string; last: string } | string; email: string; role: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const raw = localStorage.getItem("user");
+    if (raw) {
+      try { setStoredUser(JSON.parse(raw)); } catch { /* ignore */ }
+    }
+  }, []);
   const [error, setError] = useState<string | null>(null);
 
   const [purpose, setPurpose] = useState<string>("sell");
@@ -233,8 +239,8 @@ export default function NewPropertyPage() {
     }
   };
 
-  const userName = user?.firstName ?? "User";
-  const userEmail = user?.emailAddresses?.[0]?.emailAddress ?? "";
+  const userName = storedUser ? (typeof storedUser.name === "object" ? storedUser.name.first : storedUser.name) || "User" : "User";
+  const userEmail = storedUser?.email ?? "";
 
   return (
     <>

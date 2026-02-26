@@ -1,13 +1,28 @@
-import { requireOnboarded } from "@/lib/auth/proxy";
+"use client";
+
+import { useEffect, useState } from "react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import Link from "next/link";
 
-export default async function DashboardPage() {
-    const { user } = await requireOnboarded();
+export default function DashboardPage() {
+    const [userName, setUserName] = useState("User");
+    const [userEmail, setUserEmail] = useState("");
+    const [userRole, setUserRole] = useState("buyer");
 
-    const userName = user.firstName || "User";
-    const userEmail = user.emailAddresses[0]?.emailAddress || "";
-    const userRole = (user.unsafeMetadata?.role as string) || "buyer";
+    useEffect(() => {
+        const raw = localStorage.getItem("user");
+        if (!raw) return;
+        try {
+            const user = JSON.parse(raw);
+            setUserName(
+                typeof user.name === "object"
+                    ? user.name.first || "User"
+                    : user.name || "User"
+            );
+            setUserEmail(user.email || "");
+            setUserRole(user.role || "buyer");
+        } catch { /* ignore */ }
+    }, []);
 
     const getRoleLabel = (role: string) => {
         const labels: Record<string, string> = {

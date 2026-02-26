@@ -5,7 +5,7 @@ import { UserRole } from "./RoleSelection";
 
 interface RoleInfoFormProps {
     role: UserRole;
-    onComplete: () => void;
+    onComplete: (formData: Record<string, string>) => void;
     onBack: () => void;
 }
 
@@ -14,7 +14,7 @@ export default function RoleInfoForm({ role, onComplete, onBack }: RoleInfoFormP
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onComplete();
+        onComplete(formData);
     };
 
     const handleChange = (field: string, value: string) => {

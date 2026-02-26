@@ -3,13 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSignUp } from "@clerk/nextjs";
 import { Pupil, EyeBall } from "./animated-characters-login-page";
 
-type ClerkErrorShape = { errors?: Array<{ longMessage?: string }>; message?: string };
-
 function SignUpPage() {
-  const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -18,8 +14,6 @@ function SignUpPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [verifying, setVerifying] = useState(false);
-  const [code, setCode] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [mouseX, setMouseX] = useState<number>(0);
   const [mouseY, setMouseY] = useState<number>(0);
@@ -119,64 +113,32 @@ function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLoaded) return;
     setError("");
     setIsLoading(true);
     try {
-      await signUp.create({
-        emailAddress: email,
-        password,
-        firstName,
-        lastName,
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: { first: firstName, last: lastName },
+          email,
+          password,
+          role: "buyer",
+        }),
       });
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-      setVerifying(true);
-    } catch (err: unknown) {
-      const clerkError = err as ClerkErrorShape;
-      setError(
-        clerkError?.errors?.[0]?.longMessage ?? clerkError?.message ?? "Sign up failed. Please try again."
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isLoaded) return;
-    setError("");
-    setIsLoading(true);
-    try {
-      const signUpAttempt = await signUp.attemptEmailAddressVerification({ code });
-      if (signUpAttempt.status === "complete") {
-        await setActive({
-          session: signUpAttempt.createdSessionId,
-          navigate: () => {
-            window.location.replace("/onboarding");
-          },
-        });
-        // Fallback in case Clerk does not call navigate
-        window.location.replace("/onboarding");
-      } else {
-        setError("Verification incomplete. Please try again.");
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Sign up failed. Please try again.");
+        return;
       }
-    } catch (err: unknown) {
-      const clerkError = err as ClerkErrorShape;
-      setError(
-        clerkError?.errors?.[0]?.longMessage ?? clerkError?.message ?? "Verification failed. Please try again."
-      );
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      router.push("/onboarding");
+    } catch {
+      setError("Sign up failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleGoogleSignUp = () => {
-    if (!isLoaded) return;
-    signUp.authenticateWithRedirect({
-      strategy: "oauth_google",
-      redirectUrl: "/sso-callback",
-      redirectUrlComplete: "/onboarding",
-    });
   };
 
   return (
@@ -353,56 +315,15 @@ function SignUpPage() {
       {/* Right Sign Up Section */}
       <div className="flex items-center justify-center p-8 bg-white relative overflow-hidden">
         <div className="w-full max-w-lg">
-          <form onSubmit={verifying ? handleVerify : handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <div className="mb-8">
-              <h1 className="text-slate-900 text-3xl font-bold">{verifying ? "Verify your email" : "Sign up"}</h1>
+              <h1 className="text-slate-900 text-3xl font-bold">Sign up</h1>
               <p className="text-[15px] mt-6 text-slate-600">
-                {verifying ? "A verification code has been sent to your email." : "Already have an account? "}
-                {!verifying && <Link href="/demoone" className="text-blue-600 font-medium hover:underline ml-1 whitespace-nowrap">Sign In</Link>}
+                Already have an account?{" "}
+                <Link href="/demoone" className="text-blue-600 font-medium hover:underline ml-1 whitespace-nowrap">Sign In</Link>
               </p>
             </div>
 
-            {verifying ? (
-              <div className="space-y-6">
-                <div>
-                  <label className="text-slate-900 text-[15px] font-medium mb-2 block">Verification Code</label>
-                  <div className="relative flex items-center">
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="Enter code"
-                      value={code}
-                      onChange={(e) => setCode(e.target.value)}
-                      required
-                      className="w-full text-sm text-slate-900 bg-slate-100 focus:bg-transparent pl-4 pr-10 py-3.5 rounded-md border border-gray-200 focus:border-blue-600 outline-none"
-                    />
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" className="w-4.5 h-4.5 absolute right-4" viewBox="0 0 682.667 682.667">
-                      <defs>
-                        <clipPath id="a" clipPathUnits="userSpaceOnUse">
-                          <path d="M0 512h512V0H0Z" data-original="#000000"></path>
-                        </clipPath>
-                      </defs>
-                      <g clip-path="url(#a)" transform="matrix(1.33 0 0 -1.33 0 682.667)">
-                        <path fill="none" stroke-miterlimit="10" stroke-width="40" d="M452 444H60c-22.091 0-40-17.909-40-40v-39.446l212.127-157.782c14.17-10.54 33.576-10.54 47.746 0L492 364.554V404c0 22.091-17.909 40-40 40Z" data-original="#000000"></path>
-                        <path d="M472 274.9V107.999c0-11.027-8.972-20-20-20H60c-11.028 0-20 8.973-20 20V274.9L0 304.652V107.999c0-33.084 26.916-60 60-60h392c33.084 0 60 26.916 60 60v196.653Z" data-original="#000000"></path>
-                      </g>
-                    </svg>
-                  </div>
-                </div>
-                {error && (
-                  <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded">
-                    {error}
-                  </div>
-                )}
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-2.5 px-4 text-[15px] font-medium tracking-wide rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none cursor-pointer disabled:opacity-50"
-                >
-                  {isLoading ? "Verifying..." : "Verify"}
-                </button>
-              </div>
-            ) : (
               <div className="space-y-6">
                 <div>
                   <label className="text-slate-900 text-[15px] font-medium mb-2 block">First Name</label>
@@ -500,30 +421,7 @@ function SignUpPage() {
                   </button>
                 </div>
 
-                <div className="my-4 flex items-center gap-4">
-                  <hr className="w-full border-slate-300" />
-                  <p className="text-sm text-slate-900 text-center">or</p>
-                  <hr className="w-full border-slate-300" />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleGoogleSignUp}
-                  disabled={!isLoaded || isLoading}
-                  className="w-full flex items-center justify-center gap-4 py-2.5 px-6 text-[15px] font-medium tracking-wide text-slate-900 border border-slate-300 rounded-md bg-slate-50 hover:bg-slate-100 focus:outline-none cursor-pointer disabled:opacity-50"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" className="inline" viewBox="0 0 512 512">
-                    <path fill="#fbbd00" d="M120 256c0-25.367 6.989-49.13 19.131-69.477v-86.308H52.823C18.568 144.703 0 198.922 0 256s18.568 111.297 52.823 155.785h86.308v-86.308C126.989 305.13 120 281.367 120 256z" data-original="#fbbd00" />
-                    <path fill="#0f9d58" d="m256 392-60 60 60 60c57.079 0 111.297-18.568 155.785-52.823v-86.216h-86.216C305.044 385.147 281.181 392 256 392z" data-original="#0f9d58" />
-                    <path fill="#31aa52" d="m139.131 325.477-86.308 86.308a260.085 260.085 0 0 0 22.158 25.235C123.333 485.371 187.62 512 256 512V392c-49.624 0-93.117-26.72-116.869-66.523z" data-original="#31aa52" />
-                    <path fill="#3c79e6" d="M512 256a258.24 258.24 0 0 0-4.192-46.377l-2.251-12.299H256v120h121.452a135.385 135.385 0 0 1-51.884 55.638l86.216 86.216a260.085 260.085 0 0 0 25.235-22.158C485.371 388.667 512 324.38 512 256z" data-original="#3c79e6" />
-                    <path fill="#cf2d48" d="m352.167 159.833 10.606 10.606 84.853-84.852-10.606-10.606C388.668 26.629 324.381 0 256 0l-60 60 60 60c36.326 0 70.479 14.146 96.167 39.833z" data-original="#cf2d48" />
-                    <path fill="#eb4132" d="M256 120V0C187.62 0 123.333 26.629 74.98 74.98a259.849 259.849 0 0 0-22.158 25.235l86.308 86.308C162.883 146.72 206.376 120 256 120z" data-original="#eb4132" />
-                  </svg>
-                  Continue with google
-                </button>
               </div>
-            )}
           </form>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
-import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
+import { ThemeProvider } from '@/components/ThemeProvider'
 
 export const metadata: Metadata = {
   title: 'easeyourestate Properties - Your Dream Property Awaits',
@@ -13,34 +13,33 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <ClerkProvider signUpForceRedirectUrl="/onboarding">
-      <html lang="en" suppressHydrationWarning>
-        <head>
-          <link
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
-            rel="stylesheet"
-          />
-          {/* Prevent flash of wrong theme */}
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                (function() {
-                  try {
-                    var theme = localStorage.getItem('easeyourestate-theme');
-                    var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    var resolved = theme === 'dark' || (theme === 'system' && systemDark) || (!theme && systemDark);
-                    document.documentElement.classList.add(resolved ? 'dark' : 'light');
-                  } catch (e) {}
-                })();
-              `,
-            }}
-          />
-        </head>
-        <body className="font-display antialiased">
-
-            {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+          rel="stylesheet"
+        />
+        {/* Prevent flash of wrong theme */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('easeyourestate-theme');
+                  var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  var resolved = theme === 'dark' || (theme === 'system' && systemDark) || (!theme && systemDark);
+                  document.documentElement.classList.add(resolved ? 'dark' : 'light');
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="font-display antialiased">
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
   )
 }

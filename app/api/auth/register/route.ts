@@ -44,7 +44,12 @@ export async function POST(req: Request) {
     return NextResponse.json({
       message: "Registered successfully",
       token,
-      user,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (err) {
     console.error("Register Error:", err);

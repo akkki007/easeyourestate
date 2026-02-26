@@ -1,8 +1,7 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import ProgressIndicator from "@/components/onboarding/ProgressIndicator";
 import WelcomeStep from "@/components/onboarding/WelcomeStep";
@@ -13,63 +12,43 @@ import CompletionStep from "@/components/onboarding/CompletionStep";
 
 type OnboardingStep = "welcome" | "role" | "info" | "complete";
 
-// Grace period so Clerk can restore session after sign-up redirect (avoids flashing redirect to login)
-const AUTH_GRACE_MS = 2500;
+interface StoredUser {
+    _id: string;
+    name: { first: string; last: string } | string;
+    email: string;
+    role: string;
+}
 
 export default function OnboardingPage() {
-    const { user, isLoaded } = useUser();
     const router = useRouter();
     const [currentStep, setCurrentStep] = useState<OnboardingStep>("welcome");
     const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
     const [onboardingFormData, setOnboardingFormData] = useState<Record<string, string>>({});
-    const graceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const hasCheckedAuthRef = useRef(false);
+    const [user, setUser] = useState<StoredUser | null>(null);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        if (!isLoaded) return;
-
-        // If we have a user, clear any pending redirect and handle onboarded check
-        if (user) {
-            hasCheckedAuthRef.current = false;
-            if (graceTimeoutRef.current) {
-                clearTimeout(graceTimeoutRef.current);
-                graceTimeoutRef.current = null;
-            }
-            if (user.unsafeMetadata?.onboarded) {
-                router.replace("/dashboard");
-            }
+        const token = localStorage.getItem("token");
+        const storedUser = localStorage.getItem("user");
+        if (!token || !storedUser) {
+            router.replace("/demoone");
             return;
         }
-
-        // No user: wait a grace period before redirecting (session may still be hydrating after sign-up)
-        if (hasCheckedAuthRef.current) return;
-        hasCheckedAuthRef.current = true;
-        graceTimeoutRef.current = setTimeout(() => {
+        try {
+            setUser(JSON.parse(storedUser));
+        } catch {
             router.replace("/demoone");
-        }, AUTH_GRACE_MS);
-        return () => {
-            if (graceTimeoutRef.current) clearTimeout(graceTimeoutRef.current);
-        };
-    }, [isLoaded, user, router]);
+            return;
+        }
+        setIsLoaded(true);
+    }, [router]);
 
-    if (!isLoaded) {
+    if (!isLoaded || !user) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-[#0B1E3A] to-[#0B1E3A]">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="h-10 w-10 animate-spin text-[#0066CC]" />
                     <p className="text-lg font-medium text-white/60">Loading...</p>
-                </div>
-            </div>
-        );
-    }
-
-    // Still waiting for user (grace period) or no user after grace
-    if (!user) {
-        return (
-            <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-[#0B1E3A] to-[#0B1E3A]">
-                <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="h-10 w-10 animate-spin text-[#0066CC]" />
-                    <p className="text-lg font-medium text-white/60">Loading your account...</p>
                 </div>
             </div>
         );
@@ -104,24 +83,22 @@ export default function OnboardingPage() {
 
     const handleComplete = async () => {
         try {
-            // Sync role + onboarding form data to MongoDB (user may already exist via Clerk webhook)
+            const token = localStorage.getItem("token");
             await fetch("/api/users/me/onboarding", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
                 body: JSON.stringify({
                     role: selectedRole,
                     onboardingData: onboardingFormData,
                 }),
             });
 
-            // Update Clerk metadata to mark as onboarded
-            await user.update({
-                unsafeMetadata: {
-                    role: selectedRole,
-                    onboarded: true,
-                },
-            });
-            await user.reload();
+            // Update stored user with new role
+            const updatedUser = { ...user, role: selectedRole };
+            localStorage.setItem("user", JSON.stringify(updatedUser));
 
             document.cookie = "onboarded=true; path=/; max-age=31536000";
             await new Promise((resolve) => setTimeout(resolve, 300));
@@ -132,8 +109,7 @@ export default function OnboardingPage() {
         }
     };
 
-
-    const userName = user.firstName || "there";
+    const userName = (typeof user.name === "object" ? user.name.first : user.name) || "there";
 
     return (
         <div className="min-h-screen bg-blue-600 flex items-center justify-center px-6 py-8">

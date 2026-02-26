@@ -1,7 +1,5 @@
 import { redirect } from "next/navigation";
-import { requireOnboarded } from "@/lib/auth/proxy";
 
-export default async function PropertiesPage() {
-  await requireOnboarded();
+export default function PropertiesPage() {
   redirect("/dashboard/listings");
 }

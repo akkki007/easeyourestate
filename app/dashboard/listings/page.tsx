@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { Loader2, Plus, Home, MapPin } from "lucide-react";
 
@@ -22,10 +21,17 @@ type Listing = {
 };
 
 export default function ListingsPage() {
-  const { user } = useUser();
+  const [storedUser, setStoredUser] = useState<{ _id: string; name: { first: string; last: string } | string; email: string; role: string } | null>(null);
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("");
+
+  useEffect(() => {
+    const raw = localStorage.getItem("user");
+    if (raw) {
+      try { setStoredUser(JSON.parse(raw)); } catch { /* ignore */ }
+    }
+  }, []);
 
   useEffect(() => {
     const url = statusFilter ? `/api/properties/my-listings?status=${statusFilter}` : "/api/properties/my-listings";
@@ -38,8 +44,8 @@ export default function ListingsPage() {
       .finally(() => setLoading(false));
   }, [statusFilter]);
 
-  const userName = user?.firstName ?? "User";
-  const userEmail = user?.emailAddresses?.[0]?.emailAddress ?? "";
+  const userName = storedUser ? (typeof storedUser.name === "object" ? storedUser.name.first : storedUser.name) || "User" : "User";
+  const userEmail = storedUser?.email ?? "";
 
   const formatPrice = (n: number) => {
     if (n >= 1_00_00_000) return `₹${(n / 1_00_00_000).toFixed(1)} Cr`;

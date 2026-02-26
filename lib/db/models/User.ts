@@ -65,7 +65,6 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-userSchema.index({ clerkId: 1 }, { unique: true });
 userSchema.index({ email: 1 }, { unique: true });
 userSchema.index({ role: 1 });
 

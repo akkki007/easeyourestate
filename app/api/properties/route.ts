@@ -1,24 +1,17 @@
-import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/db/connection";
 import Property from "@/lib/db/models/Property";
-import User from "@/lib/db/models/User";
+import { requireAuth } from "@/lib/auth/auth";
 import { createPropertySchema } from "@/lib/validations/property";
 import { propertySlug } from "@/lib/utils/slug";
 
-export async function POST(req: Request) {
-  const { userId } = await auth();
-  if (!userId) {
+export async function POST(req: NextRequest) {
+  const dbUser = await requireAuth(req);
+  if (!dbUser) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   await dbConnect();
-
-  const dbUser = await User.findOne({ clerkId: userId, deletedAt: null });
-  if (!dbUser) {
-    return NextResponse.json({ error: "User not found. Complete onboarding first." }, { status: 404 });
-  }
-
   const role = dbUser.role;
   if (role !== "owner" && role !== "agent" && role !== "builder") {
     return NextResponse.json({ error: "Only owners, agents, and builders can create listings." }, { status: 403 });

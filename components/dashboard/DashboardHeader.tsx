@@ -1,7 +1,7 @@
 "use client";
 
-import { UserButton } from "@clerk/nextjs";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useDashboard } from "./DashboardShell";
 import { useTheme } from "@/components/ThemeProvider";
 
@@ -19,6 +19,13 @@ export default function DashboardHeader({
     const [searchQuery, setSearchQuery] = useState("");
     const { setSidebarOpen } = useDashboard();
     const { resolvedTheme, setTheme } = useTheme();
+    const router = useRouter();
+
+    const handleSignOut = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        router.push("/");
+    };
 
     const toggleTheme = () => {
         setTheme(resolvedTheme === "dark" ? "light" : "dark");
@@ -124,14 +131,13 @@ export default function DashboardHeader({
                         <p className="text-sm font-medium text-primary leading-tight">{userName}</p>
                         <p className="text-xs text-tertiary leading-tight">{userEmail}</p>
                     </div>
-                    <UserButton
-                        afterSignOutUrl="/"
-                        appearance={{
-                            elements: {
-                                avatarBox: "w-9 h-9 sm:w-10 sm:h-10",
-                            },
-                        }}
-                    />
+                    <button
+                        onClick={handleSignOut}
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-accent text-white flex items-center justify-center text-sm font-medium hover:bg-accent-hover transition-colors"
+                        title="Sign out"
+                    >
+                        {userName.charAt(0).toUpperCase()}
+                    </button>
                 </div>
             </div>
         </header>

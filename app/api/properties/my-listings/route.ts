@@ -1,21 +1,15 @@
-import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/db/connection";
 import Property from "@/lib/db/models/Property";
-import User from "@/lib/db/models/User";
+import { requireAuth } from "@/lib/auth/auth";
 
-export async function GET(req: Request) {
-  const { userId } = await auth();
-  if (!userId) {
+export async function GET(req: NextRequest) {
+  const dbUser = await requireAuth(req);
+  if (!dbUser) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   await dbConnect();
-
-  const dbUser = await User.findOne({ clerkId: userId, deletedAt: null });
-  if (!dbUser) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
 
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status") || undefined;

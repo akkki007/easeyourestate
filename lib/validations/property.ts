@@ -66,7 +66,7 @@ export const createPropertySchema = z.object({
   title: z.string().min(10).max(200),
   description: z.string().min(50).max(5000),
   price: priceSchema,
-  specs: specsSchema.default({}),
+  specs: specsSchema.default({ furnishing: "unfurnished", parking: { covered: 0, open: 0 }, possessionStatus: "ready" }),
   amenities: z.array(z.string()).max(30).default([]),
   location: locationSchema,
   media: z
