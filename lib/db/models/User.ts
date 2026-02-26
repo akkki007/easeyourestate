@@ -40,11 +40,17 @@ const onboardingDataSchema = new Schema({}, { strict: false, _id: false });
 
 const userSchema = new Schema(
   {
-    clerkId: { type: String, required: true, unique: true },
+    
     email: { type: String, required: true, unique: true },
     phone: String,
     name: { type: nameSchema, required: true },
     avatar: String,
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+      select: false
+  },
     role: {
       type: String,
       enum: ["buyer", "owner", "agent", "builder", "admin"],
@@ -65,8 +71,8 @@ userSchema.index({ role: 1 });
 
 export interface IUser {
   _id: mongoose.Types.ObjectId;
-  clerkId: string;
   email: string;
+  password: string;
   phone?: string;
   name: { first: string; last: string };
   avatar?: string;
