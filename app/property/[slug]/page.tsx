@@ -110,6 +110,32 @@ export default function PropertyDetailPage() {
   const [error, setError] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
+  const [similarProperties, setSimilarProperties] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!property) return;
+
+    // Fetch similar properties in the same locality/city
+    const fetchSimilar = async () => {
+      try {
+        const params = new URLSearchParams({
+          city: property.location.city,
+          query: property.location.locality,
+          limit: "3"
+        });
+        const res = await fetch(`/api/properties/search?${params}`);
+        if (res.ok) {
+          const data = await res.json();
+          // Filter out the current property
+          setSimilarProperties(data.listings.filter((p: any) => p.slug !== slug));
+        }
+      } catch (err) {
+        console.error("Failed to fetch similar properties", err);
+      }
+    };
+
+    fetchSimilar();
+  }, [property, slug]);
 
   useEffect(() => {
     if (!slug) return;
@@ -179,245 +205,179 @@ export default function PropertyDetailPage() {
   const hasImages = images.length > 0;
   const totalParking = (property.specs?.parking?.covered || 0) + (property.specs?.parking?.open || 0);
 
+
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-card border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-white">
+      {/* Navigation Header */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-secondary hover:text-primary transition-colors"
+            className="group flex items-center gap-2 text-gray-500 hover:text-purple-600 transition-all font-semibold"
           >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="hidden sm:inline">Back</span>
+            <div className="p-2 rounded-full group-hover:bg-purple-50 transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+            </div>
+            <span>Back to Search</span>
           </button>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setIsLiked(!isLiked)}
-              className={`p-2 rounded-full border transition-colors ${
-                isLiked
-                  ? "bg-red-50 border-red-200 text-red-500"
-                  : "border-border text-tertiary hover:text-primary hover:border-border-hover"
-              }`}
+              className={`p-2.5 rounded-full border transition-all ${isLiked
+                ? "bg-purple-50 border-purple-100 text-purple-600 shadow-sm"
+                : "bg-white border-gray-200 text-gray-400 hover:text-purple-600 hover:border-purple-100 hover:bg-purple-50"
+                }`}
             >
               <Heart className={`w-5 h-5 ${isLiked ? "fill-current" : ""}`} />
             </button>
-            <button className="p-2 rounded-full border border-border text-tertiary hover:text-primary hover:border-border-hover transition-colors">
+            <button className="p-2.5 rounded-full bg-white border border-gray-200 text-gray-400 hover:text-purple-600 hover:border-purple-100 hover:bg-purple-50 transition-all">
               <Share2 className="w-5 h-5" />
             </button>
           </div>
         </div>
-      </header>
+      </nav>
 
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left Column - Images & Details */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Image Gallery */}
-            <div className="relative rounded-2xl overflow-hidden bg-hover aspect-[16/10]">
-              {hasImages ? (
-                <>
-                  <img
-                    src={images[currentImageIndex]?.url}
-                    alt={images[currentImageIndex]?.caption || property.title}
-                    className="w-full h-full object-cover"
-                  />
-                  {images.length > 1 && (
-                    <>
-                      <button
-                        onClick={prevImage}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
-                      >
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          {/* Main Content (Left) */}
+          <div className="lg:col-span-8 space-y-10">
+            {/* Upper Content - Title & Image */}
+            <div className="space-y-6">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-3 py-1 bg-purple-50 text-purple-700 text-[11px] font-bold rounded-full uppercase tracking-widest border border-purple-100">
+                      {property.propertyType.replace(/_/g, " ")}
+                    </span>
+                    <span className="px-3 py-1 bg-violet-50 text-violet-700 text-[11px] font-bold rounded-full uppercase tracking-widest border border-violet-100">
+                      For {property.purpose}
+                    </span>
+                  </div>
+                  <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+                    {property.title}
+                  </h1>
+                  <div className="flex items-center gap-2 text-gray-500 font-medium">
+                    <MapPin className="w-5 h-5 text-purple-500" />
+                    <span>{property.location.address.line1}, {property.location.locality}, {property.location.city}</span>
+                  </div>
+                </div>
+                <div className="hidden md:block text-right">
+                  <p className="text-sm text-gray-400 font-bold uppercase tracking-widest mb-1">Total Price</p>
+                  <p className="text-4xl font-black text-purple-600">₹{formatPrice(property.price.amount)}</p>
+                </div>
+              </div>
+
+              {/* Gallery Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 aspect-[21/10]">
+                <div className="md:col-span-3 relative rounded-2xl overflow-hidden group">
+                  {hasImages ? (
+                    <img
+                      src={images[currentImageIndex]?.url}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      alt={property.title}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                      <Home className="w-20 h-20 text-gray-300" />
+                    </div>
+                  )}
+                  {hasImages && (
+                    <div className="absolute inset-0 flex items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={prevImage} className="p-3 rounded-full bg-white/90 text-gray-800 shadow-xl hover:bg-purple-600 hover:text-white transition-all transform hover:scale-110">
                         <ChevronLeft className="w-6 h-6" />
                       </button>
-                      <button
-                        onClick={nextImage}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
-                      >
+                      <button onClick={nextImage} className="p-3 rounded-full bg-white/90 text-gray-800 shadow-xl hover:bg-purple-600 hover:text-white transition-all transform hover:scale-110">
                         <ChevronRight className="w-6 h-6" />
                       </button>
-                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                        {images.map((_, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => setCurrentImageIndex(idx)}
-                            className={`w-2 h-2 rounded-full transition-colors ${
-                              idx === currentImageIndex ? "bg-white" : "bg-white/50"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    </>
+                    </div>
                   )}
-                </>
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Home className="w-20 h-20 text-tertiary" />
                 </div>
-              )}
-              {/* Purpose Badge */}
-              <div className="absolute top-4 left-4">
-                <span className="px-3 py-1.5 rounded-lg bg-accent text-white text-sm font-medium capitalize">
-                  For {property.purpose}
-                </span>
+                <div className="hidden md:flex flex-col gap-4">
+                  {images.slice(1, 4).map((img, i) => (
+                    <div key={i} className="flex-1 rounded-2xl overflow-hidden relative group cursor-pointer" onClick={() => setCurrentImageIndex(images.indexOf(img))}>
+                      <img src={img.url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="" />
+                      {i === 2 && images.length > 4 && (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-bold text-lg">
+                          +{images.length - 3}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Thumbnail Strip */}
-            {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentImageIndex(idx)}
-                    className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
-                      idx === currentImageIndex ? "border-accent" : "border-transparent"
-                    }`}
-                  >
-                    <img src={img.url} alt="" className="w-full h-full object-cover" />
-                  </button>
+            {/* Quick Specs Bar */}
+            <div className="bg-gray-50/50 rounded-3xl p-2 border border-gray-100 flex flex-wrap gap-2">
+              {[
+                { icon: Bed, label: `${property.specs.bedrooms} BHK`, sub: "Bedrooms" },
+                { icon: Bath, label: `${property.specs.bathrooms}`, sub: "Bathrooms" },
+                { icon: Square, label: `${property.specs.area?.builtUp || property.specs.area?.superBuiltUp}`, sub: property.specs.area?.unit || "sqft" },
+                { icon: Car, label: totalParking > 0 ? `${totalParking}` : "No", sub: "Parking" },
+              ].map((spec, i) => (
+                <div key={i} className="flex-1 min-w-[120px] bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-50 shadow-sm">
+                  <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
+                    <spec.icon className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-base font-bold text-gray-900 leading-none mb-1">{spec.label}</p>
+                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{spec.sub}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Overview / Description */}
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="w-1.5 h-8 bg-purple-500 rounded-full"></div>
+                Overview
+              </h2>
+              <div className="prose prose-purple max-w-none text-gray-600 leading-relaxed text-lg">
+                {property.description}
+              </div>
+            </div>
+
+            {/* Detailed Specs Grid */}
+            <div className="bg-white rounded-3xl border border-gray-100 p-8 space-y-8">
+              <h2 className="text-xl font-bold text-gray-900">Property Details</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-y-10 gap-x-12">
+                {[
+                  { label: "Property Type", value: property.propertyType, icon: Building2 },
+                  { label: "Category", value: property.category, icon: Sparkles },
+                  { label: "Furnishing", value: property.specs.furnishing || "None", icon: Home },
+                  { label: "Facing", value: property.specs.facing || "N/A", icon: MapPin },
+                  { label: "Total Floors", value: property.specs.totalFloors || "N/A", icon: Building2 },
+                  { label: "Floor Number", value: property.specs.floorNumber || "N/A", icon: ArrowLeft },
+                  { label: "Age of Property", value: property.specs.age || "New", icon: Calendar },
+                  { label: "Possession", value: property.specs.possessionStatus?.replace(/_/g, ' ') || "Ready", icon: Check },
+                ].map((item, i) => (
+                  <div key={i} className="space-y-2">
+                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{item.label}</p>
+                    <div className="flex items-center gap-2 group">
+                      <item.icon className="w-4 h-4 text-purple-500 group-hover:scale-110 transition-transform" />
+                      <p className="text-sm font-bold text-gray-800 capitalize leading-none">{item.value.toString().replace(/_/g, ' ')}</p>
+                    </div>
+                  </div>
                 ))}
               </div>
-            )}
-
-            {/* Title & Location */}
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">
-                {property.title}
-              </h1>
-              <div className="flex items-center gap-2 text-secondary">
-                <MapPin className="w-5 h-5 text-tertiary" />
-                <span>
-                  {property.location.address.line1}
-                  {property.location.address.line2 && `, ${property.location.address.line2}`}
-                  , {property.location.locality}, {property.location.city},{" "}
-                  {property.location.state} - {property.location.pincode}
-                </span>
-              </div>
             </div>
 
-            {/* Key Specs */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {property.specs?.bedrooms !== undefined && (
-                <div className="bg-card rounded-xl border border-border p-4 text-center">
-                  <Bed className="w-6 h-6 mx-auto text-accent mb-2" />
-                  <p className="text-lg font-semibold text-primary">{property.specs.bedrooms}</p>
-                  <p className="text-sm text-tertiary">Bedrooms</p>
-                </div>
-              )}
-              {property.specs?.bathrooms !== undefined && (
-                <div className="bg-card rounded-xl border border-border p-4 text-center">
-                  <Bath className="w-6 h-6 mx-auto text-accent mb-2" />
-                  <p className="text-lg font-semibold text-primary">{property.specs.bathrooms}</p>
-                  <p className="text-sm text-tertiary">Bathrooms</p>
-                </div>
-              )}
-              {property.specs?.area?.superBuiltUp && (
-                <div className="bg-card rounded-xl border border-border p-4 text-center">
-                  <Square className="w-6 h-6 mx-auto text-accent mb-2" />
-                  <p className="text-lg font-semibold text-primary">
-                    {property.specs.area.superBuiltUp}
-                  </p>
-                  <p className="text-sm text-tertiary">{property.specs.area.unit || "sqft"}</p>
-                </div>
-              )}
-              {totalParking > 0 && (
-                <div className="bg-card rounded-xl border border-border p-4 text-center">
-                  <Car className="w-6 h-6 mx-auto text-accent mb-2" />
-                  <p className="text-lg font-semibold text-primary">{totalParking}</p>
-                  <p className="text-sm text-tertiary">Parking</p>
-                </div>
-              )}
-            </div>
-
-            {/* Description */}
-            <div className="bg-card rounded-2xl border border-border p-6">
-              <h2 className="text-lg font-semibold text-primary mb-4">Description</h2>
-              <p className="text-secondary whitespace-pre-line wrap-break-word">{property.description}</p>
-            </div>
-
-            {/* Property Details */}
-            <div className="bg-card rounded-2xl border border-border p-6">
-              <h2 className="text-lg font-semibold text-primary mb-4">Property Details</h2>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-tertiary">Property Type</span>
-                  <span className="text-primary font-medium capitalize">
-                    {property.propertyType.replace(/_/g, " ")}
-                  </span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-tertiary">Category</span>
-                  <span className="text-primary font-medium capitalize">{property.category}</span>
-                </div>
-                {property.specs?.furnishing && (
-                  <div className="flex justify-between py-2 border-b border-border">
-                    <span className="text-tertiary">Furnishing</span>
-                    <span className="text-primary font-medium capitalize">
-                      {property.specs.furnishing === "semi"
-                        ? "Semi-Furnished"
-                        : property.specs.furnishing === "fully"
-                        ? "Fully Furnished"
-                        : "Unfurnished"}
-                    </span>
-                  </div>
-                )}
-                {property.specs?.facing && (
-                  <div className="flex justify-between py-2 border-b border-border">
-                    <span className="text-tertiary">Facing</span>
-                    <span className="text-primary font-medium uppercase">{property.specs.facing}</span>
-                  </div>
-                )}
-                {property.specs?.floorNumber !== undefined && (
-                  <div className="flex justify-between py-2 border-b border-border">
-                    <span className="text-tertiary">Floor</span>
-                    <span className="text-primary font-medium">
-                      {property.specs.floorNumber}
-                      {property.specs.totalFloors ? ` of ${property.specs.totalFloors}` : ""}
-                    </span>
-                  </div>
-                )}
-                {property.specs?.balconies !== undefined && (
-                  <div className="flex justify-between py-2 border-b border-border">
-                    <span className="text-tertiary">Balconies</span>
-                    <span className="text-primary font-medium">{property.specs.balconies}</span>
-                  </div>
-                )}
-                {property.specs?.possessionStatus && (
-                  <div className="flex justify-between py-2 border-b border-border">
-                    <span className="text-tertiary">Possession</span>
-                    <span className="text-primary font-medium capitalize">
-                      {property.specs.possessionStatus === "ready"
-                        ? "Ready to Move"
-                        : "Under Construction"}
-                    </span>
-                  </div>
-                )}
-                {property.specs?.age && (
-                  <div className="flex justify-between py-2 border-b border-border">
-                    <span className="text-tertiary">Property Age</span>
-                    <span className="text-primary font-medium">{property.specs.age}</span>
-                  </div>
-                )}
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-tertiary">Listed By</span>
-                  <span className="text-primary font-medium capitalize">{property.listingType}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Amenities */}
+            {/* Amenities Section */}
             {property.amenities.length > 0 && (
-              <div className="bg-card rounded-2xl border border-border p-6">
-                <h2 className="text-lg font-semibold text-primary mb-4">Amenities</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {property.amenities.map((amenity) => (
-                    <div
-                      key={amenity}
-                      className="flex items-center gap-2 p-3 rounded-xl bg-hover"
-                    >
-                      <Check className="w-4 h-4 text-success" />
-                      <span className="text-sm text-primary capitalize">
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                  <div className="w-1.5 h-8 bg-purple-500 rounded-full"></div>
+                  Amenities
+                </h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {property.amenities.map((amenity, i) => (
+                    <div key={i} className="p-4 rounded-2xl bg-gray-50 border border-transparent hover:border-purple-100 hover:bg-white transition-all flex items-center gap-3 group">
+                      <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-purple-600 shadow-sm border border-gray-50 group-hover:scale-110 transition-transform">
+                        <Check className="w-4 h-4" />
+                      </div>
+                      <span className="text-sm font-bold text-gray-700 capitalize">
                         {amenity.replace(/_/g, " ")}
                       </span>
                     </div>
@@ -427,100 +387,103 @@ export default function PropertyDetailPage() {
             )}
           </div>
 
-          {/* Right Column - Price & Contact */}
-          <div className="space-y-6">
-            {/* Price Card */}
-            <div className="bg-card rounded-2xl border border-border p-6 sticky top-24">
-              <div className="mb-6">
-                <p className="text-sm text-tertiary mb-1">Price</p>
-                <p className="text-3xl font-bold text-accent">
-                  ₹{formatPrice(property.price.amount)}
-                </p>
-                {property.price.pricePerSqft && (
-                  <p className="text-sm text-secondary mt-1">
-                    ₹{property.price.pricePerSqft.toLocaleString("en-IN")}/sqft
-                  </p>
-                )}
-                {property.price.negotiable && (
-                  <span className="inline-flex items-center gap-1 mt-2 px-2 py-1 rounded-full bg-success-bg text-success text-xs">
-                    <Sparkles className="w-3 h-3" />
-                    Price Negotiable
-                  </span>
-                )}
-              </div>
-
-              {/* Additional Costs for Rent */}
-              {(property.purpose === "rent" || property.purpose === "lease" || property.purpose === "pg") && (
-                <div className="border-t border-border pt-4 mb-6 space-y-2">
-                  {property.price.deposit && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-tertiary">Security Deposit</span>
-                      <span className="text-primary font-medium">
-                        ₹{property.price.deposit.toLocaleString("en-IN")}
-                      </span>
-                    </div>
-                  )}
-                  {property.price.maintenance && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-tertiary">Maintenance</span>
-                      <span className="text-primary font-medium">
-                        ₹{property.price.maintenance.toLocaleString("en-IN")}/month
-                      </span>
+          {/* Sticky Sidebar (Right) */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="sticky top-24 space-y-6">
+              {/* Contact Card */}
+              <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl p-8 space-y-8">
+                <div>
+                  <div className="flex items-end gap-1 mb-1">
+                    <p className="text-4xl font-black text-gray-900">₹{formatPrice(property.price.amount)}</p>
+                    {property.price.pricePerSqft && (
+                      <span className="text-sm text-gray-400 font-bold mb-1">/ Month</span>
+                    )}
+                  </div>
+                  {property.price.negotiable && (
+                    <div className="flex items-center gap-1.5 text-purple-600 bg-purple-50 w-fit px-3 py-1 rounded-full text-[10px] font-bold border border-purple-100 uppercase tracking-wider">
+                      <Sparkles className="w-3 h-3" />
+                      Negotiable Price
                     </div>
                   )}
                 </div>
-              )}
 
-              {/* Contact Button */}
-              <button className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-accent text-white rounded-xl font-medium hover:bg-accent-hover transition-colors">
-                <Phone className="w-5 h-5" />
-                Contact {property.listingType === "owner" ? "Owner" : property.listingType === "agent" ? "Agent" : "Builder"}
-              </button>
-
-              {/* Listed By Info */}
-              {property.listedBy && (
-                <div className="mt-6 pt-6 border-t border-border">
-                  <p className="text-sm text-tertiary mb-3">Listed by</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-hover flex items-center justify-center overflow-hidden">
-                      {property.listedBy.avatar ? (
-                        <img
-                          src={property.listedBy.avatar}
-                          alt={`${property.listedBy.name.first} ${property.listedBy.name.last}`.trim()}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-lg font-semibold text-tertiary">
-                          {property.listedBy.name?.first?.charAt(0)?.toUpperCase() || "U"}
-                        </span>
-                      )}
+                <div className="space-y-4">
+                  <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100 space-y-3">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-500 font-medium">Estimated EMI</span>
+                      <span className="text-gray-900 font-bold">₹{Math.round(property.price.amount * 0.0075).toLocaleString()}/mo</span>
                     </div>
-                    <div>
-                      <p className="font-medium text-primary">{property.listedBy.name ? `${property.listedBy.name.first} ${property.listedBy.name.last}`.trim() : "User"}</p>
-                      <p className="text-sm text-tertiary capitalize">{property.listingType}</p>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-500 font-medium">Monthly Maintenance</span>
+                      <span className="text-gray-900 font-bold">₹{property.price.maintenance || 0}</span>
                     </div>
                   </div>
                 </div>
-              )}
 
-              {/* Stats */}
-              <div className="mt-6 pt-6 border-t border-border grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <p className="text-lg font-semibold text-primary">{property.metrics?.views || 0}</p>
-                  <p className="text-xs text-tertiary">Views</p>
-                </div>
-                <div>
-                  <p className="text-lg font-semibold text-primary">{property.metrics?.inquiries || 0}</p>
-                  <p className="text-xs text-tertiary">Inquiries</p>
-                </div>
-                <div>
-                  <p className="text-lg font-semibold text-primary">{property.metrics?.favorites || 0}</p>
-                  <p className="text-xs text-tertiary">Favorites</p>
+                <button className="w-full py-5 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-2xl shadow-xl shadow-purple-200 transition-all flex items-center justify-center gap-3 group">
+                  <Phone className="w-6 h-6 animate-pulse group-hover:animate-none" />
+                  Contact {property.listingType === "owner" ? "Owner" : "Agent"}
+                </button>
+
+                <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                  <div className="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 font-black text-xl overflow-hidden border border-purple-100">
+                    {property.listedBy.avatar ? (
+                      <img src={property.listedBy.avatar} className="w-full h-full object-cover" alt="" />
+                    ) : (
+                      <span>{property.listedBy.name?.first?.charAt(0)}</span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-gray-900 leading-none mb-1">
+                      {property.listedBy.name ? `${property.listedBy.name.first} ${property.listedBy.name.last}` : "Property Owner"}
+                    </p>
+                    <p className="text-xs font-bold text-purple-600 uppercase tracking-widest leading-none">{property.listingType} Profile</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Similar Properties Section (Dynamic) */}
+        {similarProperties.length > 0 && (
+          <div className="mt-24 space-y-10">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-extrabold text-gray-900">Similar Properties Nearby</h2>
+              <Link href={`/search?city=${property.location.city}&query=${property.location.locality}`} className="text-purple-600 font-black text-sm hover:underline flex items-center gap-1 group">
+                View All Suggested
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {similarProperties.map((p) => (
+                <Link key={p.id} href={`/property/${p.slug}`} className="group cursor-pointer space-y-4">
+                  <div className="aspect-[4/3] rounded-3xl bg-gray-100 overflow-hidden relative border border-gray-100">
+                    {p.media?.primary ? (
+                      <img src={p.media.primary} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                        <Home className="w-12 h-12 text-gray-200" />
+                      </div>
+                    )}
+                    <div className="absolute top-4 left-4 px-3 py-1.5 bg-white/90 backdrop-blur rounded-xl text-xs font-black text-gray-900 shadow-sm">
+                      {formatPrice(p.price.amount)}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-purple-600 transition-colors leading-tight line-clamp-2">
+                      {p.title}
+                    </h3>
+                    <div className="flex items-center gap-1 text-gray-500 text-sm mt-1">
+                      <MapPin className="w-3.5 h-3.5 text-purple-500" />
+                      <p className="text-sm text-gray-500 font-medium truncate">{p.location.locality}, {p.location.city}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

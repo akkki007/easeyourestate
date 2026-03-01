@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { Loader2, Plus, Home, MapPin } from "lucide-react";
+import PropertyCard from "@/components/PropertyCard";
 
 type Listing = {
   id: string;
@@ -77,28 +78,7 @@ export default function ListingsPage() {
   const userName = storedUser ? (typeof storedUser.name === "object" ? storedUser.name.first : storedUser.name) || "User" : "User";
   const userEmail = storedUser?.email ?? "";
 
-  const formatPrice = (n: number) => {
-    if (n >= 1_00_00_000) return `₹${(n / 1_00_00_000).toFixed(1)} Cr`;
-    if (n >= 1_00_000) return `₹${(n / 1_00_000).toFixed(1)} L`;
-    return `₹${(n / 1000).toFixed(0)}K`;
-  };
 
-  const statusBadge = (status: string) => {
-    const styles: Record<string, string> = {
-      draft: "bg-tertiary/20 text-tertiary",
-      active: "bg-success-bg text-success",
-      pending_review: "bg-warning-bg text-warning",
-      sold: "bg-hover text-secondary",
-      rented: "bg-hover text-secondary",
-      archived: "bg-error-bg text-error",
-    };
-    const label = status.replace(/_/g, " ");
-    return (
-      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium capitalize ${styles[status] ?? "bg-hover text-secondary"}`}>
-        {label}
-      </span>
-    );
-  };
 
   return (
     <>
@@ -161,46 +141,19 @@ export default function ListingsPage() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {listings.map((listing) => (
-              <Link
+              <PropertyCard
                 key={listing.id}
-                href={`/property/${listing.slug}`}
-                className="bg-card rounded-2xl border border-border overflow-hidden hover:border-border-hover hover:shadow-lg transition-all cursor-pointer block"
-              >
-                <div className="aspect-[4/3] bg-hover relative">
-                  {listing.media?.primary ? (
-                    <img
-                      src={listing.media.primary}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Home className="w-12 h-12 text-tertiary" />
-                    </div>
-                  )}
-                  <div className="absolute top-2 left-2">
-                    {statusBadge(listing.status)}
-                  </div>
-                  <div className="absolute bottom-2 left-2 right-2">
-                    <span className="inline-block px-2 py-1 rounded-lg bg-black/60 text-white text-sm font-medium capitalize">
-                      {listing.purpose}
-                    </span>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-primary line-clamp-2 mb-1">{listing.title}</h3>
-                  <div className="flex items-center gap-1.5 text-tertiary text-sm mb-2">
-                    <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                    <span className="line-clamp-1">{listing.location.locality}, {listing.location.city}</span>
-                  </div>
-                  <p className="text-lg font-semibold text-accent">
-                    {formatPrice(listing.price.amount)}
-                  </p>
-                  <p className="text-xs text-tertiary mt-2 capitalize">
-                    {listing.propertyType.replace(/_/g, " ")} · {listing.category}
-                  </p>
-                </div>
-              </Link>
+                id={listing.id}
+                slug={listing.slug}
+                title={listing.title}
+                purpose={listing.purpose}
+                category={listing.category}
+                propertyType={listing.propertyType}
+                status={listing.status}
+                price={listing.price}
+                location={listing.location}
+                media={listing.media}
+              />
             ))}
           </div>
         )}
