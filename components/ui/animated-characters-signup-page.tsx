@@ -133,7 +133,7 @@ function SignUpPage() {
       }
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      router.push("/onboarding");
+      router.push("/dashboard");
     } catch {
       setError("Sign up failed. Please try again.");
     } finally {
