@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { decreaseCredit } from "@/store/creditSlice";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -26,6 +29,14 @@ export default function Hero() {
 
   // Tab state
   const [activeTab, setActiveTab] = useState<Tab>("Rent");
+
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+
+
+
+
+  //pop up alert
+  const [showPopup, setShowPopup] = useState(false);
 
   // Filter states
   const [buySubType, setBuySubType] = useState<BuySubType>("Full House");
@@ -53,6 +64,12 @@ export default function Hero() {
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchCredits = useSelector(
+    (state: RootState) => state.credits.searchCredits
+  );
+
+  const dispatch = useDispatch();
+
 
   // Fetch locality suggestions with debounce
   const fetchSuggestions = useCallback(
@@ -82,16 +99,43 @@ export default function Hero() {
     [selectedCity]
   );
 
+  //Function to Add Location (Max 3 Only)
+  const handleLocationSelect = (location: string) => {
+    if (selectedLocations.length >= 3) {
+      alert("You can only select 3 locations");
+      return;
+    }
+
+    if (!selectedLocations.includes(location)) {
+      setSelectedLocations([...selectedLocations, location]);
+    }
+  };
+
+
   const handleSearchInput = (value: string) => {
     setSearchQuery(value);
     fetchSuggestions(value);
   };
 
   const selectSuggestion = (locality: string) => {
-    setSearchQuery(locality);
+    if (selectedLocations.length >= 3) {
+      alert("You can only select 3 locations");
+      return;
+    }
+
+    if (!selectedLocations.includes(locality)) {
+      setSelectedLocations([...selectedLocations, locality]);
+    }
+
+    setSearchQuery("");
     setShowSuggestions(false);
     setSuggestions([]);
   };
+
+
+  useEffect(() => {
+    localStorage.setItem("searchCredits", searchCredits.toString());
+  }, [searchCredits]);
 
   // Close dropdowns on outside click
   const searchCardRef = useRef<HTMLDivElement>(null);
@@ -118,7 +162,22 @@ export default function Hero() {
 
   // Build search URL and navigate
   const handleSearch = () => {
+
+    if (searchCredits <= 0) {
+      setShowPopup(true);
+      return;
+    }
+
+    if (selectedLocations.length === 0) {
+      alert("Please select at least one location");
+      return;
+    }
+
+
     const params = new URLSearchParams();
+
+    params.set("locations", selectedLocations.join(","));
+
     params.set("city", selectedCity);
 
     if (activeTab === "Buy") {
@@ -175,6 +234,8 @@ export default function Hero() {
     }
 
     router.push(`/properties?${params.toString()}`);
+
+    dispatch(decreaseCredit());
   };
 
   // Radio button component
@@ -189,11 +250,10 @@ export default function Hero() {
   }) => (
     <label className="flex items-center gap-2 cursor-pointer group" onClick={onClick}>
       <div
-        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
-          selected
-            ? "border-emerald-500 bg-emerald-500"
-            : "border-gray-300 group-hover:border-emerald-400"
-        }`}
+        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${selected
+          ? "border-emerald-500 bg-emerald-500"
+          : "border-gray-300 group-hover:border-emerald-400"
+          }`}
       >
         {selected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
       </div>
@@ -254,11 +314,10 @@ export default function Hero() {
                 onSelect(opt);
                 closeAllDropdowns();
               }}
-              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-red-50 hover:text-red-600 transition-colors ${
-                value === opt
-                  ? "text-red-500 font-medium bg-red-50/60"
-                  : "text-gray-700"
-              }`}
+              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-red-50 hover:text-red-600 transition-colors ${value === opt
+                ? "text-red-500 font-medium bg-red-50/60"
+                : "text-gray-700"
+                }`}
             >
               {opt}
             </button>
@@ -272,6 +331,7 @@ export default function Hero() {
     <>
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-16">
         {/* Background */}
+
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
@@ -311,6 +371,10 @@ export default function Hero() {
             Find your perfect property — no brokers, zero commissions.
           </p>
 
+          {/* Display Credits on Top */}
+
+
+
           {/* Search card */}
           <div
             ref={searchCardRef}
@@ -325,11 +389,10 @@ export default function Hero() {
                     setActiveTab(tab);
                     closeAllDropdowns();
                   }}
-                  className={`flex-1 py-4 text-sm font-semibold transition-colors relative ${
-                    activeTab === tab
-                      ? "text-red-500"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`flex-1 py-4 text-sm font-semibold transition-colors relative ${activeTab === tab
+                    ? "text-red-500"
+                    : "text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   {tab}
                   {activeTab === tab && (
@@ -365,11 +428,10 @@ export default function Hero() {
                           setSelectedCity(city);
                           setCityDropdown(false);
                         }}
-                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-red-50 hover:text-red-600 transition-colors ${
-                          selectedCity === city
-                            ? "text-red-500 font-medium bg-red-50/60"
-                            : "text-gray-700"
-                        }`}
+                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-red-50 hover:text-red-600 transition-colors ${selectedCity === city
+                          ? "text-red-500 font-medium bg-red-50/60"
+                          : "text-gray-700"
+                          }`}
                       >
                         {city}
                       </button>
@@ -393,14 +455,45 @@ export default function Hero() {
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
+                      e.preventDefault();
+
+                      if (searchQuery.trim() !== "") {
+                        if (selectedLocations.length >= 3) {
+                          alert("You can only select 3 locations");
+                          return;
+                        }
+
+                        if (!selectedLocations.includes(searchQuery.trim())) {
+                          setSelectedLocations([
+                            ...selectedLocations,
+                            searchQuery.trim(),
+                          ]);
+                        }
+
+                        setSearchQuery("");
+                      }
+
                       setShowSuggestions(false);
                       handleSearch();
                     }
+
                     if (e.key === "Escape") setShowSuggestions(false);
                   }}
                   placeholder="Search upto 3 localities or landmarks"
                   className="w-full px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 outline-none bg-transparent"
                 />
+
+                {/* Display Selected Locations */}
+                <div className="flex gap-2 mt-2">
+                  {selectedLocations.map((loc, index) => (
+                    <span
+                      key={index}
+                      className="bg-purple-200 px-3 py-1 rounded-full text-sm"
+                    >
+                      {loc}
+                    </span>
+                  ))}
+                </div>
 
                 {/* Suggestions dropdown */}
                 {showSuggestions && (
@@ -437,9 +530,12 @@ export default function Hero() {
               {/* Search button */}
               <button
                 onClick={handleSearch}
-                className="flex items-center gap-2 px-6 py-3 m-1 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
+                disabled={searchCredits <= 0}
+                className={`px-6 py-2 rounded-lg ${searchCredits <= 0
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-red-500 hover:bg-red-600"
+                  }`}
               >
-                <Search className="w-4 h-4" />
                 Search
               </button>
             </div>
@@ -608,7 +704,27 @@ export default function Hero() {
             ))}
           </div>
         </div>
+
+
       </section>
+      {showPopup && (
+        <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-[9999]">
+          <div className="bg-white/95 p-8 rounded-2xl w-[340px] text-center shadow-2xl border border-gray-200">
+            <h2 className="text-lg font-semibold mb-3">
+              Search Credits Finished
+            </h2>
+            <p className="text-sm text-gray-600 mb-6">
+              You have used all 3 free searches.
+            </p>
+            <button
+              onClick={() => setShowPopup(false)}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition"
+            >
+              Okay
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

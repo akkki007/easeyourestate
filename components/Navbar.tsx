@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 import Link from "next/link";
 import {
   Search,
@@ -38,6 +40,7 @@ const CITIES = [
 ];
 const BHK_TYPES = ["1 BHK", "2 BHK", "3 BHK", "4 BHK", "4+ BHK"];
 
+
 export default function Navbar() {
   const [activeTab, setActiveTab] = useState<"Buy" | "Rent" | "Commercial">(
     "Rent",
@@ -51,6 +54,10 @@ export default function Navbar() {
   const [bhkDropdown, setBhkDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+const searchCredits = useSelector(
+  (state: RootState) => state.credits.searchCredits
+);
 
   return (
     <>
@@ -83,6 +90,9 @@ export default function Navbar() {
               </div>
             </div>
 
+            <div className="text-sm font-semibold text-purple-600">
+              Credits: {searchCredits}
+            </div>
             {/* Desktop nav */}
             <nav className="hidden md:flex items-center gap-1">
               <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm font-medium transition-colors">
