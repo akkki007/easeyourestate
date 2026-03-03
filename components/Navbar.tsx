@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 import {
   Search,
   MapPin,
@@ -51,6 +53,11 @@ export default function Navbar() {
   const [bhkDropdown, setBhkDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const searchCredits = useSelector(
+    (state: RootState) => state.credits.searchCredits
+  );
+
+
 
   return (
     <>
@@ -81,6 +88,9 @@ export default function Navbar() {
                   EaseYourEstate.ai
                 </span>
               </div>
+            </div>
+            <div className="text-sm font-semibold text-purple-600">
+              Credits: {searchCredits}
             </div>
 
             {/* Desktop nav */}
