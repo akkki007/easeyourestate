@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDashboard } from "./DashboardShell";
 import { useTheme } from "@/components/ThemeProvider";
+import { useAuth } from "@/lib/auth/AuthContext";
 
 interface DashboardHeaderProps {
     userName: string;
@@ -17,13 +18,14 @@ export default function DashboardHeader({
     pageTitle = "Dashboard",
 }: DashboardHeaderProps) {
     const [searchQuery, setSearchQuery] = useState("");
+    const [profileOpen, setProfileOpen] = useState(false);
     const { setSidebarOpen } = useDashboard();
     const { resolvedTheme, setTheme } = useTheme();
+    const { logout } = useAuth();
     const router = useRouter();
 
     const handleSignOut = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        logout();
         router.push("/");
     };
 
@@ -129,18 +131,55 @@ export default function DashboardHeader({
                 <div className="hidden sm:block w-px h-8 bg-border mx-2" />
 
                 {/* User Section */}
-                <div className="flex items-center gap-3">
+                <div className="relative flex items-center gap-3">
                     <div className="hidden md:block text-right">
                         <p className="text-sm font-medium text-primary leading-tight">{userName}</p>
                         <p className="text-xs text-tertiary leading-tight">{userEmail}</p>
                     </div>
                     <button
-                        onClick={handleSignOut}
+                        onClick={() => setProfileOpen(!profileOpen)}
                         className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-accent text-white flex items-center justify-center text-sm font-medium hover:bg-accent-hover transition-colors"
-                        title="Sign out"
+                        title="Profile menu"
                     >
                         {userName.charAt(0).toUpperCase()}
                     </button>
+
+                    {/* Profile dropdown */}
+                    {profileOpen && (
+                        <>
+                            <div className="fixed inset-0 z-30" onClick={() => setProfileOpen(false)} />
+                            <div className="absolute right-0 top-full mt-2 w-48 bg-surface border border-border rounded-xl shadow-xl z-40 py-1 overflow-hidden">
+                                <div className="px-4 py-3 border-b border-border">
+                                    <p className="text-sm font-medium text-primary truncate">{userName}</p>
+                                    <p className="text-xs text-tertiary truncate">{userEmail}</p>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setProfileOpen(false);
+                                        router.push("/dashboard/settings");
+                                    }}
+                                    className="w-full px-4 py-2.5 text-left text-sm text-primary hover:bg-hover transition-colors flex items-center gap-2"
+                                >
+                                    <svg className="w-4 h-4 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    My Profile
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setProfileOpen(false);
+                                        handleSignOut();
+                                    }}
+                                    className="w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                                >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    Sign Out
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </header>

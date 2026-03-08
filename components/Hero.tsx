@@ -2,31 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { decreaseCredit } from "@/store/creditSlice";
 import {
   Search,
   MapPin,
   ChevronDown,
   Building2,
-  CreditCard,
-  LogIn,
-  Menu,
-  Star,
-  Shield,
-  TrendingUp,
-  CheckCircle,
-  ArrowRight,
-  Phone,
-  Mail,
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
   Truck,
   Tag,
-  X,
 } from "lucide-react";
 
 
@@ -41,25 +23,17 @@ export default function Hero() {
     "Full House" | "PG/Hostel" | "Flatmates"
   >("Full House");
 
-  const [showPopup, setShowPopup] = useState(false);
   const [selectedCity, setSelectedCity] = useState("Bangalore");
   const [selectedBHK, setSelectedBHK] = useState("");
   const [cityDropdown, setCityDropdown] = useState(false);
   const [bhkDropdown, setBhkDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<
+    { id: string; locality: string; title: string; address: string; city: string; state: string; pincode: string }[]
+  >([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  const dispatch = useDispatch();
-
-  const searchCredits = useSelector(
-    (state: RootState) => state.credits.searchCredits
-  );
-
-  const isLoggedIn = typeof window !== "undefined" && Boolean(localStorage.getItem("token"));
-
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -90,31 +64,17 @@ export default function Hero() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("searchCredits", searchCredits.toString());
-  }, [searchCredits]);
-
-
   const handleSearch = (locality?: string) => {
-    if (!isLoggedIn && searchCredits <= 0) {
-      setShowPopup(true);
-      return;
-    }
-  
+    const query = locality || searchQuery;
+    const params = new URLSearchParams();
+    params.set("city", selectedCity);
+    if (query) params.set("query", query);
+    if (activeTab) params.set("purpose", activeTab);
+    if (activeType) params.set("type", activeType);
+    if (selectedBHK) params.set("bhk", selectedBHK);
 
-  const query = locality || searchQuery;
-  const params = new URLSearchParams();
-  params.set("city", selectedCity); 
-  if (query) params.set("query", query);
-  if (activeTab) params.set("purpose", activeTab);
-  if (activeType) params.set("type", activeType);
-  if (selectedBHK) params.set("bhk", selectedBHK);
-
-  router.push(`/search?${params.toString()}`);
-  if (!isLoggedIn) {
-  dispatch(decreaseCredit());
-}
-};
+    router.push(`/search?${params.toString()}`);
+  };
 
 return (
   <>
@@ -126,7 +86,7 @@ return (
           backgroundImage: `url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1920&q=80')`,
         }}
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-gray-800/65 to-purple-800/40" />
+      <div className="absolute inset-0 bg-linear-to-br from-gray-900/80 via-gray-800/65 to-purple-800/40" />
       <div
         className="absolute inset-0 opacity-[0.04]"
         style={{
@@ -151,7 +111,7 @@ return (
         {/* Headline */}
         <h1 className="text-center text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-3 tracking-tight drop-shadow-lg">
           More Comfortable.{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-purple-400">
+          <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-300 to-purple-400">
             More Classy.
           </span>
         </h1>
@@ -387,24 +347,6 @@ return (
         </div>
       </div>
     </section>
-    {showPopup && (
-      <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-[9999]">
-        <div className="bg-white/95 p-8 rounded-2xl w-[340px] text-center shadow-2xl border border-gray-200">
-          <h2 className="text-lg font-semibold mb-3">
-            Search Credits Finished
-          </h2>
-          <p className="text-sm text-gray-600 mb-6">
-            You have used all 3 free searches.
-          </p>
-          <button
-            onClick={() => setShowPopup(false)}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition"
-          >
-            Okay
-          </button>
-        </div>
-      </div>
-    )}
   </>
 );
 }

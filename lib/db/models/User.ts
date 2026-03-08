@@ -40,14 +40,13 @@ const onboardingDataSchema = new Schema({}, { strict: false, _id: false });
 
 const userSchema = new Schema(
   {
-    
-    email: { type: String, required: true, unique: true },
-    phone: String,
+
+    email: { type: String, sparse: true, unique: true },
+    phone: { type: String, sparse: true, unique: true },
     name: { type: nameSchema, required: true },
     avatar: String,
     password: {
       type: String,
-      required: true,
       minlength: 6,
       select: false
   },

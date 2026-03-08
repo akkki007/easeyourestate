@@ -3,6 +3,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { unlockOwnerDetail, MAX_UNLOCKS } from "@/store/creditSlice";
+import { useAuth } from "@/lib/auth/AuthContext";
 import {
   Loader2,
   ArrowLeft,
@@ -21,6 +25,7 @@ import {
   Home,
   Sparkles,
   Check,
+  Lock,
 } from "lucide-react";
 
 type Property = {
@@ -103,7 +108,12 @@ const amenityIcons: Record<string, string> = {
 export default function PropertyDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const dispatch = useDispatch();
   const slug = params?.slug as string;
+  const { token, isAuthenticated } = useAuth();
+
+  const ownerUnlocks = useSelector((state: RootState) => state.credits.ownerUnlocks);
+  const unlockedProperties = useSelector((state: RootState) => state.credits.unlockedProperties);
 
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
@@ -111,6 +121,56 @@ export default function PropertyDetailPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [similarProperties, setSimilarProperties] = useState<any[]>([]);
+  const [ownerDetails, setOwnerDetails] = useState<{ name: string; phone: string; email: string } | null>(null);
+  const [ownerLoading, setOwnerLoading] = useState(false);
+  const [ownerError, setOwnerError] = useState("");
+  const [showLimitPopup, setShowLimitPopup] = useState(false);
+
+  const isAlreadyUnlocked = unlockedProperties.includes(slug);
+  const remainingUnlocks = MAX_UNLOCKS - ownerUnlocks;
+  const canUnlock = remainingUnlocks > 0 || isAlreadyUnlocked;
+
+  // Persist credits to localStorage
+  useEffect(() => {
+    localStorage.setItem("ownerUnlocks", ownerUnlocks.toString());
+    localStorage.setItem("unlockedProperties", JSON.stringify(unlockedProperties));
+  }, [ownerUnlocks, unlockedProperties]);
+
+  const handleGetOwnerDetails = async () => {
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+
+    if (!canUnlock) {
+      setShowLimitPopup(true);
+      return;
+    }
+
+    setOwnerLoading(true);
+    setOwnerError("");
+
+    try {
+      const res = await fetch(`/api/properties/${slug}/owner`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setOwnerError(data.error || "Failed to get owner details.");
+        return;
+      }
+
+      setOwnerDetails(data.owner);
+      if (!isAlreadyUnlocked) {
+        dispatch(unlockOwnerDetail(slug));
+      }
+    } catch {
+      setOwnerError("Failed to get owner details.");
+    } finally {
+      setOwnerLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!property) return;
@@ -420,10 +480,101 @@ export default function PropertyDetailPage() {
                   </div>
                 </div>
 
-                <button className="w-full py-5 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-2xl shadow-xl shadow-purple-200 transition-all flex items-center justify-center gap-3 group">
-                  <Phone className="w-6 h-6 animate-pulse group-hover:animate-none" />
-                  Contact {property.listingType === "owner" ? "Owner" : "Agent"}
-                </button>
+                {ownerDetails ? (
+                  <div className="bg-green-50 border border-green-200 rounded-2xl p-5 space-y-3">
+                    <div className="flex items-center gap-2 text-green-700 font-bold text-sm">
+                      <Check className="w-4 h-4" />
+                      Owner Details Unlocked
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600">
+                          <Phone className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Phone</p>
+                          <a href={`tel:${ownerDetails.phone}`} className="text-sm font-bold text-gray-900 hover:text-purple-600">
+                            {ownerDetails.phone}
+                          </a>
+                        </div>
+                      </div>
+                      {ownerDetails.email && (
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="2" y="4" width="20" height="16" rx="2" />
+                              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500">Email</p>
+                            <a href={`mailto:${ownerDetails.email}`} className="text-sm font-bold text-gray-900 hover:text-purple-600">
+                              {ownerDetails.email}
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <button
+                      onClick={handleGetOwnerDetails}
+                      disabled={ownerLoading}
+                      className="w-full py-5 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white font-black rounded-2xl shadow-xl shadow-purple-200 transition-all flex items-center justify-center gap-3 group"
+                    >
+                      {ownerLoading ? (
+                        <Loader2 className="w-6 h-6 animate-spin" />
+                      ) : !canUnlock ? (
+                        <Lock className="w-6 h-6" />
+                      ) : (
+                        <Phone className="w-6 h-6 animate-pulse group-hover:animate-none" />
+                      )}
+                      {ownerLoading
+                        ? "Loading..."
+                        : `Get ${property.listingType === "owner" ? "Owner" : "Agent"} Details`}
+                    </button>
+                    {!isAlreadyUnlocked && (
+                      <p className="text-center text-xs text-gray-400">
+                        {remainingUnlocks > 0
+                          ? `${remainingUnlocks} of ${MAX_UNLOCKS} free unlocks remaining`
+                          : "You've used all free unlocks"}
+                      </p>
+                    )}
+                    {ownerError && (
+                      <p className="text-center text-xs text-red-500">{ownerError}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Limit reached popup */}
+                {showLimitPopup && (
+                  <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-[9999]">
+                    <div className="bg-white/95 p-8 rounded-2xl w-96 text-center shadow-2xl border border-gray-200">
+                      <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-purple-100 flex items-center justify-center">
+                        <Lock className="w-6 h-6 text-purple-600" />
+                      </div>
+                      <h2 className="text-lg font-semibold mb-2">Unlock Limit Reached</h2>
+                      <p className="text-sm text-gray-600 mb-6">
+                        You have used all {MAX_UNLOCKS} free owner detail unlocks. Upgrade to premium for unlimited access.
+                      </p>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => setShowLimitPopup(false)}
+                          className="flex-1 py-2.5 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition"
+                        >
+                          Close
+                        </button>
+                        <button
+                          onClick={() => setShowLimitPopup(false)}
+                          className="flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold transition"
+                        >
+                          Upgrade
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
                   <div className="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 font-black text-xl overflow-hidden border border-purple-100">

@@ -1,63 +1,23 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useState } from "react";
+import { useAuth } from "@/lib/auth/AuthContext";
 import {
-  Search,
-  MapPin,
-  ChevronDown,
   Building2,
   CreditCard,
+  LayoutDashboard,
   LogIn,
   Menu,
-  Star,
-  Shield,
-  TrendingUp,
-  CheckCircle,
-  ArrowRight,
-  Phone,
-  Mail,
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
-  Truck,
-  Tag,
   X,
 } from "lucide-react";
 
-const CITIES = [
-  "Bangalore",
-  "Mumbai",
-  "Delhi",
-  "Hyderabad",
-  "Chennai",
-  "Pune",
-  "Kolkata",
-  "Ahmedabad",
-];
-const BHK_TYPES = ["1 BHK", "2 BHK", "3 BHK", "4 BHK", "4+ BHK"];
-
 export default function Navbar() {
-  const [activeTab, setActiveTab] = useState<"Buy" | "Rent" | "Commercial">(
-    "Rent",
-  );
-  const [activeType, setActiveType] = useState<
-    "Full House" | "PG/Hostel" | "Flatmates"
-  >("Full House");
-  const [selectedCity, setSelectedCity] = useState("Bangalore");
-  const [selectedBHK, setSelectedBHK] = useState("");
-  const [cityDropdown, setCityDropdown] = useState(false);
-  const [bhkDropdown, setBhkDropdown] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const searchCredits = useSelector(
-    (state: RootState) => state.credits.searchCredits
-  );
+  const { isAuthenticated, isHydrated } = useAuth();
 
-
+  const showDashboard = isHydrated && isAuthenticated;
+  const showAuthLinks = isHydrated && !isAuthenticated;
 
   return (
     <>
@@ -65,6 +25,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
+           <Link href={"/"}>
             <div className="flex items-center gap-2 select-none cursor-pointer">
               <div className="relative flex items-end">
                 <span className="text-[2rem] font-black text-gray-900 leading-none tracking-tighter">
@@ -80,18 +41,9 @@ export default function Navbar() {
                   />
                 </div>
               </div>
-              <div className="flex flex-col leading-none ml-2">
-                <span className="text-[9px] text-gray-500 tracking-widest uppercase font-medium">
-                  at your service
-                </span>
-                <span className="text-[13px] font-bold text-gray-900 tracking-tight">
-                  EaseYourEstate.ai
-                </span>
-              </div>
+              
             </div>
-            <div className="text-sm font-semibold text-purple-600">
-              Credits: {searchCredits}
-            </div>
+           </Link>
 
             {/* Desktop nav */}
             <nav className="hidden md:flex items-center gap-1">
@@ -104,23 +56,32 @@ export default function Navbar() {
                 For Property Owners
               </button>
               <div className="w-px h-5 bg-gray-200 mx-1" />
-              <button className="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm font-medium transition-colors">
+              {showDashboard && (
                 <Link
-                  href="/signup"
-                  className="px-5 py-2 text-sm font-medium text-gray-700  transition-colors rounded-lg"
+                  href="/dashboard"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-50 text-sm font-medium transition-colors"
                 >
-                  Sign Up
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
                 </Link>
-              </button>
-              <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-50 text-sm font-medium transition-colors">
-                <LogIn className="w-4 h-4" />
-                <Link
-                  href="/login"
-                  className="px-5 py-2 text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors rounded-lg hover:bg-indigo-50"
-                >
-                  Login
-                </Link>
-              </button>
+              )}
+              {showAuthLinks && (
+                <>
+                  <Link
+                    href="/signup"
+                    className="px-5 py-2 text-sm font-medium text-gray-700 transition-colors rounded-lg hover:bg-gray-50"
+                  >
+                    Sign Up
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-50 text-sm font-medium transition-colors"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Login
+                  </Link>
+                </>
+              )}
               <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm font-medium transition-colors">
                 <Menu className="w-4 h-4" />
                 Menu
@@ -150,12 +111,31 @@ export default function Navbar() {
             <button className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-semibold">
               <Building2 className="w-4 h-4" /> For Property Owners
             </button>
-            <button className="px-4 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm font-medium text-left">
-              Sign up
-            </button>
-            <button className="px-4 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm font-medium text-left">
-              Log in
-            </button>
+            {showDashboard && (
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm font-medium"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                Dashboard
+              </Link>
+            )}
+            {showAuthLinks && (
+              <>
+                <Link
+                  href="/signup"
+                  className="px-4 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm font-medium text-left"
+                >
+                  Sign up
+                </Link>
+                <Link
+                  href="/login"
+                  className="px-4 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm font-medium text-left"
+                >
+                  Log in
+                </Link>
+              </>
+            )}
           </div>
         )}
       </header>

@@ -1,44 +1,39 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+const MAX_FREE_UNLOCKS = 3;
+
 interface CreditState {
-    searchCredits: number;
+    ownerUnlocks: number; // how many owner details unlocked so far
+    unlockedProperties: string[]; // property IDs/slugs already unlocked
 }
 
-const getInitialCredits = () => {
-    if (typeof window !== "undefined") {
-        const saved = localStorage.getItem("searchCredits");
-        return saved ? parseInt(saved) : 3;
-    }
-    return 3;
-};
-
 const initialState: CreditState = {
-    searchCredits: 3
+    ownerUnlocks: 0,
+    unlockedProperties: [],
 };
 
 const creditSlice = createSlice({
     name: "credits",
     initialState,
     reducers: {
-        decreaseCredit: (state) => {
-            if (state.searchCredits > 0) {
-                state.searchCredits -= 1;
+        unlockOwnerDetail: (state, action: PayloadAction<string>) => {
+            const slug = action.payload;
+            if (!state.unlockedProperties.includes(slug)) {
+                state.unlockedProperties.push(slug);
+                state.ownerUnlocks += 1;
             }
         },
 
-        resetCredits: (state) => {
-            state.searchCredits = 3;
-        },
-
-        setCreditsFromStorage: (state, action: PayloadAction<number>) => {
-            state.searchCredits = action.payload;
+        setCreditsFromStorage: (
+            state,
+            action: PayloadAction<{ ownerUnlocks: number; unlockedProperties: string[] }>
+        ) => {
+            state.ownerUnlocks = action.payload.ownerUnlocks;
+            state.unlockedProperties = action.payload.unlockedProperties;
         },
     },
 });
 
-export const {
-  decreaseCredit,
-  resetCredits,
-  setCreditsFromStorage
-} = creditSlice.actions;
+export const MAX_UNLOCKS = MAX_FREE_UNLOCKS;
+export const { unlockOwnerDetail, setCreditsFromStorage } = creditSlice.actions;
 export default creditSlice.reducer;

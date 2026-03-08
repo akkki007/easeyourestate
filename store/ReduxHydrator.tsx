@@ -8,10 +8,15 @@ export default function ReduxHydrator() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const saved = localStorage.getItem("searchCredits");
-    if (saved) {
-      dispatch(setCreditsFromStorage(parseInt(saved)));
-    }
+    const savedUnlocks = localStorage.getItem("ownerUnlocks");
+    const savedUnlockedProps = localStorage.getItem("unlockedProperties");
+
+    const ownerUnlocks = savedUnlocks ? parseInt(savedUnlocks) : 0;
+    const unlockedProperties = savedUnlockedProps
+      ? JSON.parse(savedUnlockedProps)
+      : [];
+
+    dispatch(setCreditsFromStorage({ ownerUnlocks, unlockedProperties }));
   }, [dispatch]);
 
   return null;
