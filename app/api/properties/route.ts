@@ -106,6 +106,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Only owners, agents, and builders can create listings." }, { status: 403 });
   }
 
+  // Owners can post only 1 property listing
+  if (role === "owner") {
+    const existingCount = await Property.countDocuments({
+      listedBy: dbUser._id,
+      deletedAt: null,
+    });
+    if (existingCount >= 1) {
+      return NextResponse.json(
+        { error: "Owners can post only 1 property listing. Please delete your existing listing to post a new one." },
+        { status: 403 }
+      );
+    }
+  }
+
   let body: unknown;
   try {
     body = await req.json();

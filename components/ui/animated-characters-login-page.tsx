@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth/AuthContext";
 
 
 interface PupilProps {
@@ -176,6 +177,7 @@ export const EyeBall = ({
 
 function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -316,8 +318,11 @@ function LoginPage() {
         setError(data.error || "Sign in failed. Please try again.");
         return;
       }
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      if (!data?.token || !data?.user) {
+        setError("Invalid sign in response. Please try again.");
+        return;
+      }
+      login(data.token, data.user);
       router.push("/dashboard");
     } catch {
       setError("Sign in failed. Please try again.");

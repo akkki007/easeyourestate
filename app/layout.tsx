@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { ReduxProvider } from "@/store/ReduxProvider";
+import { AuthProvider } from "@/lib/auth/AuthContext";
 
 export const metadata: Metadata = {
   title: 'easeyourestate Properties - Your Dream Property Awaits',
@@ -37,12 +38,13 @@ export default function RootLayout({
         />
       </head>
       <body className="font-display antialiased">
-        
- <ReduxProvider>
-    <ThemeProvider>
-      {children}
-    </ThemeProvider>
-  </ReduxProvider>
+        <ReduxProvider>
+          <AuthProvider>
+            <ThemeProvider>
+              {children}
+            </ThemeProvider>
+          </AuthProvider>
+        </ReduxProvider>
       </body>
     </html>
   )

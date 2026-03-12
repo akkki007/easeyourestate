@@ -4,9 +4,11 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Pupil, EyeBall } from "./animated-characters-login-page";
+import { useAuth } from "@/lib/auth/AuthContext";
 
 function SignUpPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -131,8 +133,11 @@ function SignUpPage() {
         setError(data.error || "Sign up failed. Please try again.");
         return;
       }
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      if (!data?.token || !data?.user) {
+        setError("Invalid sign up response. Please try again.");
+        return;
+      }
+      login(data.token, data.user);
       router.push("/dashboard");
     } catch {
       setError("Sign up failed. Please try again.");
@@ -320,7 +325,7 @@ function SignUpPage() {
               <h1 className="text-slate-900 text-3xl font-bold">Sign up</h1>
               <p className="text-[15px] mt-6 text-slate-600">
                 Already have an account?{" "}
-                <Link href="/demoone" className="text-blue-600 font-medium hover:underline ml-1 whitespace-nowrap">Sign In</Link>
+                <Link href="/login" className="text-blue-600 font-medium hover:underline ml-1 whitespace-nowrap">Sign In</Link>
               </p>
             </div>
 
