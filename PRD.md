@@ -10,6 +10,8 @@
 | Owner Dashboard UI | ✅ Done |
 | Owner — Create & View Property Listings | ✅ Done |
 | Landing Page Search (NoBroker-style) | ✅ Done |
+| MODULE 1 — User Profile & Role Management | ✅ Done |
+| MODULE 8 — Admin Panel | ✅ Done |
 
 ---
 

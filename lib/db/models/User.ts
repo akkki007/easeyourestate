@@ -1,6 +1,6 @@
 import mongoose, { Schema, model, models } from "mongoose";
 
-export type UserRole = "buyer" | "owner" | "agent" | "builder" | "admin";
+export type UserRole = "buyer" | "tenant" | "owner" | "agent" | "builder" | "admin";
 
 const nameSchema = new Schema(
   { first: { type: String, required: true }, last: { type: String, default: "" } },
@@ -52,7 +52,7 @@ const userSchema = new Schema(
   },
     role: {
       type: String,
-      enum: ["buyer", "owner", "agent", "builder", "admin"],
+      enum: ["buyer", "tenant", "owner", "agent", "builder", "admin"],
       required: true,
       default: "buyer",
     },

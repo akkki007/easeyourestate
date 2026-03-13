@@ -156,7 +156,7 @@ export default function DashboardHeader({
                                 <button
                                     onClick={() => {
                                         setProfileOpen(false);
-                                        router.push("/dashboard/settings");
+                                        router.push("/dashboard/profile");
                                     }}
                                     className="w-full px-4 py-2.5 text-left text-sm text-primary hover:bg-hover transition-colors flex items-center gap-2"
                                 >

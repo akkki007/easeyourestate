@@ -26,7 +26,8 @@ export default function DashboardPage() {
 
     const getRoleLabel = (role: string) => {
         const labels: Record<string, string> = {
-            buyer: "Buyer / Tenant",
+            buyer: "Buyer",
+            tenant: "Tenant",
             owner: "Property Owner",
             agent: "Agent / Broker",
             builder: "Builder / Developer",
@@ -41,6 +42,12 @@ export default function DashboardPage() {
                     { label: "Search Properties", href: "/dashboard/search", icon: "search" },
                     { label: "View Saved", href: "/dashboard/saved", icon: "heart" },
                     { label: "My Appointments", href: "/dashboard/appointments", icon: "calendar" },
+                ];
+            case "tenant":
+                return [
+                    { label: "Search Rentals", href: "/dashboard/search", icon: "search" },
+                    { label: "View Saved", href: "/dashboard/saved", icon: "heart" },
+                    { label: "Saved Searches", href: "/dashboard/saved-searches", icon: "list" },
                 ];
             case "owner":
                 return [
