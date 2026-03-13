@@ -14,8 +14,13 @@ export async function GET(req: NextRequest) {
         const bhk = searchParams.get("bhk"); // 1 BHK, 2 BHK, etc.
         const minPrice = searchParams.get("minPrice");
         const maxPrice = searchParams.get("maxPrice");
+        const minArea = searchParams.get("min_area");
+        const maxArea = searchParams.get("max_area");
         const furnishing = searchParams.get("furnishing");
         const parking = searchParams.get("parking");
+        const amenities = searchParams.get("amenities");
+        const possession = searchParams.get("possession");
+        const sort = searchParams.get("sort");
         const limit = Math.min(Number(searchParams.get("limit")) || 20, 50);
         const page = Math.max(Number(searchParams.get("page")) || 1, 1);
         const skip = (page - 1) * limit;
@@ -24,6 +29,22 @@ export async function GET(req: NextRequest) {
             status: { $in: ["active", "draft"] },
             deletedAt: { $exists: false },
         };
+
+        let sortOption: any = { updatedAt: -1 };
+
+        if (sort === "price_asc") {
+            sortOption = { "price.amount": 1 };
+        }
+        else if (sort === "price_desc") {
+            sortOption = { "price.amount": -1 };
+        }
+        else if (sort === "date") {
+            sortOption = { createdAt: -1 };
+        }
+        else if (sort === "popularity") {
+            sortOption = { "metrics.views": -1 };
+        }
+
 
         if (city) {
             filter["location.city"] = { $regex: new RegExp(city, "i") };
@@ -57,6 +78,14 @@ export async function GET(req: NextRequest) {
             filter["specs.furnishing"] = { $in: furnishing.split(",") };
         }
 
+        if (amenities) {
+            const amenityList = amenities.split(",");
+
+            filter.amenities = {
+                $all: amenityList
+            };
+        }
+
         if (query) {
             filter.$or = [
                 { "location.locality": { $regex: new RegExp(query, "i") } },
@@ -71,9 +100,20 @@ export async function GET(req: NextRequest) {
             if (maxPrice) filter["price.amount"].$lte = parseInt(maxPrice);
         }
 
+        if (minArea || maxArea) {
+            filter["specs.area.superBuiltUp"] = {};
+
+            if (minArea) filter["specs.area.superBuiltUp"].$gte = parseInt(minArea);
+            if (maxArea) filter["specs.area.superBuiltUp"].$lte = parseInt(maxArea);
+        }
+
+        if (possession) {
+            filter["specs.possessionStatus"] = possession;
+        }
+
         const [list, total] = await Promise.all([
             Property.find(filter)
-                .sort({ updatedAt: -1 })
+                .sort(sortOption)
                 .skip(skip)
                 .limit(limit)
                 .lean(),

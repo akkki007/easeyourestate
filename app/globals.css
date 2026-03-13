@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@import "leaflet/dist/leaflet.css";
 /* SF Pro Display Font */
 @font-face {
   font-family: 'SF Pro Display';
