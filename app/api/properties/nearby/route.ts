@@ -18,10 +18,31 @@ export async function GET(req: NextRequest) {
           type: "Point",
           coordinates: [lng, lat]
         },
-        $maxDistance: 5000 // 5km
+        $maxDistance: 5000
       }
     }
   }).limit(20);
 
-  return NextResponse.json({ properties });
+  const formatted = properties.map((p:any) => ({
+
+    _id: p._id,
+
+    title: p.title,
+
+    price: p.price?.amount,
+
+    locality: p.location?.locality,
+
+    slug: p.slug,
+
+    image: p.media?.images?.[0]?.url,
+
+    lat: p.location?.coordinates?.coordinates?.[1],
+
+    lng: p.location?.coordinates?.coordinates?.[0]
+
+  }));
+
+  return NextResponse.json({ properties: formatted });
+
 }

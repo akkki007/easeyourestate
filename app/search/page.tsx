@@ -9,19 +9,21 @@ import SearchSidebar from "@/components/SearchSidebar";
 import dynamic from "next/dynamic";
 
 const PropertyMap = dynamic(
-  () => import("@/components/PropertyMap"),
-  { ssr: false }
+    () => import("@/components/PropertyMap"),
+    { ssr: false }
 );
 
 function SearchResults() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [listings, setListings] = useState<any[]>([]);
+    const [mapProperties, setMapProperties] = useState<any[]>([]);
     const [suggested, setSuggested] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
     const sort = searchParams.get("sort") || "";
     const [viewMode, setViewMode] = useState("list");
+
 
     // Filters state from URL
     const city = searchParams.get("city") || "Bangalore";
@@ -36,6 +38,10 @@ function SearchResults() {
                 const data = await res.json();
                 setListings(data.listings || []);
                 setTotal(data.pagination?.total || 0);
+
+                const mapRes = await fetch(`/api/properties/map?${searchParams.toString()}`);
+                const mapData = await mapRes.json();
+                setMapProperties(mapData.properties || []);
 
                 if (!data.listings || data.listings.length === 0) {
                     const sugRes = await fetch(`/api/properties/search?city=${city}&limit=3`);
@@ -121,14 +127,14 @@ function SearchResults() {
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setViewMode("list")}
-                                    className="px-3 py-1 border rounded"
+                                    className="px-3 py-1 border rounded bg-black text-white"
                                 >
                                     List
                                 </button>
 
                                 <button
                                     onClick={() => setViewMode("map")}
-                                    className="px-3 py-1 border rounded"
+                                    className="px-3 py-1 border rounded bg-black text-white"
                                 >
                                     Map
                                 </button>
@@ -153,8 +159,7 @@ function SearchResults() {
                             </div>
                         ) : viewMode === "map" ? (
 
-                            <PropertyMap properties={listings} />
-
+                       <PropertyMap properties={mapProperties} />
                         ) : listings.length > 0 ? (
 
                             <div className="flex flex-col gap-6">
