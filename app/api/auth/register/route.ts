@@ -5,6 +5,7 @@ import connectDB from "@/lib/db/connection";
 import User from "@/lib/db/models/User";
 import { signToken } from "@/lib/jwt";
 
+
 export async function POST(req: Request) {
   try {
     await connectDB();

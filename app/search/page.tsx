@@ -6,14 +6,24 @@ import { Search, MapPin, ChevronDown, ChevronRight, SlidersHorizontal, Loader2, 
 import Navbar from "@/components/Navbar";
 import AdvancedPropertyCard from "@/components/AdvancedPropertyCard";
 import SearchSidebar from "@/components/SearchSidebar";
+import dynamic from "next/dynamic";
+
+const PropertyMap = dynamic(
+    () => import("@/components/PropertyMap"),
+    { ssr: false }
+);
 
 function SearchResults() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [listings, setListings] = useState<any[]>([]);
+    const [mapProperties, setMapProperties] = useState<any[]>([]);
     const [suggested, setSuggested] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
+    const sort = searchParams.get("sort") || "";
+    const [viewMode, setViewMode] = useState("list");
+
 
     // Filters state from URL
     const city = searchParams.get("city") || "Bangalore";
@@ -29,6 +39,10 @@ function SearchResults() {
                 setListings(data.listings || []);
                 setTotal(data.pagination?.total || 0);
 
+                const mapRes = await fetch(`/api/properties/map?${searchParams.toString()}`);
+                const mapData = await mapRes.json();
+                setMapProperties(mapData.properties || []);
+
                 if (!data.listings || data.listings.length === 0) {
                     const sugRes = await fetch(`/api/properties/search?city=${city}&limit=3`);
                     const sugData = await sugRes.json();
@@ -43,6 +57,18 @@ function SearchResults() {
 
         fetchResults();
     }, [searchParams, city]);
+
+    const handleSortChange = (value: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        if (value) {
+            params.set("sort", value);
+        } else {
+            params.delete("sort");
+        }
+
+        router.push(`/search?${params.toString()}`);
+    };
 
     const handleFilterChange = (newFilters: any) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -83,7 +109,41 @@ function SearchResults() {
                                     </>
                                 )}
                             </nav>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-600 font-medium">Sort by:</span>
+
+                                <select
+                                    value={sort}
+                                    onChange={(e) => handleSortChange(e.target.value)}
+                                    className="border border-gray-200 rounded-md px-3 py-1 text-sm bg-white text-black"
+                                >
+                                    <option value="">Relevance</option>
+                                    <option value="price_asc">Price Low → High</option>
+                                    <option value="price_desc">Price High → Low</option>
+                                    <option value="date">Newest</option>
+                                    <option value="popularity">Most Popular</option>
+                                </select>
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setViewMode("list")}
+                                    className="px-3 py-1 border rounded bg-black text-white"
+                                >
+                                    List
+                                </button>
+
+                                <button
+                                    onClick={() => setViewMode("map")}
+                                    className="px-3 py-1 border rounded bg-black text-white"
+                                >
+                                    Map
+                                </button>
+                            </div>
+
+
                         </div>
+
+
 
                         {/* Results Title */}
                         <div>
@@ -97,7 +157,11 @@ function SearchResults() {
                                 <Loader2 className="w-10 h-10 text-teal-600 animate-spin mb-4" />
                                 <p className="text-gray-500 font-medium">Finding the best properties for you...</p>
                             </div>
+                        ) : viewMode === "map" ? (
+
+                       <PropertyMap properties={mapProperties} />
                         ) : listings.length > 0 ? (
+
                             <div className="flex flex-col gap-6">
                                 {listings.map((listing) => (
                                     <AdvancedPropertyCard key={listing.id} {...listing} />
