@@ -25,9 +25,12 @@ export async function GET(req: NextRequest) {
 
   const status = sp.get("status");
   if (status === "suspended") {
-    filter.deletedAt = { $ne: null };
+    filter.isSuspended = true;
   } else if (status === "active") {
+    filter.isSuspended = { $ne: true };
     filter.deletedAt = null;
+  } else if (status === "deleted") {
+    filter.deletedAt = { $ne: null };
   }
 
   const q = sp.get("q");

@@ -25,7 +25,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  await User.findByIdAndUpdate(id, { $unset: { deletedAt: 1 } });
+  await User.findByIdAndUpdate(id, { $set: { isSuspended: false } });
 
   return NextResponse.json({ message: "User activated" });
 }

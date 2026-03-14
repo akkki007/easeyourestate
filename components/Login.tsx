@@ -87,7 +87,7 @@ export default function Login() {
       }
 
       login(data.token, data.user);
-      router.push("/dashboard");
+      router.push(data.user.role === "admin" ? "/admin" : "/dashboard");
     } catch {
       setError("Verification failed. Please try again.");
     } finally {

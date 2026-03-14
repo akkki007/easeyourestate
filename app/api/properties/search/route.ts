@@ -32,8 +32,8 @@ export async function GET(req: NextRequest) {
         const skip = (page - 1) * limit;
 
         const filter: any = {
-            status: { $in: ["active", "draft"] },
-            deletedAt: { $exists: false },
+            status: "active",
+            deletedAt: null,
         };
 
         let sortOption: any = { updatedAt: -1 };
@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
 
         if (parsedQuery.city) {
             filter["location.city"] = {
-                $regex: city,
+                $regex: parsedQuery.city,
                 $options: "i"
             };
         }
@@ -130,13 +130,13 @@ export async function GET(req: NextRequest) {
             };
         }
 
-        // PRICE FILTER
+        // PRICE FILTER (merge with any existing price filter from parsedQuery)
 
         if (minPrice || maxPrice) {
-            filter["price.amount"] = filter["price.amount"] || {};
-
-            if (minPrice) filter["price.amount"].$gte = parseInt(minPrice);
-            if (maxPrice) filter["price.amount"].$lte = parseInt(maxPrice);
+            const existing = filter["price.amount"] ?? {};
+            if (minPrice) existing.$gte = parseInt(minPrice);
+            if (maxPrice) existing.$lte = parseInt(maxPrice);
+            filter["price.amount"] = existing;
         }
 
         // AREA FILTER

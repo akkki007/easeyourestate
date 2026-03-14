@@ -59,6 +59,7 @@ const userSchema = new Schema(
     onboardingData: { type: onboardingDataSchema, default: () => ({}) },
     preferences: { type: preferencesSchema, default: () => ({}) },
     meta: { type: metaSchema, default: () => ({}) },
+    isSuspended: { type: Boolean, default: false },
     deletedAt: Date,
   },
   { timestamps: true }
@@ -81,6 +82,7 @@ export interface IUser {
     notificationPrefs?: { email?: boolean; sms?: boolean; whatsapp?: boolean; push?: boolean };
   };
   meta?: { lastLoginAt?: Date; loginCount?: number; source?: string };
+  isSuspended: boolean;
   deletedAt?: Date;
   createdAt: Date;
   updatedAt: Date;

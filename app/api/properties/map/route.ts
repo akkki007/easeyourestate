@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 
         const filter: any = {
             status: "active",
-            deletedAt: { $exists: false }
+            deletedAt: null,
         };
 
         if (city) {

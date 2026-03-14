@@ -29,7 +29,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Cannot suspend admin" }, { status: 403 });
   }
 
-  await User.findByIdAndUpdate(id, { $set: { deletedAt: new Date() } });
+  await User.findByIdAndUpdate(id, { $set: { isSuspended: true } });
 
   return NextResponse.json({ message: "User suspended" });
 }

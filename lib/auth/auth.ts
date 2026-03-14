@@ -19,6 +19,13 @@ export async function requireAuth(req: NextRequest) {
 
     const user = await User.findById(decoded.id);
 
+    if (!user) return null;
+
+    // Block suspended or soft-deleted users
+    if (user.isSuspended || user.deletedAt) {
+      return null;
+    }
+
     return user;
 
   } catch {

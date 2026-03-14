@@ -18,6 +18,11 @@ export default function DashboardLayout({
         if (!isHydrated) return;
         if (!token || !user) {
             router.replace("/login");
+            return;
+        }
+        // Redirect admin users to the admin panel
+        if (user.role === "admin") {
+            router.replace("/admin");
         }
     }, [isHydrated, router, token, user]);
 
