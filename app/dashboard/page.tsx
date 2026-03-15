@@ -4,10 +4,15 @@ import { useEffect, useState } from "react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import Link from "next/link";
 
+interface DashboardStats {
+    [key: string]: number;
+}
+
 export default function DashboardPage() {
     const [userName, setUserName] = useState("User");
     const [userEmail, setUserEmail] = useState("");
     const [userRole, setUserRole] = useState("buyer");
+    const [stats, setStats] = useState<DashboardStats>({});
 
     useEffect(() => {
         const raw = localStorage.getItem("user");
@@ -22,6 +27,19 @@ export default function DashboardPage() {
             setUserEmail(user.email || "");
             setUserRole(user.role || "buyer");
         } catch { /* ignore */ }
+    }, []);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        fetch("/api/user/dashboard-stats", {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+            .then((r) => r.ok ? r.json() : null)
+            .then((data) => {
+                if (data?.stats) setStats(data.stats);
+            })
+            .catch(() => { /* ignore */ });
     }, []);
 
     const getRoleLabel = (role: string) => {
@@ -120,51 +138,103 @@ export default function DashboardPage() {
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <StatCard
-                        label="Total Views"
-                        value="0"
-                        change="+0%"
-                        changeType="neutral"
-                        icon={
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                        }
-                    />
-                    <StatCard
-                        label={userRole === "buyer" ? "Saved Properties" : "Active Listings"}
-                        value="0"
-                        change="+0%"
-                        changeType="neutral"
-                        icon={
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                        }
-                    />
-                    <StatCard
-                        label="Messages"
-                        value="0"
-                        change="0 new"
-                        changeType="neutral"
-                        icon={
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                            </svg>
-                        }
-                    />
-                    <StatCard
-                        label="Appointments"
-                        value="0"
-                        change="0 upcoming"
-                        changeType="neutral"
-                        icon={
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        }
-                    />
+                    {(userRole === "buyer" || userRole === "tenant") ? (
+                        <>
+                            <StatCard
+                                label="Viewed Properties"
+                                value={String(stats.viewedProperties ?? 0)}
+                                change=""
+                                changeType="neutral"
+                                icon={
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                }
+                            />
+                            <StatCard
+                                label="Saved Properties"
+                                value={String(stats.savedProperties ?? 0)}
+                                change=""
+                                changeType="neutral"
+                                icon={
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                }
+                            />
+                            <StatCard
+                                label="Saved Searches"
+                                value={String(stats.savedSearches ?? 0)}
+                                change=""
+                                changeType="neutral"
+                                icon={
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                }
+                            />
+                            <StatCard
+                                label="Appointments"
+                                value={String(stats.appointments ?? 0)}
+                                change=""
+                                changeType="neutral"
+                                icon={
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                }
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <StatCard
+                                label="Total Views"
+                                value={String(stats.totalViews ?? 0)}
+                                change=""
+                                changeType="neutral"
+                                icon={
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                }
+                            />
+                            <StatCard
+                                label="Active Listings"
+                                value={String(stats.activeListings ?? 0)}
+                                change=""
+                                changeType="neutral"
+                                icon={
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                }
+                            />
+                            <StatCard
+                                label="Total Inquiries"
+                                value={String(stats.totalInquiries ?? 0)}
+                                change=""
+                                changeType="neutral"
+                                icon={
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                }
+                            />
+                            <StatCard
+                                label="Appointments"
+                                value={String(stats.appointments ?? 0)}
+                                change=""
+                                changeType="neutral"
+                                icon={
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                }
+                            />
+                        </>
+                    )}
                 </div>
 
                 {/* Main Content Grid */}

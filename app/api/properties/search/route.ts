@@ -157,6 +157,12 @@ export async function GET(req: NextRequest) {
             filter["specs.possessionStatus"] = possession;
         }
 
+        // PROJECT FILTER
+        const project = searchParams.get("project");
+        if (project) {
+            filter.project = project;
+        }
+
         // GENERIC TEXT SEARCH (TITLE + DESCRIPTION ONLY)
 
         if (query) {

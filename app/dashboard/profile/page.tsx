@@ -36,6 +36,7 @@ export default function ProfilePage() {
   const [email, setEmail] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const fetchProfile = useCallback(async () => {
     if (!token) return;
@@ -234,14 +235,59 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-secondary mb-1.5">Avatar URL</label>
-                  <input
-                    type="url"
-                    value={avatarUrl}
-                    onChange={(e) => setAvatarUrl(e.target.value)}
-                    placeholder="https://example.com/avatar.jpg"
-                    className="w-full px-4 py-2.5 rounded-xl bg-input-bg border border-input-border focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10 text-sm text-primary placeholder:text-tertiary"
-                  />
+                  <label className="block text-sm font-medium text-secondary mb-1.5">Avatar</label>
+                  <div className="flex items-center gap-4">
+                    {avatarUrl && (
+                      <img src={avatarUrl} alt="Avatar preview" className="w-12 h-12 rounded-xl object-cover border border-border" />
+                    )}
+                    <label className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium cursor-pointer hover:bg-hover transition-colors ${uploadingAvatar ? "opacity-50 pointer-events-none" : "text-secondary"}`}>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                      </svg>
+                      {uploadingAvatar ? "Uploading..." : "Upload Image"}
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        className="hidden"
+                        disabled={uploadingAvatar}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file || !token) return;
+                          setUploadingAvatar(true);
+                          try {
+                            const formData = new FormData();
+                            formData.append("file", file);
+                            const res = await fetch("/api/upload", {
+                              method: "POST",
+                              headers: { Authorization: `Bearer ${token}` },
+                              body: formData,
+                            });
+                            if (!res.ok) {
+                              const err = await res.json();
+                              throw new Error(err.error || "Upload failed");
+                            }
+                            const data = await res.json();
+                            setAvatarUrl(data.url);
+                            toast.success("Avatar uploaded");
+                          } catch (err: unknown) {
+                            toast.error(err instanceof Error ? err.message : "Upload failed");
+                          } finally {
+                            setUploadingAvatar(false);
+                            e.target.value = "";
+                          }
+                        }}
+                      />
+                    </label>
+                    {avatarUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setAvatarUrl("")}
+                        className="text-xs text-error hover:underline"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Phone (read-only) */}

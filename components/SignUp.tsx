@@ -16,7 +16,7 @@ export default function Signup() {
   const [otp, setOtp] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [isPropertyManager, setIsPropertyManager] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<"buyer" | "tenant" | "owner" | "agent" | "builder">("buyer");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
@@ -124,7 +124,7 @@ export default function Signup() {
           phone: phone.replace(/\s/g, ""),
           name: name.trim(),
           email: email.trim().toLowerCase() || undefined,
-          role: isPropertyManager ? "owner" : "buyer",
+          role: selectedRole,
         }),
       });
 
@@ -333,38 +333,36 @@ export default function Signup() {
                   />
                 </div>
 
-                {/* Property Manager Checkbox */}
-                <div className="flex items-center gap-3 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setIsPropertyManager(!isPropertyManager)}
-                    className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
-                      isPropertyManager
-                        ? "bg-purple-600 border-purple-600"
-                        : "bg-white border-gray-300 hover:border-indigo-400"
-                    }`}
-                  >
-                    {isPropertyManager && (
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="white"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    )}
-                  </button>
-                  <label
-                    onClick={() => setIsPropertyManager(!isPropertyManager)}
-                    className="text-sm text-gray-600 cursor-pointer select-none"
-                  >
-                    I am a property manager
+                {/* Role Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    I am a <span className="text-red-400">*</span>
                   </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {([
+                      { value: "buyer", label: "Buyer", desc: "Looking to buy" },
+                      { value: "tenant", label: "Tenant", desc: "Looking to rent" },
+                      { value: "owner", label: "Owner", desc: "List my property" },
+                      { value: "agent", label: "Agent", desc: "Manage listings" },
+                      { value: "builder", label: "Builder", desc: "Manage projects" },
+                    ] as const).map((role) => (
+                      <button
+                        key={role.value}
+                        type="button"
+                        onClick={() => setSelectedRole(role.value)}
+                        className={`flex flex-col items-start p-3 rounded-xl border-2 text-left transition-all ${
+                          selectedRole === role.value
+                            ? "border-purple-600 bg-purple-50"
+                            : "border-gray-200 hover:border-purple-300 bg-gray-50"
+                        }`}
+                      >
+                        <span className={`text-sm font-semibold ${selectedRole === role.value ? "text-purple-700" : "text-gray-800"}`}>
+                          {role.label}
+                        </span>
+                        <span className="text-[11px] text-gray-500">{role.desc}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {error && <p className="text-sm text-red-600">{error}</p>}

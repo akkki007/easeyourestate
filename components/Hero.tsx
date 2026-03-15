@@ -16,7 +16,7 @@ const CITIES = ["Bangalore", "Mumbai", "Delhi", "Hyderabad", "Chennai", "Pune", 
 const BHK_TYPES = ["1 BHK", "2 BHK", "3 BHK", "4 BHK", "4+ BHK"];
 
 export default function Hero() {
-  const [activeTab, setActiveTab] = useState<"Buy" | "Rent" | "Commercial">(
+  const [activeTab, setActiveTab] = useState<"Buy" | "Rent" | "Commercial" | "PG">(
     "Rent",
   );
   const [activeType, setActiveType] = useState<
@@ -69,8 +69,13 @@ export default function Hero() {
     const params = new URLSearchParams();
     params.set("city", selectedCity);
     if (query) params.set("query", query);
-    if (activeTab) params.set("purpose", activeTab);
-    if (activeType) params.set("type", activeType);
+    if (activeTab === "PG") {
+      params.set("purpose", "PG");
+      params.set("type", "PG/Hostel");
+    } else {
+      if (activeTab) params.set("purpose", activeTab);
+      if (activeType) params.set("type", activeType);
+    }
     if (selectedBHK) params.set("bhk", selectedBHK);
 
     router.push(`/search?${params.toString()}`);
@@ -123,7 +128,7 @@ return (
         <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl shadow-black/30 overflow-visible">
           {/* Tabs */}
           <div className="flex border-b border-gray-100">
-            {(["Buy", "Rent", "Commercial"] as const).map((tab) => (
+            {(["Buy", "Rent", "Commercial", "PG"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -236,78 +241,80 @@ return (
             </button>
           </div>
 
-          {/* Filters row */}
-          <div className="flex items-center justify-between px-4 pb-4 pt-3">
-            <div className="flex items-center gap-5">
-              {(["Full House", "PG/Hostel", "Flatmates"] as const).map(
-                (type) => (
-                  <label
-                    key={type}
-                    className="flex items-center gap-2 cursor-pointer group"
-                  >
-                    <div
-                      onClick={() => setActiveType(type)}
-                      className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${activeType === type
-                        ? "border-purple-600 bg-purple-600"
-                        : "border-gray-300 group-hover:border-purple-400"
-                        }`}
+          {/* Filters row — hidden when PG tab is active */}
+          {activeTab !== "PG" && (
+            <div className="flex items-center justify-between px-4 pb-4 pt-3">
+              <div className="flex items-center gap-5">
+                {(["Full House", "PG/Hostel", "Flatmates"] as const).map(
+                  (type) => (
+                    <label
+                      key={type}
+                      className="flex items-center gap-2 cursor-pointer group"
                     >
-                      {activeType === type && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                      )}
-                    </div>
-                    <span className="text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
-                      {type}
-                    </span>
-                  </label>
-                ),
-              )}
-            </div>
+                      <div
+                        onClick={() => setActiveType(type)}
+                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${activeType === type
+                          ? "border-purple-600 bg-purple-600"
+                          : "border-gray-300 group-hover:border-purple-400"
+                          }`}
+                      >
+                        {activeType === type && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                        )}
+                      </div>
+                      <span className="text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
+                        {type}
+                      </span>
+                    </label>
+                  ),
+                )}
+              </div>
 
-            {/* BHK dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => {
-                  setBhkDropdown(!bhkDropdown);
-                  setCityDropdown(false);
-                }}
-                className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:border-purple-400 hover:text-purple-600 transition-colors"
-              >
-                {selectedBHK || "BHK Type"}
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform ${bhkDropdown ? "rotate-180" : ""}`}
-                />
-              </button>
-              {bhkDropdown && (
-                <div className="absolute bottom-full right-0 mb-1 w-36 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50">
-                  <button
-                    onClick={() => {
-                      setSelectedBHK("");
-                      setBhkDropdown(false);
-                    }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-500 hover:bg-purple-50 transition-colors"
-                  >
-                    Any BHK
-                  </button>
-                  {BHK_TYPES.map((bhk) => (
+              {/* BHK dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setBhkDropdown(!bhkDropdown);
+                    setCityDropdown(false);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:border-purple-400 hover:text-purple-600 transition-colors"
+                >
+                  {selectedBHK || "BHK Type"}
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform ${bhkDropdown ? "rotate-180" : ""}`}
+                  />
+                </button>
+                {bhkDropdown && (
+                  <div className="absolute bottom-full right-0 mb-1 w-36 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50">
                     <button
-                      key={bhk}
                       onClick={() => {
-                        setSelectedBHK(bhk);
+                        setSelectedBHK("");
                         setBhkDropdown(false);
                       }}
-                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-purple-50 hover:text-purple-700 transition-colors ${selectedBHK === bhk
-                        ? "text-purple-600 font-medium bg-purple-50/60"
-                        : "text-gray-700"
-                        }`}
+                      className="w-full text-left px-4 py-2.5 text-sm text-gray-500 hover:bg-purple-50 transition-colors"
                     >
-                      {bhk}
+                      Any BHK
                     </button>
-                  ))}
-                </div>
-              )}
+                    {BHK_TYPES.map((bhk) => (
+                      <button
+                        key={bhk}
+                        onClick={() => {
+                          setSelectedBHK(bhk);
+                          setBhkDropdown(false);
+                        }}
+                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-purple-50 hover:text-purple-700 transition-colors ${selectedBHK === bhk
+                          ? "text-purple-600 font-medium bg-purple-50/60"
+                          : "text-gray-700"
+                          }`}
+                      >
+                        {bhk}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Property owner CTA */}
