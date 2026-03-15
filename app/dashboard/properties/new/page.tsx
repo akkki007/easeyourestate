@@ -144,7 +144,12 @@ export default function NewPropertyPage() {
       const formData = new FormData();
       formData.append("file", file);
       try {
-        const res = await fetch("/api/upload", { method: "POST", body: formData });
+        const token = localStorage.getItem("token");
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          body: formData,
+        });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Upload failed");
         clearFieldError("images");
