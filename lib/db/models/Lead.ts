@@ -7,10 +7,14 @@ interface IMessage {
 }
 
 export interface ILead extends Document {
-  tenantId: mongoose.Types.ObjectId;
+  buyerId: mongoose.Types.ObjectId;
   ownerId: mongoose.Types.ObjectId;
   propertyId: mongoose.Types.ObjectId;
-  status: "open" | "closed" | "converted";
+  name: string;
+  phone: string;
+  message: string;
+  intent: "buy" | "visit" | "info";
+  status: "open" | "closed" | "converted" | "pending" | "contacted" | "visited";
   messages: IMessage[];
   createdAt: Date;
 }
@@ -35,7 +39,7 @@ const MessageSchema = new Schema<IMessage>({
 
 const LeadSchema = new Schema<ILead>(
   {
-    tenantId: {
+    buyerId: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -53,10 +57,31 @@ const LeadSchema = new Schema<ILead>(
       required: true,
     },
 
+    name: {
+      type: String,
+      required: true,
+    },
+
+    phone: {
+      type: String,
+      required: true,
+    },
+
+    message: {
+      type: String,
+      required: true,
+    },
+
+    intent: {
+      type: String,
+      enum: ["buy", "visit", "info"],
+      default: "info",
+    },
+
     status: {
       type: String,
-      enum: ["open", "closed", "converted"],
-      default: "open",
+      enum: ["open", "closed", "converted", "pending", "contacted", "visited"],
+      default: "pending",
     },
 
     messages: [MessageSchema],
