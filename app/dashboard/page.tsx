@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import BuyerDashboard from "@/components/dashboard/BuyerDashboard";
 import Link from "next/link";
 
 interface DashboardStats {
@@ -9,23 +10,25 @@ interface DashboardStats {
 }
 
 export default function DashboardPage() {
+    const [user, setUser] = useState<any>(null);
     const [userName, setUserName] = useState("User");
     const [userEmail, setUserEmail] = useState("");
-    const [userRole, setUserRole] = useState("buyer");
+    const [userRole, setUserRole] = useState("");
     const [stats, setStats] = useState<DashboardStats>({});
 
     useEffect(() => {
         const raw = localStorage.getItem("user");
         if (!raw) return;
         try {
-            const user = JSON.parse(raw);
+            const userData = JSON.parse(raw);
+            setUser(userData);
             setUserName(
-                typeof user.name === "object"
-                    ? user.name.first || "User"
-                    : user.name || "User"
+                typeof userData.name === "object"
+                    ? userData.name.first || "User"
+                    : userData.name || "User"
             );
-            setUserEmail(user.email || "");
-            setUserRole(user.role || "buyer");
+            setUserEmail(userData.email || "");
+            setUserRole(userData.role || "buyer");
         } catch { /* ignore */ }
     }, []);
 
@@ -58,7 +61,7 @@ export default function DashboardPage() {
             case "buyer":
                 return [
                     { label: "Search Properties", href: "/dashboard/search", icon: "search" },
-                    { label: "View Saved", href: "/dashboard/saved", icon: "heart" },
+                    { label: "Compare Properties", href: "/dashboard/compare", icon: "repeat" },
                     { label: "My Appointments", href: "/dashboard/appointments", icon: "calendar" },
                 ];
             case "tenant":
@@ -137,7 +140,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
                     {(userRole === "buyer" || userRole === "tenant") ? (
                         <>
                             <StatCard
@@ -238,54 +241,58 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Main Content Grid */}
-                <div className="grid lg:grid-cols-3 gap-6">
-                    {/* Recent Activity */}
-                    <div className="lg:col-span-2 bg-card rounded-2xl border border-border overflow-hidden">
-                        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-                            <h3 className="font-semibold text-primary">Recent Activity</h3>
-                            <button className="text-sm text-secondary hover:text-primary">View all</button>
-                        </div>
-                        <div className="p-6">
-                            <div className="flex flex-col items-center justify-center py-12 text-center">
-                                <div className="w-16 h-16 rounded-full bg-hover flex items-center justify-center mb-4">
-                                    <svg className="w-8 h-8 text-tertiary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <p className="text-primary font-medium mb-1">No recent activity</p>
-                                <p className="text-tertiary text-sm">Your recent actions will appear here</p>
+                {userRole === "buyer" ? (
+                    <BuyerDashboard user={user} />
+                ) : (
+                    <div className="grid lg:grid-cols-3 gap-6">
+                        {/* Recent Activity */}
+                        <div className="lg:col-span-2 bg-card rounded-2xl border border-border overflow-hidden">
+                            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+                                <h3 className="font-semibold text-primary">Recent Activity</h3>
+                                <button className="text-sm text-secondary hover:text-primary">View all</button>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* Quick Actions */}
-                    <div className="bg-card rounded-2xl border border-border overflow-hidden">
-                        <div className="px-6 py-4 border-b border-border">
-                            <h3 className="font-semibold text-primary">Quick Actions</h3>
-                        </div>
-                        <div className="p-4">
-                            <div className="space-y-2">
-                                {quickActions.map((action, idx) => (
-                                    <Link
-                                        key={idx}
-                                        href={action.href}
-                                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-hover transition-colors group"
-                                    >
-                                        <div className="w-10 h-10 rounded-lg bg-hover flex items-center justify-center text-secondary group-hover:bg-active transition-colors">
-                                            <ActionIcon type={action.icon} />
-                                        </div>
-                                        <span className="text-sm font-medium text-secondary group-hover:text-primary">
-                                            {action.label}
-                                        </span>
-                                        <svg className="w-4 h-4 text-tertiary ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            <div className="p-6">
+                                <div className="flex flex-col items-center justify-center py-12 text-center">
+                                    <div className="w-16 h-16 rounded-full bg-hover flex items-center justify-center mb-4">
+                                        <svg className="w-8 h-8 text-tertiary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
-                                    </Link>
-                                ))}
+                                    </div>
+                                    <p className="text-primary font-medium mb-1">No recent activity</p>
+                                    <p className="text-tertiary text-sm">Your recent actions will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Quick Actions */}
+                        <div className="bg-card rounded-2xl border border-border overflow-hidden">
+                            <div className="px-6 py-4 border-b border-border">
+                                <h3 className="font-semibold text-primary">Quick Actions</h3>
+                            </div>
+                            <div className="p-4">
+                                <div className="space-y-2">
+                                    {quickActions.map((action, idx) => (
+                                        <Link
+                                            key={idx}
+                                            href={action.href}
+                                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-hover transition-colors group"
+                                        >
+                                            <div className="w-10 h-10 rounded-lg bg-hover flex items-center justify-center text-secondary group-hover:bg-active transition-colors">
+                                                <ActionIcon type={action.icon} />
+                                            </div>
+                                            <span className="text-sm font-medium text-secondary group-hover:text-primary">
+                                                {action.label}
+                                            </span>
+                                            <svg className="w-4 h-4 text-tertiary ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                )}
 
                 {/* Bottom Section */}
                 <div className="mt-6 grid md:grid-cols-2 gap-6">

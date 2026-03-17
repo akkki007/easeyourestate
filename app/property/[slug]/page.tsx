@@ -27,6 +27,9 @@ import {
   Check,
   Lock,
 } from "lucide-react";
+import PropertyActions from "@/components/property/PropertyActions";
+import PriceTrendChart from "@/components/property/PriceTrendChart";
+import toast from "react-hot-toast";
 
 type Property = {
   _id: string;
@@ -110,7 +113,7 @@ export default function PropertyDetailPage() {
   const router = useRouter();
   const dispatch = useDispatch();
   const slug = params?.slug as string;
-  const { token, isAuthenticated } = useAuth();
+  const { token, user, isAuthenticated } = useAuth();
 
   const ownerUnlocks = useSelector((state: RootState) => state.credits.ownerUnlocks);
   const unlockedProperties = useSelector((state: RootState) => state.credits.unlockedProperties);
@@ -445,6 +448,12 @@ export default function PropertyDetailPage() {
                 </div>
               </div>
             )}
+
+            {/* Price Trends */}
+            <PriceTrendChart
+              localitySlug={property.location.locality.toLowerCase().replace(/\s+/g, '-')}
+              localityName={property.location.locality}
+            />
           </div>
 
           {/* Sticky Sidebar (Right) */}
@@ -544,6 +553,17 @@ export default function PropertyDetailPage() {
                     {ownerError && (
                       <p className="text-center text-xs text-red-500">{ownerError}</p>
                     )}
+                  </div>
+                )}
+
+                {/* Buyer Actions */}
+                {user?.role === "buyer" && (
+                  <div className="pt-6 border-t border-gray-100">
+                    <PropertyActions
+                      property={property}
+                      token={token}
+                      isAuthenticated={isAuthenticated}
+                    />
                   </div>
                 )}
 
