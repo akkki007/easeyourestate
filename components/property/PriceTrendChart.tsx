@@ -72,9 +72,17 @@ export default function PriceTrendChart({ localitySlug, localityName }: PriceTre
                     <h3 className="text-lg font-semibold text-primary">Price Trends</h3>
                     <p className="text-sm text-secondary">Average price per sqft in {localityName}</p>
                 </div>
-                <div className="px-3 py-1 rounded-full bg-success-bg text-success text-xs font-bold">
-                    +8.5% YoY
-                </div>
+                {data.length >= 2 && (() => {
+                    const first = data[0].price;
+                    const last = data[data.length - 1].price;
+                    const change = first > 0 ? ((last - first) / first) * 100 : 0;
+                    const isPositive = change >= 0;
+                    return (
+                        <div className={`px-3 py-1 rounded-full text-xs font-bold ${isPositive ? "bg-success-bg text-success" : "bg-error-bg text-error"}`}>
+                            {isPositive ? "+" : ""}{change.toFixed(1)}%
+                        </div>
+                    );
+                })()}
             </div>
 
             <div className="h-[250px] w-full">

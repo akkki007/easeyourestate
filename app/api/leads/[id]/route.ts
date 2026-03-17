@@ -5,7 +5,7 @@ import Lead from "@/lib/db/models/Lead";
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = await requireAuth(req);
