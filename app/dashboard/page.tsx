@@ -108,13 +108,13 @@ export default function DashboardPage() {
                 <div className="mb-8 bg-gradient-to-r from-accent to-accent-hover rounded-2xl p-6 md:p-8">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div>
-                            <p className="text-white/70 text-sm mb-1">Welcome back,</p>
-                            <h2 className="text-2xl md:text-3xl font-semibold text-white mb-2">
+                            <p className="text-primary-foreground/70 text-sm mb-1">Welcome back,</p>
+                            <h2 className="text-2xl md:text-3xl font-semibold text-primary-foreground mb-2">
                                 {userName}
                             </h2>
                             <div className="flex items-center gap-2">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white/90 text-xs font-medium">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card/10 text-primary-foreground/90 text-xs font-medium">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-success" />
                                     {getRoleLabel(userRole)}
                                 </span>
                             </div>
@@ -125,12 +125,12 @@ export default function DashboardPage() {
                                     key={idx}
                                     href={action.href}
                                     className={`
-                                        px-5 py-2.5 rounded-xl text-sm font-medium transition-all
-                                        ${idx === 0
-                                            ? "bg-white text-accent hover:bg-white/90"
-                                            : "bg-white/10 text-white hover:bg-white/20"
+ px-5 py-2.5 rounded-xl text-sm font-medium transition-all
+ ${idx === 0
+                                            ? "bg-card text-accent hover:bg-card/90"
+                                            : "bg-card/10 text-primary-foreground hover:bg-card/20"
                                         }
-                                    `}
+`}
                                 >
                                     {action.label}
                                 </Link>
@@ -306,7 +306,7 @@ export default function DashboardPage() {
                             </div>
                             <div>
                                 <h4 className="font-semibold text-primary mb-1">Getting Started</h4>
-                                <p className="text-sm text-secondary mb-3">
+                                <p className="text-sm text-foreground mb-3">
                                     {userRole === "buyer"
                                         ? "Start by searching for properties in your preferred location. Save your favorites to compare later."
                                         : "Complete your profile and add your first property listing to get started."
@@ -335,7 +335,7 @@ export default function DashboardPage() {
                             </div>
                             <div>
                                 <h4 className="font-semibold text-primary mb-1">Need Help?</h4>
-                                <p className="text-sm text-secondary mb-3">
+                                <p className="text-sm text-foreground mb-3">
                                     Our support team is here to help you with any questions or issues you might have.
                                 </p>
                                 <Link
@@ -377,17 +377,17 @@ function StatCard({
                 </div>
                 <span
                     className={`
-                        text-xs font-medium px-2 py-1 rounded-full
-                        ${changeType === "positive" ? "bg-success-bg text-success" : ""}
-                        ${changeType === "negative" ? "bg-error-bg text-error" : ""}
-                        ${changeType === "neutral" ? "bg-hover text-tertiary" : ""}
-                    `}
+ text-xs font-medium px-2 py-1 rounded-full
+ ${changeType === "positive" ? "bg-success-bg text-success" : ""}
+ ${changeType === "negative" ? "bg-error-bg text-error" : ""}
+ ${changeType === "neutral" ? "bg-hover text-tertiary" : ""}
+`}
                 >
                     {change}
                 </span>
             </div>
             <p className="text-2xl font-semibold text-primary mb-1">{value}</p>
-            <p className="text-sm text-secondary">{label}</p>
+            <p className="text-sm text-foreground">{label}</p>
         </div>
     );
 }
