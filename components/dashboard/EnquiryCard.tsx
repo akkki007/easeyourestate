@@ -17,7 +17,7 @@ export default function EnquiryCard({ enquiry }: EnquiryCardProps) {
             contacted: "bg-info-bg text-info",
             visited: "bg-success-bg text-success",
             open: "bg-info-bg text-info",
-            closed: "bg-hover text-tertiary",
+            closed: "bg-accent text-muted-foreground",
             converted: "bg-success-bg text-success",
         };
 
@@ -29,7 +29,7 @@ export default function EnquiryCard({ enquiry }: EnquiryCardProps) {
     };
 
     return (
-        <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-accent/50 transition-colors group">
+        <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-border transition-colors group">
             <div className="flex">
                 <div className="w-32 h-32 relative flex-shrink-0">
                     <Image
@@ -41,27 +41,27 @@ export default function EnquiryCard({ enquiry }: EnquiryCardProps) {
                 </div>
                 <div className="p-4 flex-grow min-w-0">
                     <div className="flex justify-between items-start mb-1">
-                        <h4 className="font-semibold text-primary truncate group-hover:text-accent transition-colors">
+                        <h4 className="font-semibold text-foreground truncate group-hover:text-muted-foreground transition-colors">
                             {property?.title || "Unknown Property"}
                         </h4>
                         {getStatusBadge(enquiry.status)}
                     </div>
-                    <p className="text-secondary text-xs truncate mb-2">
+                    <p className="text-muted-foreground text-xs truncate mb-2">
                         {property?.location ? `${property.location.locality}, ${property.location.city}` : "Location unavailable"}
                     </p>
                     <div className="flex items-center justify-between mt-auto">
-                        <span className="text-sm font-bold text-accent">
+                        <span className="text-sm font-bold text-foreground">
                             {property?.price?.amount ? `₹${(property.price.amount / 10000000).toFixed(2)} Cr` : "Price on Request"}
                         </span>
-                        <span className="text-[10px] text-tertiary">
+                        <span className="text-[10px] text-muted-foreground">
                             {new Date(enquiry.createdAt).toLocaleDateString()}
                         </span>
                     </div>
                 </div>
             </div>
-            <div className="px-4 py-2 bg-hover/30 border-t border-border flex justify-between items-center text-xs">
-                <span className="text-secondary italic truncate max-w-[200px]">"{enquiry.message}"</span>
-                <Link href={`/dashboard/messages/${enquiry._id}`} className="text-accent font-medium hover:underline">
+            <div className="px-4 py-2 bg-accent/30 border-t border-border flex justify-between items-center text-xs">
+                <span className="text-muted-foreground italic truncate max-w-[200px]">"{enquiry.message}"</span>
+                <Link href={`/dashboard/messages/${enquiry._id}`} className="text-foreground font-medium hover:underline">
                     View Chat
                 </Link>
             </div>

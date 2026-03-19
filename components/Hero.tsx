@@ -104,10 +104,10 @@ return (
       <div className="relative z-10 flex flex-col items-center px-4 w-full max-w-4xl mx-auto">
         {/* Badge */}
         <div className="flex items-center gap-6 mb-8 mt-4">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur border border-white/20 text-white text-sm font-medium">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card/10 backdrop-blur border border-white/20 text-white text-sm font-medium">
             <Truck className="w-4 h-4 text-purple-300" />
             <span className="text-white/90">Packers And Movers</span>
-            <div className="w-px h-4 bg-white/30" />
+            <div className="w-px h-4 bg-card/30" />
             <Tag className="w-4 h-4 text-purple-300" />
             <span className="text-white/90">Lowest Prices</span>
           </div>
@@ -125,7 +125,7 @@ return (
         </p>
 
         {/* Search card */}
-        <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl shadow-black/30 overflow-visible">
+        <div className="w-full max-w-3xl bg-card rounded-2xl shadow-2xl shadow-black/30 overflow-visible">
           {/* Tabs */}
           <div className="flex border-b border-gray-100">
             {(["Buy", "Rent", "Commercial", "PG"] as const).map((tab) => (
@@ -134,7 +134,7 @@ return (
                 onClick={() => setActiveTab(tab)}
                 className={`flex-1 py-4 text-sm font-semibold transition-colors relative ${activeTab === tab
                   ? "text-purple-600"
-                  : "text-gray-500 hover:text-gray-700"
+                  : "text-muted-foreground hover:text-foreground"
                   }`}
               >
                 {tab}
@@ -154,7 +154,7 @@ return (
                   setCityDropdown(!cityDropdown);
                   setBhkDropdown(false);
                 }}
-                className="flex items-center gap-1.5 px-3 py-3 text-gray-700 font-medium text-sm hover:bg-gray-50 rounded-xl transition-colors whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-3 text-foreground font-medium text-sm hover:bg-muted rounded-xl transition-colors whitespace-nowrap"
               >
                 <MapPin className="w-4 h-4 text-purple-500" />
                 {selectedCity}
@@ -163,7 +163,7 @@ return (
                 />
               </button>
               {cityDropdown && (
-                <div className="absolute top-full left-0 mt-1 w-44 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50">
+                <div className="absolute top-full left-0 mt-1 w-44 bg-card rounded-xl shadow-xl border border-gray-100 py-1 z-50">
                   {CITIES.map((city) => (
                     <button
                       key={city}
@@ -173,7 +173,7 @@ return (
                       }}
                       className={`w-full text-left px-4 py-2.5 text-sm hover:bg-purple-50 hover:text-purple-700 transition-colors ${selectedCity === city
                         ? "text-purple-600 font-medium bg-purple-50/60"
-                        : "text-gray-700"
+                        : "text-foreground"
                         }`}
                     >
                       {city}
@@ -198,10 +198,10 @@ return (
                 }}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 placeholder="Search upto 3 localities or landmarks"
-                className="w-full px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 outline-none bg-transparent"
+                className="w-full px-4 py-3 text-sm text-foreground placeholder:text-gray-400 outline-none bg-transparent"
               />
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50 max-h-96 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-card rounded-xl shadow-xl border border-gray-100 py-1 z-50 max-h-96 overflow-y-auto">
                   {suggestions.map((s) => (
                     <button
                       key={s.id}
@@ -220,7 +220,7 @@ return (
                           <div className="text-sm font-bold text-gray-900 group-hover:text-purple-700 leading-tight">
                             {s.title}
                           </div>
-                          <div className="text-[11px] text-gray-500 line-clamp-1 mt-1">
+                          <div className="text-[11px] text-muted-foreground line-clamp-1 mt-1">
                             {s.address}, {s.locality}, {s.city}, {s.state} {s.pincode}
                           </div>
                         </div>
@@ -259,7 +259,7 @@ return (
                           }`}
                       >
                         {activeType === type && (
-                          <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-card" />
                         )}
                       </div>
                       <span className="text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
@@ -277,7 +277,7 @@ return (
                     setBhkDropdown(!bhkDropdown);
                     setCityDropdown(false);
                   }}
-                  className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:border-purple-400 hover:text-purple-600 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-2 border border-border rounded-lg text-sm text-gray-600 hover:border-purple-400 hover:text-purple-600 transition-colors"
                 >
                   {selectedBHK || "BHK Type"}
                   <ChevronDown
@@ -285,13 +285,13 @@ return (
                   />
                 </button>
                 {bhkDropdown && (
-                  <div className="absolute bottom-full right-0 mb-1 w-36 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50">
+                  <div className="absolute bottom-full right-0 mb-1 w-36 bg-card rounded-xl shadow-xl border border-gray-100 py-1 z-50">
                     <button
                       onClick={() => {
                         setSelectedBHK("");
                         setBhkDropdown(false);
                       }}
-                      className="w-full text-left px-4 py-2.5 text-sm text-gray-500 hover:bg-purple-50 transition-colors"
+                      className="w-full text-left px-4 py-2.5 text-sm text-muted-foreground hover:bg-purple-50 transition-colors"
                     >
                       Any BHK
                     </button>
@@ -304,7 +304,7 @@ return (
                         }}
                         className={`w-full text-left px-4 py-2.5 text-sm hover:bg-purple-50 hover:text-purple-700 transition-colors ${selectedBHK === bhk
                           ? "text-purple-600 font-medium bg-purple-50/60"
-                          : "text-gray-700"
+                          : "text-foreground"
                           }`}
                       >
                         {bhk}
@@ -320,11 +320,11 @@ return (
         {/* Property owner CTA */}
         <div className="mt-8 flex flex-col items-center gap-3">
           <div className="flex items-center gap-3 w-full max-w-xs">
-            <div className="flex-1 h-px bg-white/20" />
+            <div className="flex-1 h-px bg-card/20" />
             <span className="text-white/70 text-sm font-medium whitespace-nowrap">
               Are you a Property Owner?
             </span>
-            <div className="flex-1 h-px bg-white/20" />
+            <div className="flex-1 h-px bg-card/20" />
           </div>
           <button className="px-8 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm shadow-lg shadow-purple-900/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
             Post Free Property Ad

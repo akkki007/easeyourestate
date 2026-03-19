@@ -35,16 +35,16 @@ export default function PropertyCard({
 
     const statusBadge = (s: string) => {
         const styles: Record<string, string> = {
-            draft: "bg-gray-200 text-gray-700",
+            draft: "bg-gray-200 text-foreground",
             active: "bg-emerald-100 text-emerald-700",
             pending_review: "bg-amber-100 text-amber-700",
-            sold: "bg-gray-100 text-gray-500",
-            rented: "bg-gray-100 text-gray-500",
+            sold: "bg-gray-100 text-muted-foreground",
+            rented: "bg-gray-100 text-muted-foreground",
             archived: "bg-red-100 text-red-700",
         };
         const label = s.replace(/_/g, " ");
         return (
-            <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium capitalize ${styles[s] ?? "bg-gray-100 text-gray-500"}`}>
+            <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium capitalize ${styles[s] ?? "bg-gray-100 text-muted-foreground"}`}>
                 {label}
             </span>
         );
@@ -53,7 +53,7 @@ export default function PropertyCard({
     return (
         <Link
             href={`/property/${slug}`}
-            className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-purple-200 hover:shadow-xl transition-all cursor-pointer block group"
+            className="bg-card rounded-2xl border border-gray-100 overflow-hidden hover:border-purple-200 hover:shadow-xl transition-all cursor-pointer block group"
         >
             <div className="aspect-[16/10] bg-gray-50 relative overflow-hidden">
                 {media?.primary ? (
@@ -80,7 +80,7 @@ export default function PropertyCard({
             </div>
             <div className="p-4">
                 <h3 className="font-bold text-gray-900 line-clamp-1 mb-1 group-hover:text-purple-600 transition-colors">{title}</h3>
-                <div className="flex items-center gap-1.5 text-gray-500 text-sm mb-3">
+                <div className="flex items-center gap-1.5 text-muted-foreground text-sm mb-3">
                     <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-purple-500" />
                     <span className="line-clamp-1">{location.locality}, {location.city}</span>
                 </div>

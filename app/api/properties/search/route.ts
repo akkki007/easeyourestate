@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/db/connection";
 import Property from "@/lib/db/models/Property";
-import { parseSearchQuery } from "@/lib/utils/parseSearchQuery";
+import { parseSearchQuery } from "@/lib/helpers/parseSearchQuery";
 
 export async function GET(req: NextRequest) {
     try {

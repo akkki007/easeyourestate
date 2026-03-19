@@ -105,7 +105,7 @@ export default function BuyerDashboard({ user }: BuyerDashboardProps) {
     if (!user) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border"></div>
             </div>
         );
     }
@@ -128,14 +128,14 @@ export default function BuyerDashboard({ user }: BuyerDashboardProps) {
                         className={`
                             px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors
                             ${activeTab === tab.id
-                                ? "border-accent text-accent"
-                                : "border-transparent text-secondary hover:text-primary hover:border-border"
+                                ? "border-border text-foreground"
+                                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
                             }
                         `}
                     >
                         {tab.label}
                         {tab.count > 0 && (
-                            <span className="ml-2 px-2 py-0.5 rounded-full bg-hover text-tertiary text-xs">
+                            <span className="ml-2 px-2 py-0.5 rounded-full bg-accent text-muted-foreground text-xs">
                                 {tab.count}
                             </span>
                         )}
@@ -147,7 +147,7 @@ export default function BuyerDashboard({ user }: BuyerDashboardProps) {
             <div className="min-h-[400px]">
                 {loading ? (
                     <div className="flex items-center justify-center h-64">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border"></div>
                     </div>
                 ) : (
                     <>
@@ -244,9 +244,9 @@ function SavedPropertyCard({ property, onUnsave }: { property: any; onUnsave: (i
     };
 
     return (
-        <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-accent/50 transition-colors group relative">
+        <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-border transition-colors group relative">
             <Link href={`/property/${property.slug}`}>
-                <div className="aspect-[16/10] relative overflow-hidden bg-hover">
+                <div className="aspect-[16/10] relative overflow-hidden bg-accent">
                     <Image
                         src={thumbnail}
                         alt={property.title || "Property"}
@@ -254,23 +254,23 @@ function SavedPropertyCard({ property, onUnsave }: { property: any; onUnsave: (i
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     {property.purpose && (
-                        <span className="absolute bottom-2 left-2 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-white text-[10px] font-semibold capitalize">
+                        <span className="absolute bottom-2 left-2 px-2 py-1 rounded-lg bg-card text-foreground text-[10px] font-semibold capitalize">
                             For {property.purpose}
                         </span>
                     )}
                 </div>
                 <div className="p-4">
-                    <h4 className="font-semibold text-primary truncate group-hover:text-accent transition-colors">
+                    <h4 className="font-semibold text-foreground truncate group-hover:text-muted-foreground transition-colors">
                         {property.title}
                     </h4>
-                    <p className="text-xs text-secondary truncate mt-1">
+                    <p className="text-xs text-muted-foreground truncate mt-1">
                         {property.location?.locality}, {property.location?.city}
                     </p>
                     <div className="flex items-center justify-between mt-3">
-                        <span className="text-lg font-bold text-accent">
+                        <span className="text-lg font-bold text-foreground">
                             {property.price?.amount ? formatPrice(property.price.amount) : "Price on Request"}
                         </span>
-                        <span className="text-[10px] text-tertiary uppercase tracking-wider">
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
                             {property.propertyType?.replace(/_/g, " ")}
                         </span>
                     </div>
@@ -278,7 +278,7 @@ function SavedPropertyCard({ property, onUnsave }: { property: any; onUnsave: (i
             </Link>
             <button
                 onClick={(e) => { e.preventDefault(); onUnsave(property._id); }}
-                className="absolute top-2 right-2 p-1.5 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-error/80 transition-colors"
+                className="absolute top-2 right-2 p-1.5 rounded-full bg-card text-foreground hover:bg-error-bg transition-colors flex items-center justify-center"
                 title="Remove from saved"
             >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -305,18 +305,18 @@ function SavedSearchCard({
         .map(([key, value]) => (
             <span
                 key={key}
-                className="inline-flex px-2 py-0.5 rounded-full bg-hover text-tertiary text-[10px] font-medium capitalize"
+                className="inline-flex px-2 py-0.5 rounded-full bg-accent text-muted-foreground text-[10px] font-medium capitalize"
             >
                 {key.replace(/_/g, " ")}: {String(value)}
             </span>
         ));
 
     return (
-        <div className="p-4 bg-card border border-border rounded-xl hover:border-accent/50 transition-colors">
+        <div className="p-4 bg-card border border-border rounded-xl hover:border-border transition-colors">
             <div className="flex justify-between items-start gap-4">
                 <div className="min-w-0 flex-grow">
-                    <h4 className="font-semibold text-primary">{search.name}</h4>
-                    <p className="text-[10px] text-tertiary mt-0.5">
+                    <h4 className="font-semibold text-foreground">{search.name}</h4>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
                         Saved on {new Date(search.createdAt).toLocaleDateString()}
                     </p>
                     {filterBadges.length > 0 && (
@@ -328,13 +328,13 @@ function SavedSearchCard({
                 <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                         onClick={() => onView(search)}
-                        className="px-3 py-1.5 text-xs bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-medium"
+                        className="px-3 py-1.5 text-xs bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
                     >
                         View Results
                     </button>
                     <button
                         onClick={() => onDelete(search._id)}
-                        className="p-1.5 text-tertiary hover:text-error transition-colors rounded-lg hover:bg-error-bg"
+                        className="p-1.5 text-muted-foreground hover:text-error transition-colors rounded-lg hover:bg-error-bg"
                         title="Delete saved search"
                     >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -351,13 +351,13 @@ function SavedSearchCard({
 function EmptyState({ message, description }: { message: string; description?: string }) {
     return (
         <div className="col-span-full flex flex-col items-center justify-center py-20 text-center bg-card rounded-2xl border border-dashed border-border">
-            <div className="w-16 h-16 rounded-full bg-hover flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-tertiary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
-            <p className="text-primary font-medium">{message}</p>
-            <p className="text-secondary text-sm mt-1">{description || "Start exploring properties to see results here"}</p>
+            <p className="text-foreground font-medium">{message}</p>
+            <p className="text-muted-foreground text-sm mt-1">{description || "Start exploring properties to see results here"}</p>
         </div>
     );
 }

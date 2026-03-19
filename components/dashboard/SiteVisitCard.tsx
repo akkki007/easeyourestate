@@ -84,7 +84,7 @@ export default function SiteVisitCard({ visit, onUpdate }: SiteVisitCardProps) {
     const isActionable = visit.status !== "completed" && visit.status !== "cancelled";
 
     return (
-        <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-accent/50 transition-colors group">
+        <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-border transition-colors group">
             <div className="p-4 flex gap-4">
                 <div className="w-20 h-20 relative flex-shrink-0 rounded-lg overflow-hidden">
                     <Image
@@ -96,13 +96,13 @@ export default function SiteVisitCard({ visit, onUpdate }: SiteVisitCardProps) {
                 </div>
                 <div className="flex-grow min-w-0">
                     <div className="flex justify-between items-start mb-1">
-                        <h4 className="font-semibold text-primary truncate">
+                        <h4 className="font-semibold text-foreground truncate">
                             {property?.title || "Unknown Property"}
                         </h4>
                         {getStatusBadge(visit.status)}
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-secondary mb-2">
-                        <svg className="w-3 h-3 text-tertiary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                        <svg className="w-3 h-3 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <span>{new Date(visit.preferredDate).toLocaleDateString()} at {visit.preferredTime}</span>
@@ -112,14 +112,14 @@ export default function SiteVisitCard({ visit, onUpdate }: SiteVisitCardProps) {
                             <button
                                 onClick={() => { setShowReschedule(!showReschedule); setConfirmCancel(false); }}
                                 disabled={loading}
-                                className="px-3 py-1 bg-hover text-tertiary text-[10px] font-medium rounded-lg hover:bg-active transition-colors disabled:opacity-50"
+                                className="px-3 py-1 bg-accent text-muted-foreground text-[10px] font-medium rounded-lg hover:bg-accent/90 transition-colors disabled:opacity-50"
                             >
                                 Reschedule
                             </button>
                             <button
                                 onClick={() => { setConfirmCancel(!confirmCancel); setShowReschedule(false); }}
                                 disabled={loading}
-                                className="px-3 py-1 bg-hover text-error text-[10px] font-medium rounded-lg hover:bg-error-bg transition-colors disabled:opacity-50"
+                                className="px-3 py-1 bg-accent text-error text-[10px] font-medium rounded-lg hover:bg-error-bg transition-colors disabled:opacity-50"
                             >
                                 Cancel
                             </button>
@@ -133,36 +133,36 @@ export default function SiteVisitCard({ visit, onUpdate }: SiteVisitCardProps) {
                 <div className="px-4 pb-4 border-t border-border pt-3 space-y-3">
                     <div className="flex gap-3">
                         <div className="flex-1">
-                            <label className="text-[10px] font-medium text-secondary uppercase tracking-wider block mb-1">Date</label>
+                            <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider block mb-1">Date</label>
                             <input
                                 type="date"
                                 value={rescheduleDate}
                                 onChange={(e) => setRescheduleDate(e.target.value)}
                                 min={new Date().toISOString().slice(0, 10)}
-                                className="w-full px-3 py-1.5 text-sm bg-hover border border-border rounded-lg text-primary focus:outline-none focus:border-accent"
+                                className="w-full px-3 py-1.5 text-sm bg-input border border-border rounded-lg text-foreground focus:outline-none focus:border-border"
                             />
                         </div>
                         <div className="flex-1">
-                            <label className="text-[10px] font-medium text-secondary uppercase tracking-wider block mb-1">Time</label>
+                            <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider block mb-1">Time</label>
                             <input
                                 type="time"
                                 value={rescheduleTime}
                                 onChange={(e) => setRescheduleTime(e.target.value)}
-                                className="w-full px-3 py-1.5 text-sm bg-hover border border-border rounded-lg text-primary focus:outline-none focus:border-accent"
+                                className="w-full px-3 py-1.5 text-sm bg-input border border-border rounded-lg text-foreground focus:outline-none focus:border-border"
                             />
                         </div>
                     </div>
                     <div className="flex gap-2 justify-end">
                         <button
                             onClick={() => setShowReschedule(false)}
-                            className="px-3 py-1.5 text-xs text-secondary hover:text-primary transition-colors"
+                            className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={handleReschedule}
                             disabled={loading || !rescheduleDate || !rescheduleTime}
-                            className="px-4 py-1.5 text-xs bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors disabled:opacity-50"
+                            className="px-4 py-1.5 text-xs bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
                         >
                             {loading ? "Saving..." : "Confirm"}
                         </button>
@@ -173,11 +173,11 @@ export default function SiteVisitCard({ visit, onUpdate }: SiteVisitCardProps) {
             {/* Cancel confirmation */}
             {confirmCancel && (
                 <div className="px-4 pb-4 border-t border-border pt-3">
-                    <p className="text-sm text-secondary mb-3">Are you sure you want to cancel this visit?</p>
+                    <p className="text-sm text-muted-foreground mb-3">Are you sure you want to cancel this visit?</p>
                     <div className="flex gap-2 justify-end">
                         <button
                             onClick={() => setConfirmCancel(false)}
-                            className="px-3 py-1.5 text-xs text-secondary hover:text-primary transition-colors"
+                            className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
                         >
                             No, keep it
                         </button>

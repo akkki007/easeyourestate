@@ -208,8 +208,8 @@ export default function Sidebar({ userRole, userName, userEmail, collapsed = fal
             {/* Logo */}
             <div className="h-16 flex items-center px-5 border-b border-border">
                 <Link href="/" className="flex items-center gap-3">
-                    <div className="w-9 h-9 bg-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                    <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg className="w-5 h-5 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
                     </div>
@@ -225,14 +225,14 @@ export default function Sidebar({ userRole, userName, userEmail, collapsed = fal
             {!collapsed && (
                 <div className="px-4 py-4 border-b border-border">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-hover flex items-center justify-center text-secondary font-medium">
+                        <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-muted-foreground font-medium">
                             {userName.charAt(0).toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-primary truncate">
+                            <p className="text-sm font-medium text-foreground truncate">
                                 {userName}
                             </p>
-                            <p className="text-xs text-tertiary truncate">
+                            <p className="text-xs text-muted-foreground truncate">
                                 {getRoleLabel(userRole)}
                             </p>
                         </div>
@@ -244,7 +244,7 @@ export default function Sidebar({ userRole, userName, userEmail, collapsed = fal
             <nav className="flex-1 overflow-y-auto py-4 px-3">
                 <div className="space-y-1">
                     {!collapsed && (
-                        <p className="px-3 mb-2 text-xs font-medium text-tertiary uppercase tracking-wider">
+                        <p className="px-3 mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                             Main
                         </p>
                     )}
@@ -257,12 +257,12 @@ export default function Sidebar({ userRole, userName, userEmail, collapsed = fal
                                 transition-all duration-150 group
                                 ${isActive(item.href)
                                     ? "bg-sidebar-active text-sidebar-active-text"
-                                    : "text-secondary hover:bg-sidebar-hover hover:text-primary"
+                                    : "text-muted-foreground hover:bg-sidebar-hover hover:text-foreground"
                                 }
                                 ${collapsed ? "justify-center" : ""}
                             `}
                         >
-                            <span className={`flex-shrink-0 ${isActive(item.href) ? "" : "text-tertiary group-hover:text-secondary"}`}>
+                            <span className={`flex-shrink-0 ${isActive(item.href) ? "" : "text-muted-foreground group-hover:text-foreground"}`}>
                                 {item.icon}
                             </span>
                             {!collapsed && (
@@ -285,12 +285,12 @@ export default function Sidebar({ userRole, userName, userEmail, collapsed = fal
                                 transition-all duration-150 group
                                 ${isActive(item.href)
                                     ? "bg-sidebar-active text-sidebar-active-text"
-                                    : "text-secondary hover:bg-sidebar-hover hover:text-primary"
+                                    : "text-muted-foreground hover:bg-sidebar-hover hover:text-foreground"
                                 }
                                 ${collapsed ? "justify-center" : ""}
                             `}
                         >
-                            <span className={`flex-shrink-0 ${isActive(item.href) ? "" : "text-tertiary group-hover:text-secondary"}`}>
+                            <span className={`flex-shrink-0 ${isActive(item.href) ? "" : "text-muted-foreground group-hover:text-foreground"}`}>
                                 {item.icon}
                             </span>
                             {!collapsed && (

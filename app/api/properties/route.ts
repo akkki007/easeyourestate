@@ -3,7 +3,7 @@ import { dbConnect } from "@/lib/db/connection";
 import Property from "@/lib/db/models/Property";
 import { requireAuth } from "@/lib/auth/auth";
 import { createPropertySchema } from "@/lib/validations/property";
-import { propertySlug } from "@/lib/utils/slug";
+import { propertySlug } from "@/lib/helpers/slug";
 
 // ── Search / List properties ────────────────────────────────────────────────
 export async function GET(req: NextRequest) {

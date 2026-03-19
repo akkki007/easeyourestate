@@ -149,13 +149,13 @@ function SignUpPage() {
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left Content Section */}
-      <div className="relative hidden lg:flex flex-col justify-between bg-[#0B1E3A] p-12 text-white">
+      <div className="relative hidden lg:flex flex-col justify-between bg-sidebar-bg p-12 text-foreground">
         <div className="relative z-20">
           <div className="flex items-center gap-2 text-lg font-semibold">
-            <div className="size-8 rounded-lg bg-blue-500/20 border border-blue-400/30 flex items-center justify-center">
-              <span className="material-symbols-outlined text-blue-400 text-xl">real_estate_agent</span>
+            <div className="size-8 rounded-lg bg-accent border border-border flex items-center justify-center">
+              <span className="material-symbols-outlined text-foreground text-xl">real_estate_agent</span>
             </div>
-            <span className="text-white">Wisteria Properties</span>
+            <span className="text-foreground">Wisteria Properties</span>
           </div>
         </div>
 
@@ -304,34 +304,34 @@ function SignUpPage() {
           </div>
         </div>
 
-        <div className="relative z-20 flex items-center gap-8 text-sm text-white/60">
-          <a href="#" className="hover:text-white transition-colors">
+        <div className="relative z-20 flex items-center gap-8 text-sm text-muted-foreground">
+          <a href="#" className="hover:text-foreground transition-colors">
             Privacy Policy
           </a>
-          <a href="#" className="hover:text-white transition-colors">
+          <a href="#" className="hover:text-foreground transition-colors">
             Terms of Service
           </a>
-          <a href="#" className="hover:text-white transition-colors">
+          <a href="#" className="hover:text-foreground transition-colors">
             Contact
           </a>
         </div>
       </div>
 
       {/* Right Sign Up Section */}
-      <div className="flex items-center justify-center p-8 bg-white relative overflow-hidden">
+      <div className="flex items-center justify-center p-8 bg-background relative overflow-hidden">
         <div className="w-full max-w-lg">
           <form onSubmit={handleSubmit}>
             <div className="mb-8">
-              <h1 className="text-slate-900 text-3xl font-bold">Sign up</h1>
-              <p className="text-[15px] mt-6 text-slate-600">
+              <h1 className="text-foreground text-3xl font-bold">Sign up</h1>
+              <p className="text-[15px] mt-6 text-muted-foreground">
                 Already have an account?{" "}
-                <Link href="/login" className="text-blue-600 font-medium hover:underline ml-1 whitespace-nowrap">Sign In</Link>
+                <Link href="/login" className="text-foreground font-medium hover:underline ml-1 whitespace-nowrap">Sign In</Link>
               </p>
             </div>
 
               <div className="space-y-6">
                 <div>
-                  <label className="text-slate-900 text-[15px] font-medium mb-2 block">First Name</label>
+                  <label className="text-foreground text-[15px] font-medium mb-2 block">First Name</label>
                   <input
                     type="text"
                     placeholder="Enter first name"
@@ -340,12 +340,12 @@ function SignUpPage() {
                     onFocus={() => setIsTyping(true)}
                     onBlur={() => setIsTyping(false)}
                     required
-                    className="w-full text-sm text-slate-900 bg-slate-100 focus:bg-transparent pl-4 pr-4 py-3.5 rounded-md border border-gray-200 focus:border-blue-600 outline-none"
+                    className="w-full text-sm text-foreground bg-input focus:bg-background pl-4 pr-4 py-3.5 rounded-md border border-border focus:border-border outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="text-slate-900 text-[15px] font-medium mb-2 block">Last Name</label>
+                  <label className="text-foreground text-[15px] font-medium mb-2 block">Last Name</label>
                   <input
                     type="text"
                     placeholder="Enter last name"
@@ -354,12 +354,12 @@ function SignUpPage() {
                     onFocus={() => setIsTyping(true)}
                     onBlur={() => setIsTyping(false)}
                     required
-                    className="w-full text-sm text-slate-900 bg-slate-100 focus:bg-transparent pl-4 pr-4 py-3.5 rounded-md border border-gray-200 focus:border-blue-600 outline-none"
+                    className="w-full text-sm text-foreground bg-input focus:bg-background pl-4 pr-4 py-3.5 rounded-md border border-border focus:border-border outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="text-slate-900 text-[15px] font-medium mb-2 block">Email</label>
+                  <label className="text-foreground text-[15px] font-medium mb-2 block">Email</label>
                   <div className="relative flex items-center">
                     <input
                       type="email"
@@ -369,7 +369,7 @@ function SignUpPage() {
                       onFocus={() => setIsTyping(true)}
                       onBlur={() => setIsTyping(false)}
                       required
-                      className="w-full text-sm text-slate-900 bg-slate-100 focus:bg-transparent pl-4 pr-10 py-3.5 rounded-md border border-gray-200 focus:border-blue-600 outline-none"
+                      className="w-full text-sm text-foreground bg-input focus:bg-background pl-4 pr-10 py-3.5 rounded-md border border-border focus:border-border outline-none"
                     />
                     <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" className="w-4.5 h-4.5 absolute right-4" viewBox="0 0 682.667 682.667">
                       <defs>
@@ -386,7 +386,7 @@ function SignUpPage() {
                 </div>
 
                 <div>
-                  <label className="text-slate-900 text-[15px] font-medium mb-2 block">Password</label>
+                  <label className="text-foreground text-[15px] font-medium mb-2 block">Password</label>
                   <div className="relative flex items-center">
                     <input
                       type={showPassword ? "text" : "password"}
@@ -396,7 +396,7 @@ function SignUpPage() {
                       onFocus={() => setIsTyping(true)}
                       onBlur={() => setIsTyping(false)}
                       required
-                      className="w-full text-sm text-slate-900 bg-slate-100 focus:bg-transparent pl-4 pr-10 py-3.5 rounded-md border border-gray-200 focus:border-blue-600 outline-none"
+                      className="w-full text-sm text-foreground bg-input focus:bg-background pl-4 pr-10 py-3.5 rounded-md border border-border focus:border-border outline-none"
                     />
                     <button
                       type="button"
@@ -411,7 +411,7 @@ function SignUpPage() {
                 </div>
 
                 {error && (
-                  <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded">
+                  <div className="p-3 text-sm text-error bg-error-bg border border-border rounded">
                     {error}
                   </div>
                 )}
@@ -420,7 +420,7 @@ function SignUpPage() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-2.5 px-4 text-[15px] font-medium tracking-wide rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none cursor-pointer disabled:opacity-50"
+                    className="w-full py-2.5 px-4 text-[15px] font-medium tracking-wide rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none cursor-pointer disabled:opacity-50"
                   >
                     {isLoading ? "Creating account..." : "Sign Up"}
                   </button>

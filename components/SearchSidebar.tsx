@@ -52,10 +52,10 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
     };
 
     return (
-        <div className="w-80 flex-shrink-0 bg-white border border-gray-200 rounded-lg overflow-hidden hidden lg:block h-fit sticky top-24">
-            <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+        <div className="w-80 flex-shrink-0 bg-card border border-border rounded-lg overflow-hidden hidden lg:block h-fit sticky top-24">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-card sticky top-0 z-10">
                 <span className="text-sm font-bold text-teal-600 uppercase tracking-wider">Filters</span>
-                <button onClick={resetFilters} className="text-xs font-semibold text-gray-500 hover:text-teal-600 flex items-center gap-1">
+                <button onClick={resetFilters} className="text-xs font-semibold text-muted-foreground hover:text-teal-600 flex items-center gap-1">
                     <RotateCcw className="w-3 h-3" />
                     Reset
                 </button>
@@ -88,7 +88,7 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
 
                         <button
                             onClick={() => onFilterChange({ minPrice: "10000", maxPrice: "50000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
+                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-muted"
 
                         >
                             ₹10k – ₹50k
@@ -96,14 +96,14 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
 
                         <button
                             onClick={() => onFilterChange({ minPrice: "50000", maxPrice: "100000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
+                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-muted"
                         >
                             ₹50k – ₹1L
                         </button>
 
                         <button
                             onClick={() => onFilterChange({ minPrice: "100000", maxPrice: "200000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
+                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-muted"
                         >
                             ₹1L – ₹2L
                         </button>
@@ -118,28 +118,28 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
 
                         <button
                             onClick={() => onFilterChange({ min_area: "500", max_area: "1000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
+                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-muted"
                         >
                             500 – 1000 sqft
                         </button>
 
                         <button
                             onClick={() => onFilterChange({ min_area: "1000", max_area: "2000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
+                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-muted"
                         >
                             1000 – 2000 sqft
                         </button>
 
                         <button
                             onClick={() => onFilterChange({ min_area: "2000", max_area: "4000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
+                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-muted"
                         >
                             2000 – 4000 sqft
                         </button>
 
                         <button
                             onClick={() => onFilterChange({ min_area: "4000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
+                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-muted"
                         >
                             4000+ sqft
                         </button>
@@ -150,7 +150,7 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                 {/* New Builder Projects */}
                 <label className="flex items-center gap-3 cursor-pointer group">
                     <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500" />
-                    <span className="text-sm font-medium text-gray-700">New Builder Projects</span>
+                    <span className="text-sm font-medium text-foreground">New Builder Projects</span>
                     <span className="px-1.5 py-0.5 bg-red-100 text-red-600 text-[9px] font-bold rounded flex items-center gap-0.5 uppercase">
                         Offer
                     </span>
@@ -171,7 +171,7 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                                 }}
                                 className="w-4 h-4 border-gray-300 text-teal-600 focus:ring-teal-500"
                             />
-                            <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">Under Construction</span>
+                            <span className="text-sm text-gray-600 group-hover:text-foreground transition-colors">Under Construction</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer group">
                             <input
@@ -184,7 +184,7 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                                 }}
                                 className="w-4 h-4 border-gray-300 text-teal-600 focus:ring-teal-500"
                             />
-                            <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">Ready</span>
+                            <span className="text-sm text-gray-600 group-hover:text-foreground transition-colors">Ready</span>
                         </label>
                     </div>
                 </div>
@@ -205,7 +205,7 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                                     onChange={() => handleFurnishingToggle(item.value)}
                                     className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
                                 />
-                                <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">{item.value}</span>
+                                <span className="text-sm text-gray-600 group-hover:text-foreground transition-colors">{item.value}</span>
                             </label>
                         ))}
                     </div>
@@ -228,7 +228,7 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                                     onChange={() => handlePropertyTypeToggle(type.id)}
                                     className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
                                 />
-                                <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">{type.label}</span>
+                                <span className="text-sm text-gray-600 group-hover:text-foreground transition-colors">{type.label}</span>
                             </label>
                         ))}
                     </div>
@@ -249,7 +249,7 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                                 }}
                                 className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
                             />
-                            <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">2 Wheeler</span>
+                            <span className="text-sm text-gray-600 group-hover:text-foreground transition-colors">2 Wheeler</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer group">
                             <input
@@ -262,7 +262,7 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                                 }}
                                 className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
                             />
-                            <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">4 Wheeler</span>
+                            <span className="text-sm text-gray-600 group-hover:text-foreground transition-colors">4 Wheeler</span>
                         </label>
                     </div>
                 </div>

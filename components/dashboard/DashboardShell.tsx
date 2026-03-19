@@ -32,11 +32,11 @@ export default function DashboardShell({
 
     return (
         <DashboardContext.Provider value={{ sidebarOpen, setSidebarOpen }}>
-            <div className="min-h-screen bg-bg-secondary">
+            <div className="min-h-screen bg-background">
                 {/* Mobile Overlay */}
                 {sidebarOpen && (
                     <div
-                        className="fixed inset-0 bg-black/50 z-30 lg:hidden backdrop-blur-sm"
+                        className="fixed inset-0 bg-background/80 z-30 lg:hidden backdrop-blur-sm"
                         onClick={() => setSidebarOpen(false)}
                     />
                 )}
