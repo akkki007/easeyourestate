@@ -15,13 +15,12 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
     const [furnishing, setFurnishing] = useState<string[]>(initialFilters.furnishing ? initialFilters.furnishing.split(",") : []);
     const [propertyType, setPropertyType] = useState<string[]>(initialFilters.type ? initialFilters.type.split(",") : []);
     const [parking, setParking] = useState<string[]>(initialFilters.parking ? initialFilters.parking.split(",") : []);
+    const [priceRange, setPriceRange] = useState<string>("");
 
     const handleBhkToggle = (val: string) => {
-        const number = val.split(" ")[0]; // "1 BHK" -> "1"
-
-        const newBhk = bhk.includes(number)
-            ? bhk.filter((item) => item !== number)
-            : [...bhk, number];
+        const newBhk = bhk.includes(val)
+            ? bhk.filter((item) => item !== val)
+            : [...bhk, val];
 
         setBhk(newBhk);
 
@@ -31,15 +30,45 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
     };
 
     const handleFurnishingToggle = (val: string) => {
-        const newFurnishing = furnishing.includes(val) ? furnishing.filter((item) => item !== val) : [...furnishing, val];
-        setFurnishing(newFurnishing);
-        onFilterChange({ furnishing: newFurnishing.join(",") });
+        setFurnishing((prev) => {
+            const updated = prev.includes(val)
+                ? prev.filter((item) => item !== val)
+                : [...prev, val];
+
+            onFilterChange({
+                furnishing: updated.length ? updated.join(",") : ""
+            });
+
+            return updated;
+        });
     };
 
     const handlePropertyTypeToggle = (val: string) => {
-        const newType = propertyType.includes(val) ? propertyType.filter((item) => item !== val) : [...propertyType, val];
-        setPropertyType(newType);
-        onFilterChange({ type: newType.join(",") });
+        setPropertyType((prev) => {
+            const updated = prev.includes(val)
+                ? prev.filter((item) => item !== val)
+                : [...prev, val];
+
+            onFilterChange({
+                type: updated.length ? updated.join(",") : ""
+            });
+
+            return updated;
+        });
+    };
+
+    const handlePriceSelect = (min: string, max: string) => {
+        const value = `${min}-${max}`;
+
+        const newValue = priceRange === value ? "" : value;
+
+        setPriceRange(newValue);
+
+        onFilterChange(
+            newValue
+                ? { minPrice: min, maxPrice: max }
+                : { minPrice: "", maxPrice: "" }
+        );
     };
 
     const resetFilters = () => {
@@ -52,10 +81,10 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
     };
 
     return (
-        <div className="w-80 flex-shrink-0 bg-white border border-gray-200 rounded-lg overflow-hidden hidden lg:block h-fit sticky top-24">
-            <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
-                <span className="text-sm font-bold text-teal-600 uppercase tracking-wider">Filters</span>
-                <button onClick={resetFilters} className="text-xs font-semibold text-gray-500 hover:text-teal-600 flex items-center gap-1">
+        <div className="w-80 flex-shrink-0 bg-card border border-border rounded-lg overflow-hidden hidden lg:block h-fit sticky top-24">
+            <div className="p-5 border-b border-border flex items-center justify-between bg-card sticky top-0 z-10">
+                <span className="text-sm font-bold text-primary uppercase tracking-wider">Filters</span>
+                <button onClick={resetFilters} className="text-xs font-semibold text-muted-foreground hover:text-primary flex items-center gap-1">
                     <RotateCcw className="w-3 h-3" />
                     Reset
                 </button>
@@ -64,15 +93,15 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
             <div className="p-5 space-y-8">
                 {/* BHK Type */}
                 <div>
-                    <h3 className="text-sm font-bold text-gray-800 mb-4">BHK Type</h3>
+                    <h3 className="text-sm font-bold text-foreground mb-4">BHK Type</h3>
                     <div className="grid grid-cols-3 gap-2">
                         {["1 RK", "1 BHK", "2 BHK", "3 BHK", "4 BHK", "4+ BHK"].map((val) => (
                             <button
                                 key={val}
                                 onClick={() => handleBhkToggle(val)}
-                                className={`py-2 text-xs font-semibold rounded-md border transition-all ${bhk.includes(val.split(" ")[0])
-                                    ? "bg-teal-50 border-teal-500 text-teal-600 shadow-sm"
-                                    : "bg-gray-50 border-gray-100 text-gray-600 hover:border-gray-300"
+                                className={`py-2 text-xs font-semibold rounded-md border transition-all ${bhk.includes(val)
+                                    ? "bg-primary/10 border-primary text-primary"
+                                    : "bg-card border-border text-muted-foreground hover:border-border"
                                     }`}
                             >
                                 {val}
@@ -82,64 +111,64 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                 </div>
 
                 <div>
-                    <h3 className="text-sm font-bold text-gray-800 mb-4">Budget</h3>
+                    <h3 className="text-sm font-bold text-foreground mb-4">Budget</h3>
 
                     <div className="space-y-2">
 
-                        <button
-                            onClick={() => onFilterChange({ minPrice: "10000", maxPrice: "50000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
+                        {[
+                            { label: "₹10k – ₹50k", min: "10000", max: "50000" },
+                            { label: "₹50k – ₹1L", min: "50000", max: "100000" },
+                            { label: "₹1L – ₹2L", min: "100000", max: "200000" }
+                        ].map(({ label, min, max }) => {
+                            const value = `${min}-${max}`;
+                            const selected = priceRange === value;
 
-                        >
-                            ₹10k – ₹50k
-                        </button>
-
-                        <button
-                            onClick={() => onFilterChange({ minPrice: "50000", maxPrice: "100000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
-                        >
-                            ₹50k – ₹1L
-                        </button>
-
-                        <button
-                            onClick={() => onFilterChange({ minPrice: "100000", maxPrice: "200000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
-                        >
-                            ₹1L – ₹2L
-                        </button>
+                            return (
+                                <button
+                                    key={value}
+                                    onClick={() => handlePriceSelect(min, max)}
+                                    className={`block w-full text-left px-3 py-2 rounded-md border text-sm transition-all ${selected
+                                        ? "bg-primary/10 border-primary text-primary"
+                                        : "bg-card border-border text-foreground hover:bg-accent"
+                                        }`}
+                                >
+                                    {label}
+                                </button>
+                            );
+                        })}
 
                     </div>
                 </div>
 
                 <div>
-                    <h3 className="text-sm font-bold text-gray-800 mb-4">Area (sq ft)</h3>
+                    <h3 className="text-sm font-bold text-foreground mb-4">Area (sq ft)</h3>
 
                     <div className="space-y-2">
 
                         <button
                             onClick={() => onFilterChange({ min_area: "500", max_area: "1000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
+                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-foreground hover:bg-muted"
                         >
                             500 – 1000 sqft
                         </button>
 
                         <button
                             onClick={() => onFilterChange({ min_area: "1000", max_area: "2000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
+                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-foreground hover:bg-muted"
                         >
                             1000 – 2000 sqft
                         </button>
 
                         <button
                             onClick={() => onFilterChange({ min_area: "2000", max_area: "4000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
+                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-foreground hover:bg-muted"
                         >
                             2000 – 4000 sqft
                         </button>
 
                         <button
                             onClick={() => onFilterChange({ min_area: "4000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-black hover:bg-gray-50"
+                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-foreground hover:bg-muted"
                         >
                             4000+ sqft
                         </button>
@@ -149,16 +178,16 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
 
                 {/* New Builder Projects */}
                 <label className="flex items-center gap-3 cursor-pointer group">
-                    <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500" />
-                    <span className="text-sm font-medium text-gray-700">New Builder Projects</span>
-                    <span className="px-1.5 py-0.5 bg-red-100 text-red-600 text-[9px] font-bold rounded flex items-center gap-0.5 uppercase">
+                    <input type="checkbox" className="w-4 h-4 rounded border-border text-primary focus:ring-primary" />
+                    <span className="text-sm font-medium text-foreground">New Builder Projects</span>
+                    <span className="px-1.5 py-0.5 bg-error text-error text-[9px] font-bold rounded flex items-center gap-0.5 uppercase">
                         Offer
                     </span>
                 </label>
 
                 {/* Property Status */}
                 <div>
-                    <h3 className="text-sm font-bold text-gray-800 mb-4">Property Status</h3>
+                    <h3 className="text-sm font-bold text-foreground mb-4">Property Status</h3>
                     <div className="flex items-center gap-6">
                         <label className="flex items-center gap-2 cursor-pointer group">
                             <input
@@ -169,9 +198,9 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                                     setPropertyStatus("under_construction");
                                     onFilterChange({ possession: "under_construction" });
                                 }}
-                                className="w-4 h-4 border-gray-300 text-teal-600 focus:ring-teal-500"
+                                className="w-4 h-4 border-border text-primary focus:ring-primary"
                             />
-                            <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">Under Construction</span>
+                            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Under Construction</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer group">
                             <input
@@ -182,16 +211,16 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                                     setPropertyStatus("ready");
                                     onFilterChange({ possession: "ready" });
                                 }}
-                                className="w-4 h-4 border-gray-300 text-teal-600 focus:ring-teal-500"
+                                className="w-4 h-4 border-border text-primary focus:ring-primary"
                             />
-                            <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">Ready</span>
+                            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Ready</span>
                         </label>
                     </div>
                 </div>
 
                 {/* Furnishing */}
                 <div>
-                    <h3 className="text-sm font-bold text-gray-800 mb-4">Furnishing</h3>
+                    <h3 className="text-sm font-bold text-foreground mb-4">Furnishing</h3>
                     <div className="flex items-center gap-6">
                         {[
                             { label: "Full", value: "fully" },
@@ -203,9 +232,9 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                                     type="checkbox"
                                     checked={furnishing.includes(item.value)}
                                     onChange={() => handleFurnishingToggle(item.value)}
-                                    className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                                    className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                                 />
-                                <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">{item.value}</span>
+                                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">{item.value}</span>
                             </label>
                         ))}
                     </div>
@@ -213,7 +242,7 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
 
                 {/* Property Type */}
                 <div>
-                    <h3 className="text-sm font-bold text-gray-800 mb-4">Property Type</h3>
+                    <h3 className="text-sm font-bold text-foreground mb-4">Property Type</h3>
                     <div className="space-y-3">
                         {[
                             { id: "apartment", label: "Apartment" },
@@ -226,9 +255,9 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                                     type="checkbox"
                                     checked={propertyType.includes(type.id)}
                                     onChange={() => handlePropertyTypeToggle(type.id)}
-                                    className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                                    className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                                 />
-                                <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">{type.label}</span>
+                                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">{type.label}</span>
                             </label>
                         ))}
                     </div>
@@ -236,7 +265,7 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
 
                 {/* Parking */}
                 <div>
-                    <h3 className="text-sm font-bold text-gray-800 mb-4">Parking</h3>
+                    <h3 className="text-sm font-bold text-foreground mb-4">Parking</h3>
                     <div className="flex items-center gap-6">
                         <label className="flex items-center gap-2 cursor-pointer group">
                             <input
@@ -247,9 +276,9 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                                     setParking(newParking);
                                     onFilterChange({ parking: newParking.join(",") });
                                 }}
-                                className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                                className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                             />
-                            <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">2 Wheeler</span>
+                            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">2 Wheeler</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer group">
                             <input
@@ -260,9 +289,9 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                                     setParking(newParking);
                                     onFilterChange({ parking: newParking.join(",") });
                                 }}
-                                className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                                className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                             />
-                            <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">4 Wheeler</span>
+                            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">4 Wheeler</span>
                         </label>
                     </div>
                 </div>

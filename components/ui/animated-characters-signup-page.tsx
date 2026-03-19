@@ -1,437 +1,437 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Pupil, EyeBall } from "./animated-characters-login-page";
-import { useAuth } from "@/lib/auth/AuthContext";
+import { useState, useEffect, useRef } from"react";
+import Link from"next/link";
+import { useRouter } from"next/navigation";
+import { Pupil, EyeBall } from"./animated-characters-login-page";
+import { useAuth } from"@/lib/auth/AuthContext";
 
 function SignUpPage() {
-  const router = useRouter();
-  const { login } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const [mouseX, setMouseX] = useState<number>(0);
-  const [mouseY, setMouseY] = useState<number>(0);
-  const [isPurpleBlinking, setIsPurpleBlinking] = useState(false);
-  const [isBlackBlinking, setIsBlackBlinking] = useState(false);
-  const [isLookingAtEachOther, setIsLookingAtEachOther] = useState(false);
-  const [isPurplePeeking, setIsPurplePeeking] = useState(false);
-  const purpleRef = useRef<HTMLDivElement>(null);
-  const blackRef = useRef<HTMLDivElement>(null);
-  const yellowRef = useRef<HTMLDivElement>(null);
-  const orangeRef = useRef<HTMLDivElement>(null);
+ const router = useRouter();
+ const { login } = useAuth();
+ const [showPassword, setShowPassword] = useState(false);
+ const [firstName, setFirstName] = useState("");
+ const [lastName, setLastName] = useState("");
+ const [email, setEmail] = useState("");
+ const [password, setPassword] = useState("");
+ const [error, setError] = useState("");
+ const [isLoading, setIsLoading] = useState(false);
+ const [isTyping, setIsTyping] = useState(false);
+ const [mouseX, setMouseX] = useState<number>(0);
+ const [mouseY, setMouseY] = useState<number>(0);
+ const [isPurpleBlinking, setIsPurpleBlinking] = useState(false);
+ const [isBlackBlinking, setIsBlackBlinking] = useState(false);
+ const [isLookingAtEachOther, setIsLookingAtEachOther] = useState(false);
+ const [isPurplePeeking, setIsPurplePeeking] = useState(false);
+ const purpleRef = useRef<HTMLDivElement>(null);
+ const blackRef = useRef<HTMLDivElement>(null);
+ const yellowRef = useRef<HTMLDivElement>(null);
+ const orangeRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMouseX(e.clientX);
-      setMouseY(e.clientY);
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+ useEffect(() => {
+ const handleMouseMove = (e: MouseEvent) => {
+ setMouseX(e.clientX);
+ setMouseY(e.clientY);
+ };
+ window.addEventListener("mousemove", handleMouseMove);
+ return () => window.removeEventListener("mousemove", handleMouseMove);
+ }, []);
 
-  useEffect(() => {
-    const getRandomBlinkInterval = () => Math.random() * 4000 + 3000;
-    const scheduleBlink = () => {
-      const blinkTimeout = setTimeout(() => {
-        setIsPurpleBlinking(true);
-        setTimeout(() => {
-          setIsPurpleBlinking(false);
-          scheduleBlink();
-        }, 150);
-      }, getRandomBlinkInterval());
-      return blinkTimeout;
-    };
-    const timeout = scheduleBlink();
-    return () => clearTimeout(timeout);
-  }, []);
+ useEffect(() => {
+ const getRandomBlinkInterval = () => Math.random() * 4000 + 3000;
+ const scheduleBlink = () => {
+ const blinkTimeout = setTimeout(() => {
+ setIsPurpleBlinking(true);
+ setTimeout(() => {
+ setIsPurpleBlinking(false);
+ scheduleBlink();
+ }, 150);
+ }, getRandomBlinkInterval());
+ return blinkTimeout;
+ };
+ const timeout = scheduleBlink();
+ return () => clearTimeout(timeout);
+ }, []);
 
-  useEffect(() => {
-    const getRandomBlinkInterval = () => Math.random() * 4000 + 3000;
-    const scheduleBlink = () => {
-      const blinkTimeout = setTimeout(() => {
-        setIsBlackBlinking(true);
-        setTimeout(() => {
-          setIsBlackBlinking(false);
-          scheduleBlink();
-        }, 150);
-      }, getRandomBlinkInterval());
-      return blinkTimeout;
-    };
-    const timeout = scheduleBlink();
-    return () => clearTimeout(timeout);
-  }, []);
+ useEffect(() => {
+ const getRandomBlinkInterval = () => Math.random() * 4000 + 3000;
+ const scheduleBlink = () => {
+ const blinkTimeout = setTimeout(() => {
+ setIsBlackBlinking(true);
+ setTimeout(() => {
+ setIsBlackBlinking(false);
+ scheduleBlink();
+ }, 150);
+ }, getRandomBlinkInterval());
+ return blinkTimeout;
+ };
+ const timeout = scheduleBlink();
+ return () => clearTimeout(timeout);
+ }, []);
 
-  useEffect(() => {
-    if (isTyping) {
-      setIsLookingAtEachOther(true);
-      const timer = setTimeout(() => setIsLookingAtEachOther(false), 800);
-      return () => clearTimeout(timer);
-    } else {
-      setIsLookingAtEachOther(false);
-    }
-  }, [isTyping]);
+ useEffect(() => {
+ if (isTyping) {
+ setIsLookingAtEachOther(true);
+ const timer = setTimeout(() => setIsLookingAtEachOther(false), 800);
+ return () => clearTimeout(timer);
+ } else {
+ setIsLookingAtEachOther(false);
+ }
+ }, [isTyping]);
 
-  useEffect(() => {
-    if (password.length > 0 && showPassword) {
-      const schedulePeek = () => {
-        const peekInterval = setTimeout(() => {
-          setIsPurplePeeking(true);
-          setTimeout(() => setIsPurplePeeking(false), 800);
-        }, Math.random() * 3000 + 2000);
-        return peekInterval;
-      };
-      const firstPeek = schedulePeek();
-      return () => clearTimeout(firstPeek);
-    } else {
-      setIsPurplePeeking(false);
-    }
-  }, [password, showPassword, isPurplePeeking]);
+ useEffect(() => {
+ if (password.length > 0 && showPassword) {
+ const schedulePeek = () => {
+ const peekInterval = setTimeout(() => {
+ setIsPurplePeeking(true);
+ setTimeout(() => setIsPurplePeeking(false), 800);
+ }, Math.random() * 3000 + 2000);
+ return peekInterval;
+ };
+ const firstPeek = schedulePeek();
+ return () => clearTimeout(firstPeek);
+ } else {
+ setIsPurplePeeking(false);
+ }
+ }, [password, showPassword, isPurplePeeking]);
 
-  const calculatePosition = (ref: React.RefObject<HTMLDivElement | null>) => {
-    if (!ref.current) return { faceX: 0, faceY: 0, bodySkew: 0 };
-    const rect = ref.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 3;
-    const deltaX = mouseX - centerX;
-    const deltaY = mouseY - centerY;
-    const faceX = Math.max(-15, Math.min(15, deltaX / 20));
-    const faceY = Math.max(-10, Math.min(10, deltaY / 30));
-    const bodySkew = Math.max(-6, Math.min(6, -deltaX / 120));
-    return { faceX, faceY, bodySkew };
-  };
+ const calculatePosition = (ref: React.RefObject<HTMLDivElement | null>) => {
+ if (!ref.current) return { faceX: 0, faceY: 0, bodySkew: 0 };
+ const rect = ref.current.getBoundingClientRect();
+ const centerX = rect.left + rect.width / 2;
+ const centerY = rect.top + rect.height / 3;
+ const deltaX = mouseX - centerX;
+ const deltaY = mouseY - centerY;
+ const faceX = Math.max(-15, Math.min(15, deltaX / 20));
+ const faceY = Math.max(-10, Math.min(10, deltaY / 30));
+ const bodySkew = Math.max(-6, Math.min(6, -deltaX / 120));
+ return { faceX, faceY, bodySkew };
+ };
 
-  const purplePos = calculatePosition(purpleRef);
-  const blackPos = calculatePosition(blackRef);
-  const yellowPos = calculatePosition(yellowRef);
-  const orangePos = calculatePosition(orangeRef);
+ const purplePos = calculatePosition(purpleRef);
+ const blackPos = calculatePosition(blackRef);
+ const yellowPos = calculatePosition(yellowRef);
+ const orangePos = calculatePosition(orangeRef);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
-    try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: { first: firstName, last: lastName },
-          email,
-          password,
-          role: "buyer",
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Sign up failed. Please try again.");
-        return;
-      }
-      if (!data?.token || !data?.user) {
-        setError("Invalid sign up response. Please try again.");
-        return;
-      }
-      login(data.token, data.user);
-      router.push("/dashboard");
-    } catch {
-      setError("Sign up failed. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+ const handleSubmit = async (e: React.FormEvent) => {
+ e.preventDefault();
+ setError("");
+ setIsLoading(true);
+ try {
+ const res = await fetch("/api/auth/register", {
+ method:"POST",
+ headers: {"Content-Type":"application/json"},
+ body: JSON.stringify({
+ name: { first: firstName, last: lastName },
+ email,
+ password,
+ role:"buyer",
+ }),
+ });
+ const data = await res.json();
+ if (!res.ok) {
+ setError(data.error ||"Sign up failed. Please try again.");
+ return;
+ }
+ if (!data?.token || !data?.user) {
+ setError("Invalid sign up response. Please try again.");
+ return;
+ }
+ login(data.token, data.user);
+ router.push("/dashboard");
+ } catch {
+ setError("Sign up failed. Please try again.");
+ } finally {
+ setIsLoading(false);
+ }
+ };
 
-  return (
-    <div className="min-h-screen grid lg:grid-cols-2">
-      {/* Left Content Section */}
-      <div className="relative hidden lg:flex flex-col justify-between bg-[#0B1E3A] p-12 text-white">
-        <div className="relative z-20">
-          <div className="flex items-center gap-2 text-lg font-semibold">
-            <div className="size-8 rounded-lg bg-blue-500/20 border border-blue-400/30 flex items-center justify-center">
-              <span className="material-symbols-outlined text-blue-400 text-xl">real_estate_agent</span>
-            </div>
-            <span className="text-white">Wisteria Properties</span>
-          </div>
-        </div>
+ return (
+ <div className="min-h-screen grid lg:grid-cols-2">
+ {/* Left Content Section */}
+ <div className="relative hidden lg:flex flex-col justify-between bg-sidebar-bg p-12 text-foreground">
+ <div className="relative z-20">
+ <div className="flex items-center gap-2 text-lg font-semibold">
+ <div className="size-8 rounded-lg bg-accent border border-border flex items-center justify-center">
+ <span className="material-symbols-outlined text-foreground text-xl">real_estate_agent</span>
+ </div>
+ <span className="text-foreground">Wisteria Properties</span>
+ </div>
+ </div>
 
-        <div className="relative z-20 flex items-end justify-center h-[500px]">
-          <div className="relative" style={{ width: "550px", height: "400px" }}>
-            <div
-              ref={purpleRef}
-              className="absolute bottom-0 transition-all duration-700 ease-in-out"
-              style={{
-                left: "70px",
-                width: "180px",
-                height: isTyping || (password.length > 0 && !showPassword) ? "440px" : "400px",
-                backgroundColor: "#7C5CFF",
-                borderRadius: "10px 10px 0 0",
-                zIndex: 1,
-                transform:
-                  password.length > 0 && showPassword
-                    ? "skewX(0deg)"
-                    : isTyping || (password.length > 0 && !showPassword)
-                      ? `skewX(${(purplePos.bodySkew || 0) - 12}deg) translateX(40px)`
-                      : `skewX(${purplePos.bodySkew || 0}deg)`,
-                transformOrigin: "bottom center",
-              }}
-            >
-              <div
-                className="absolute flex gap-8 transition-all duration-700 ease-in-out"
-                style={{
-                  left: password.length > 0 && showPassword ? "20px" : isLookingAtEachOther ? "55px" : `${45 + purplePos.faceX}px`,
-                  top: password.length > 0 && showPassword ? "35px" : isLookingAtEachOther ? "65px" : `${40 + purplePos.faceY}px`,
-                }}
-              >
-                <EyeBall
-                  size={18}
-                  pupilSize={7}
-                  maxDistance={5}
-                  eyeColor="white"
-                  pupilColor="#2D2D2D"
-                  isBlinking={isPurpleBlinking}
-                  forceLookX={password.length > 0 && showPassword ? (isPurplePeeking ? 4 : -4) : isLookingAtEachOther ? 3 : undefined}
-                  forceLookY={password.length > 0 && showPassword ? (isPurplePeeking ? 5 : -4) : isLookingAtEachOther ? 4 : undefined}
-                />
-                <EyeBall
-                  size={18}
-                  pupilSize={7}
-                  maxDistance={5}
-                  eyeColor="white"
-                  pupilColor="#2D2D2D"
-                  isBlinking={isPurpleBlinking}
-                  forceLookX={password.length > 0 && showPassword ? (isPurplePeeking ? 4 : -4) : isLookingAtEachOther ? 3 : undefined}
-                  forceLookY={password.length > 0 && showPassword ? (isPurplePeeking ? 5 : -4) : isLookingAtEachOther ? 4 : undefined}
-                />
-              </div>
-            </div>
+ <div className="relative z-20 flex items-end justify-center h-[500px]">
+ <div className="relative"style={{ width:"550px", height:"400px"}}>
+ <div
+ ref={purpleRef}
+ className="absolute bottom-0 transition-all duration-700 ease-in-out"
+ style={{
+ left:"70px",
+ width:"180px",
+ height: isTyping || (password.length > 0 && !showPassword) ?"440px":"400px",
+ backgroundColor:"#7C5CFF",
+ borderRadius:"10px 10px 0 0",
+ zIndex: 1,
+ transform:
+ password.length > 0 && showPassword
+ ?"skewX(0deg)"
+ : isTyping || (password.length > 0 && !showPassword)
+ ?`skewX(${(purplePos.bodySkew || 0) - 12}deg) translateX(40px)`
+ :`skewX(${purplePos.bodySkew || 0}deg)`,
+ transformOrigin:"bottom center",
+ }}
+ >
+ <div
+ className="absolute flex gap-8 transition-all duration-700 ease-in-out"
+ style={{
+ left: password.length > 0 && showPassword ?"20px": isLookingAtEachOther ?"55px":`${45 + purplePos.faceX}px`,
+ top: password.length > 0 && showPassword ?"35px": isLookingAtEachOther ?"65px":`${40 + purplePos.faceY}px`,
+ }}
+ >
+ <EyeBall
+ size={18}
+ pupilSize={7}
+ maxDistance={5}
+ eyeColor="white"
+ pupilColor="#2D2D2D"
+ isBlinking={isPurpleBlinking}
+ forceLookX={password.length > 0 && showPassword ? (isPurplePeeking ? 4 : -4) : isLookingAtEachOther ? 3 : undefined}
+ forceLookY={password.length > 0 && showPassword ? (isPurplePeeking ? 5 : -4) : isLookingAtEachOther ? 4 : undefined}
+ />
+ <EyeBall
+ size={18}
+ pupilSize={7}
+ maxDistance={5}
+ eyeColor="white"
+ pupilColor="#2D2D2D"
+ isBlinking={isPurpleBlinking}
+ forceLookX={password.length > 0 && showPassword ? (isPurplePeeking ? 4 : -4) : isLookingAtEachOther ? 3 : undefined}
+ forceLookY={password.length > 0 && showPassword ? (isPurplePeeking ? 5 : -4) : isLookingAtEachOther ? 4 : undefined}
+ />
+ </div>
+ </div>
 
-            <div
-              ref={blackRef}
-              className="absolute bottom-0 transition-all duration-700 ease-in-out"
-              style={{
-                left: "240px",
-                width: "120px",
-                height: "310px",
-                backgroundColor: "#2EC4B6",
-                borderRadius: "8px 8px 0 0",
-                zIndex: 2,
-                transform:
-                  password.length > 0 && showPassword
-                    ? "skewX(0deg)"
-                    : isLookingAtEachOther
-                      ? `skewX(${(blackPos.bodySkew || 0) * 1.5 + 10}deg) translateX(20px)`
-                      : isTyping || (password.length > 0 && !showPassword)
-                        ? `skewX(${(blackPos.bodySkew || 0) * 1.5}deg)`
-                        : `skewX(${blackPos.bodySkew || 0}deg)`,
-                transformOrigin: "bottom center",
-              }}
-            >
-              <div
-                className="absolute flex gap-6 transition-all duration-700 ease-in-out"
-                style={{
-                  left: password.length > 0 && showPassword ? "10px" : isLookingAtEachOther ? "32px" : `${26 + blackPos.faceX}px`,
-                  top: password.length > 0 && showPassword ? "28px" : isLookingAtEachOther ? "12px" : `${32 + blackPos.faceY}px`,
-                }}
-              >
-                <EyeBall size={16} pupilSize={6} maxDistance={4} eyeColor="white" pupilColor="#2D2D2D" isBlinking={isBlackBlinking} forceLookX={password.length > 0 && showPassword ? -4 : isLookingAtEachOther ? 0 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : isLookingAtEachOther ? -4 : undefined} />
-                <EyeBall size={16} pupilSize={6} maxDistance={4} eyeColor="white" pupilColor="#2D2D2D" isBlinking={isBlackBlinking} forceLookX={password.length > 0 && showPassword ? -4 : isLookingAtEachOther ? 0 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : isLookingAtEachOther ? -4 : undefined} />
-              </div>
-            </div>
+ <div
+ ref={blackRef}
+ className="absolute bottom-0 transition-all duration-700 ease-in-out"
+ style={{
+ left:"240px",
+ width:"120px",
+ height:"310px",
+ backgroundColor:"#2EC4B6",
+ borderRadius:"8px 8px 0 0",
+ zIndex: 2,
+ transform:
+ password.length > 0 && showPassword
+ ?"skewX(0deg)"
+ : isLookingAtEachOther
+ ?`skewX(${(blackPos.bodySkew || 0) * 1.5 + 10}deg) translateX(20px)`
+ : isTyping || (password.length > 0 && !showPassword)
+ ?`skewX(${(blackPos.bodySkew || 0) * 1.5}deg)`
+ :`skewX(${blackPos.bodySkew || 0}deg)`,
+ transformOrigin:"bottom center",
+ }}
+ >
+ <div
+ className="absolute flex gap-6 transition-all duration-700 ease-in-out"
+ style={{
+ left: password.length > 0 && showPassword ?"10px": isLookingAtEachOther ?"32px":`${26 + blackPos.faceX}px`,
+ top: password.length > 0 && showPassword ?"28px": isLookingAtEachOther ?"12px":`${32 + blackPos.faceY}px`,
+ }}
+ >
+ <EyeBall size={16} pupilSize={6} maxDistance={4} eyeColor="white"pupilColor="#2D2D2D"isBlinking={isBlackBlinking} forceLookX={password.length > 0 && showPassword ? -4 : isLookingAtEachOther ? 0 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : isLookingAtEachOther ? -4 : undefined} />
+ <EyeBall size={16} pupilSize={6} maxDistance={4} eyeColor="white"pupilColor="#2D2D2D"isBlinking={isBlackBlinking} forceLookX={password.length > 0 && showPassword ? -4 : isLookingAtEachOther ? 0 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : isLookingAtEachOther ? -4 : undefined} />
+ </div>
+ </div>
 
-            <div
-              ref={orangeRef}
-              className="absolute bottom-0 transition-all duration-700 ease-in-out"
-              style={{
-                left: "0px",
-                width: "240px",
-                height: "200px",
-                zIndex: 3,
-                backgroundColor: "#F4A261",
-                borderRadius: "120px 120px 0 0",
-                transform: password.length > 0 && showPassword ? "skewX(0deg)" : `skewX(${orangePos.bodySkew || 0}deg)`,
-                transformOrigin: "bottom center",
-              }}
-            >
-              <div
-                className="absolute flex gap-8 transition-all duration-200 ease-out"
-                style={{
-                  left: password.length > 0 && showPassword ? "50px" : `${82 + (orangePos.faceX || 0)}px`,
-                  top: password.length > 0 && showPassword ? "85px" : `${90 + (orangePos.faceY || 0)}px`,
-                }}
-              >
-                <Pupil size={12} maxDistance={5} pupilColor="#2D2D2D" forceLookX={password.length > 0 && showPassword ? -5 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : undefined} />
-                <Pupil size={12} maxDistance={5} pupilColor="#2D2D2D" forceLookX={password.length > 0 && showPassword ? -5 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : undefined} />
-              </div>
-            </div>
+ <div
+ ref={orangeRef}
+ className="absolute bottom-0 transition-all duration-700 ease-in-out"
+ style={{
+ left:"0px",
+ width:"240px",
+ height:"200px",
+ zIndex: 3,
+ backgroundColor:"#F4A261",
+ borderRadius:"120px 120px 0 0",
+ transform: password.length > 0 && showPassword ?"skewX(0deg)":`skewX(${orangePos.bodySkew || 0}deg)`,
+ transformOrigin:"bottom center",
+ }}
+ >
+ <div
+ className="absolute flex gap-8 transition-all duration-200 ease-out"
+ style={{
+ left: password.length > 0 && showPassword ?"50px":`${82 + (orangePos.faceX || 0)}px`,
+ top: password.length > 0 && showPassword ?"85px":`${90 + (orangePos.faceY || 0)}px`,
+ }}
+ >
+ <Pupil size={12} maxDistance={5} pupilColor="#2D2D2D"forceLookX={password.length > 0 && showPassword ? -5 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : undefined} />
+ <Pupil size={12} maxDistance={5} pupilColor="#2D2D2D"forceLookX={password.length > 0 && showPassword ? -5 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : undefined} />
+ </div>
+ </div>
 
-            <div
-              ref={yellowRef}
-              className="absolute bottom-0 transition-all duration-700 ease-in-out"
-              style={{
-                left: "310px",
-                width: "140px",
-                height: "230px",
-                backgroundColor: "#E9C46A",
-                borderRadius: "70px 70px 0 0",
-                zIndex: 4,
-                transform: password.length > 0 && showPassword ? "skewX(0deg)" : `skewX(${yellowPos.bodySkew || 0}deg)`,
-                transformOrigin: "bottom center",
-              }}
-            >
-              <div
-                className="absolute flex gap-6 transition-all duration-200 ease-out"
-                style={{
-                  left: password.length > 0 && showPassword ? "20px" : `${52 + (yellowPos.faceX || 0)}px`,
-                  top: password.length > 0 && showPassword ? "35px" : `${40 + (yellowPos.faceY || 0)}px`,
-                }}
-              >
-                <Pupil size={12} maxDistance={5} pupilColor="#2D2D2D" forceLookX={password.length > 0 && showPassword ? -5 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : undefined} />
-                <Pupil size={12} maxDistance={5} pupilColor="#2D2D2D" forceLookX={password.length > 0 && showPassword ? -5 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : undefined} />
-              </div>
-              <div
-                className="absolute w-20 h-[4px] bg-[#2D2D2D] rounded-full transition-all duration-200 ease-out"
-                style={{
-                  left: password.length > 0 && showPassword ? "10px" : `${40 + (yellowPos.faceX || 0)}px`,
-                  top: password.length > 0 && showPassword ? "88px" : `${88 + (yellowPos.faceY || 0)}px`,
-                }}
-              />
-            </div>
-          </div>
-        </div>
+ <div
+ ref={yellowRef}
+ className="absolute bottom-0 transition-all duration-700 ease-in-out"
+ style={{
+ left:"310px",
+ width:"140px",
+ height:"230px",
+ backgroundColor:"#E9C46A",
+ borderRadius:"70px 70px 0 0",
+ zIndex: 4,
+ transform: password.length > 0 && showPassword ?"skewX(0deg)":`skewX(${yellowPos.bodySkew || 0}deg)`,
+ transformOrigin:"bottom center",
+ }}
+ >
+ <div
+ className="absolute flex gap-6 transition-all duration-200 ease-out"
+ style={{
+ left: password.length > 0 && showPassword ?"20px":`${52 + (yellowPos.faceX || 0)}px`,
+ top: password.length > 0 && showPassword ?"35px":`${40 + (yellowPos.faceY || 0)}px`,
+ }}
+ >
+ <Pupil size={12} maxDistance={5} pupilColor="#2D2D2D"forceLookX={password.length > 0 && showPassword ? -5 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : undefined} />
+ <Pupil size={12} maxDistance={5} pupilColor="#2D2D2D"forceLookX={password.length > 0 && showPassword ? -5 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : undefined} />
+ </div>
+ <div
+ className="absolute w-20 h-[4px] bg-[#2D2D2D] rounded-full transition-all duration-200 ease-out"
+ style={{
+ left: password.length > 0 && showPassword ?"10px":`${40 + (yellowPos.faceX || 0)}px`,
+ top: password.length > 0 && showPassword ?"88px":`${88 + (yellowPos.faceY || 0)}px`,
+ }}
+ />
+ </div>
+ </div>
+ </div>
 
-        <div className="relative z-20 flex items-center gap-8 text-sm text-white/60">
-          <a href="#" className="hover:text-white transition-colors">
-            Privacy Policy
-          </a>
-          <a href="#" className="hover:text-white transition-colors">
-            Terms of Service
-          </a>
-          <a href="#" className="hover:text-white transition-colors">
-            Contact
-          </a>
-        </div>
-      </div>
+ <div className="relative z-20 flex items-center gap-8 text-sm text-muted-foreground">
+ <a href="#"className="hover:text-foreground transition-colors">
+ Privacy Policy
+ </a>
+ <a href="#"className="hover:text-foreground transition-colors">
+ Terms of Service
+ </a>
+ <a href="#"className="hover:text-foreground transition-colors">
+ Contact
+ </a>
+ </div>
+ </div>
 
-      {/* Right Sign Up Section */}
-      <div className="flex items-center justify-center p-8 bg-white relative overflow-hidden">
-        <div className="w-full max-w-lg">
-          <form onSubmit={handleSubmit}>
-            <div className="mb-8">
-              <h1 className="text-slate-900 text-3xl font-bold">Sign up</h1>
-              <p className="text-[15px] mt-6 text-slate-600">
-                Already have an account?{" "}
-                <Link href="/login" className="text-blue-600 font-medium hover:underline ml-1 whitespace-nowrap">Sign In</Link>
-              </p>
-            </div>
+ {/* Right Sign Up Section */}
+ <div className="flex items-center justify-center p-8 bg-background relative overflow-hidden">
+ <div className="w-full max-w-lg">
+ <form onSubmit={handleSubmit}>
+ <div className="mb-8">
+ <h1 className="text-foreground text-3xl font-bold">Sign up</h1>
+ <p className="text-[15px] mt-6 text-muted-foreground">
+ Already have an account?{""}
+ <Link href="/login"className="text-foreground font-medium hover:underline ml-1 whitespace-nowrap">Sign In</Link>
+ </p>
+ </div>
 
-              <div className="space-y-6">
-                <div>
-                  <label className="text-slate-900 text-[15px] font-medium mb-2 block">First Name</label>
-                  <input
-                    type="text"
-                    placeholder="Enter first name"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    onFocus={() => setIsTyping(true)}
-                    onBlur={() => setIsTyping(false)}
-                    required
-                    className="w-full text-sm text-slate-900 bg-slate-100 focus:bg-transparent pl-4 pr-4 py-3.5 rounded-md border border-gray-200 focus:border-blue-600 outline-none"
-                  />
-                </div>
+ <div className="space-y-6">
+ <div>
+ <label className="text-foreground text-[15px] font-medium mb-2 block">First Name</label>
+ <input
+ type="text"
+ placeholder="Enter first name"
+ value={firstName}
+ onChange={(e) => setFirstName(e.target.value)}
+ onFocus={() => setIsTyping(true)}
+ onBlur={() => setIsTyping(false)}
+ required
+ className="w-full text-sm text-foreground bg-input focus:bg-background pl-4 pr-4 py-3.5 rounded-md border border-border focus:border-border outline-none"
+ />
+ </div>
 
-                <div>
-                  <label className="text-slate-900 text-[15px] font-medium mb-2 block">Last Name</label>
-                  <input
-                    type="text"
-                    placeholder="Enter last name"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    onFocus={() => setIsTyping(true)}
-                    onBlur={() => setIsTyping(false)}
-                    required
-                    className="w-full text-sm text-slate-900 bg-slate-100 focus:bg-transparent pl-4 pr-4 py-3.5 rounded-md border border-gray-200 focus:border-blue-600 outline-none"
-                  />
-                </div>
+ <div>
+ <label className="text-foreground text-[15px] font-medium mb-2 block">Last Name</label>
+ <input
+ type="text"
+ placeholder="Enter last name"
+ value={lastName}
+ onChange={(e) => setLastName(e.target.value)}
+ onFocus={() => setIsTyping(true)}
+ onBlur={() => setIsTyping(false)}
+ required
+ className="w-full text-sm text-foreground bg-input focus:bg-background pl-4 pr-4 py-3.5 rounded-md border border-border focus:border-border outline-none"
+ />
+ </div>
 
-                <div>
-                  <label className="text-slate-900 text-[15px] font-medium mb-2 block">Email</label>
-                  <div className="relative flex items-center">
-                    <input
-                      type="email"
-                      placeholder="Enter email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      onFocus={() => setIsTyping(true)}
-                      onBlur={() => setIsTyping(false)}
-                      required
-                      className="w-full text-sm text-slate-900 bg-slate-100 focus:bg-transparent pl-4 pr-10 py-3.5 rounded-md border border-gray-200 focus:border-blue-600 outline-none"
-                    />
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" className="w-4.5 h-4.5 absolute right-4" viewBox="0 0 682.667 682.667">
-                      <defs>
-                        <clipPath id="a" clipPathUnits="userSpaceOnUse">
-                          <path d="M0 512h512V0H0Z" data-original="#000000"></path>
-                        </clipPath>
-                      </defs>
-                      <g clip-path="url(#a)" transform="matrix(1.33 0 0 -1.33 0 682.667)">
-                        <path fill="none" stroke-miterlimit="10" stroke-width="40" d="M452 444H60c-22.091 0-40-17.909-40-40v-39.446l212.127-157.782c14.17-10.54 33.576-10.54 47.746 0L492 364.554V404c0 22.091-17.909 40-40 40Z" data-original="#000000"></path>
-                        <path d="M472 274.9V107.999c0-11.027-8.972-20-20-20H60c-11.028 0-20 8.973-20 20V274.9L0 304.652V107.999c0-33.084 26.916-60 60-60h392c33.084 0 60 26.916 60 60v196.653Z" data-original="#000000"></path>
-                      </g>
-                    </svg>
-                  </div>
-                </div>
+ <div>
+ <label className="text-foreground text-[15px] font-medium mb-2 block">Email</label>
+ <div className="relative flex items-center">
+ <input
+ type="email"
+ placeholder="Enter email"
+ value={email}
+ onChange={(e) => setEmail(e.target.value)}
+ onFocus={() => setIsTyping(true)}
+ onBlur={() => setIsTyping(false)}
+ required
+ className="w-full text-sm text-foreground bg-input focus:bg-background pl-4 pr-10 py-3.5 rounded-md border border-border focus:border-border outline-none"
+ />
+ <svg xmlns="http://www.w3.org/2000/svg"fill="#bbb"stroke="#bbb"className="w-4.5 h-4.5 absolute right-4"viewBox="0 0 682.667 682.667">
+ <defs>
+ <clipPath id="a"clipPathUnits="userSpaceOnUse">
+ <path d="M0 512h512V0H0Z"data-original="#000000"></path>
+ </clipPath>
+ </defs>
+ <g clip-path="url(#a)"transform="matrix(1.33 0 0 -1.33 0 682.667)">
+ <path fill="none"stroke-miterlimit="10"stroke-width="40"d="M452 444H60c-22.091 0-40-17.909-40-40v-39.446l212.127-157.782c14.17-10.54 33.576-10.54 47.746 0L492 364.554V404c0 22.091-17.909 40-40 40Z"data-original="#000000"></path>
+ <path d="M472 274.9V107.999c0-11.027-8.972-20-20-20H60c-11.028 0-20 8.973-20 20V274.9L0 304.652V107.999c0-33.084 26.916-60 60-60h392c33.084 0 60 26.916 60 60v196.653Z"data-original="#000000"></path>
+ </g>
+ </svg>
+ </div>
+ </div>
 
-                <div>
-                  <label className="text-slate-900 text-[15px] font-medium mb-2 block">Password</label>
-                  <div className="relative flex items-center">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      onFocus={() => setIsTyping(true)}
-                      onBlur={() => setIsTyping(false)}
-                      required
-                      className="w-full text-sm text-slate-900 bg-slate-100 focus:bg-transparent pl-4 pr-10 py-3.5 rounded-md border border-gray-200 focus:border-blue-600 outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 cursor-pointer"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" className="w-4.5 h-4.5" viewBox="0 0 128 128">
-                        <path d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z" data-original="#000000"></path>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
+ <div>
+ <label className="text-foreground text-[15px] font-medium mb-2 block">Password</label>
+ <div className="relative flex items-center">
+ <input
+ type={showPassword ?"text":"password"}
+ placeholder="Enter password"
+ value={password}
+ onChange={(e) => setPassword(e.target.value)}
+ onFocus={() => setIsTyping(true)}
+ onBlur={() => setIsTyping(false)}
+ required
+ className="w-full text-sm text-foreground bg-input focus:bg-background pl-4 pr-10 py-3.5 rounded-md border border-border focus:border-border outline-none"
+ />
+ <button
+ type="button"
+ onClick={() => setShowPassword(!showPassword)}
+ className="absolute right-4 cursor-pointer"
+ >
+ <svg xmlns="http://www.w3.org/2000/svg"fill="#bbb"stroke="#bbb"className="w-4.5 h-4.5"viewBox="0 0 128 128">
+ <path d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z"data-original="#000000"></path>
+ </svg>
+ </button>
+ </div>
+ </div>
 
-                {error && (
-                  <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded">
-                    {error}
-                  </div>
-                )}
+ {error && (
+ <div className="p-3 text-sm text-error bg-error-bg border border-border rounded">
+ {error}
+ </div>
+ )}
 
-                <div className="mt-12">
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full py-2.5 px-4 text-[15px] font-medium tracking-wide rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none cursor-pointer disabled:opacity-50"
-                  >
-                    {isLoading ? "Creating account..." : "Sign Up"}
-                  </button>
-                </div>
+ <div className="mt-12">
+ <button
+ type="submit"
+ disabled={isLoading}
+ className="w-full py-2.5 px-4 text-[15px] font-medium tracking-wide rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none cursor-pointer disabled:opacity-50"
+ >
+ {isLoading ?"Creating account...":"Sign Up"}
+ </button>
+ </div>
 
-              </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
+ </div>
+ </form>
+ </div>
+ </div>
+ </div>
+ );
 }
 
 export const Component = SignUpPage;
