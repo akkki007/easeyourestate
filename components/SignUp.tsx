@@ -229,7 +229,7 @@ export default function Signup() {
  placeholder="Enter 10-digit number"
  value={phone}
  onChange={(e) => setPhone(e.target.value.replace(/\D/g,"").slice(0, 10))}
- className="flex-1 px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+ className="flex-1 px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
  autoFocus
  />
  </div>
@@ -260,7 +260,7 @@ export default function Signup() {
  placeholder="6-digit OTP"
  value={otp}
  onChange={(e) => setOtp(e.target.value.replace(/\D/g,"").slice(0, 6))}
- className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition tracking-[0.3em] text-center text-lg font-semibold"
+ className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition tracking-[0.3em] text-center text-lg font-semibold"
  autoFocus
  />
  </div>
@@ -302,7 +302,7 @@ export default function Signup() {
  {/* Step 3: Profile */}
  {step ==="profile"&& (
  <form onSubmit={handleCompleteProfile} className="space-y-4">
- <div className="px-3 py-2 rounded-lg bg-primary border border-primary text-sm text-primary font-medium">
+ <div className="px-3 py-2 rounded-lg bg-primary/10 border border-primary text-sm text-primary font-medium">
  Phone verified: +91 {phone}
  </div>
 
@@ -315,7 +315,7 @@ export default function Signup() {
  placeholder="Full name"
  value={name}
  onChange={(e) => setName(e.target.value)}
- className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+ className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
  autoFocus
  />
  </div>
@@ -329,7 +329,7 @@ export default function Signup() {
  placeholder="hi@example.com"
  value={email}
  onChange={(e) => setEmail(e.target.value)}
- className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+ className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
  />
  </div>
 
@@ -352,7 +352,7 @@ export default function Signup() {
  onClick={() => setSelectedRole(role.value)}
  className={`flex flex-col items-start p-3 rounded-xl border-2 text-left transition-all ${
  selectedRole === role.value
- ?"border-primary bg-primary"
+ ?"border-primary bg-primary/10"
  :"border-border hover:border-primary bg-background"
  }`}
  >
@@ -396,7 +396,7 @@ export default function Signup() {
  alt="Beautiful modern home"
  className="absolute inset-0 w-full h-full object-cover"
  />
- <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10"/>
+ <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-black/10"/>
 
  <div className="relative z-10 flex flex-col justify-end p-10 h-full">
  <h2 className="text-3xl font-bold text-primary-foreground leading-tight mb-3">
@@ -429,14 +429,14 @@ export default function Signup() {
  {/* Close button */}
  <button
  onClick={() => router.push("/")}
- className="absolute top-4 right-4 w-8 h-8 rounded-full bg-muted hover:bg-accent flex items-center justify-center transition-colors z-20"
+ className="absolute top-4 right-4 w-8 h-8 rounded-full bg-muted hover:bg-accent text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors z-20"
  >
  <svg
  width="14"
  height="14"
  viewBox="0 0 24 24"
  fill="none"
- stroke="#6b7280"
+ stroke="currentColor"
  strokeWidth="2.5"
  strokeLinecap="round"
  >

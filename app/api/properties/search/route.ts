@@ -35,6 +35,7 @@ export async function GET(req: NextRequest) {
  status:"active",
  deletedAt: null,
  };
+ const andConditions: any[] = [];
 
  let sortOption: any = { updatedAt: -1 };
 
@@ -62,6 +63,14 @@ export async function GET(req: NextRequest) {
  filter.purpose ="pg";
  } else if (type ==="Flatmates") {
  filter.propertyType ="flat";
+ } else {
+ const typeValues = type
+ .split(",")
+ .map((v) => v.trim())
+ .filter(Boolean);
+ if (typeValues.length > 0) {
+ filter.propertyType = { $in: typeValues };
+ }
  }
  }
 
@@ -94,7 +103,12 @@ export async function GET(req: NextRequest) {
  }
 
  if (parsedQuery.parking) {
- filter["specs.parking"] = true;
+ andConditions.push({
+ $or: [
+ { "specs.parking.covered": { $gt: 0 } },
+ { "specs.parking.open": { $gt: 0 } },
+ ],
+ });
  }
 
  // BHK FILTER FROM UI
@@ -102,7 +116,7 @@ export async function GET(req: NextRequest) {
  if (bhk) {
  const bhkValues = bhk
  .split(",")
- .map((v) => parseInt(v.split("")[0]))
+ .map((v) => parseInt(v, 10))
  .filter((v) => !isNaN(v));
 
  if (bhkValues.length > 0) {
@@ -119,7 +133,36 @@ export async function GET(req: NextRequest) {
  // PARKING
 
  if (parking) {
- filter["specs.parking"] = parking ==="true";
+ if (parking ==="true") {
+ andConditions.push({
+ $or: [
+ { "specs.parking.covered": { $gt: 0 } },
+ { "specs.parking.open": { $gt: 0 } },
+ ],
+ });
+ } else {
+ const parkingValues = parking
+ .split(",")
+ .map((v) => v.trim())
+ .filter(Boolean);
+ const normalizedParkingValues = parkingValues.map((v) => {
+ if (v ==="two_wheeler") return"open";
+ if (v ==="four_wheeler") return"covered";
+ return v;
+ });
+ const parkingConditions: any[] = [];
+ if (normalizedParkingValues.includes("covered")) {
+ parkingConditions.push({ "specs.parking.covered": { $gt: 0 } });
+ }
+ if (normalizedParkingValues.includes("open")) {
+ parkingConditions.push({ "specs.parking.open": { $gt: 0 } });
+ }
+ if (parkingConditions.length === 1) {
+ andConditions.push(parkingConditions[0]);
+ } else if (parkingConditions.length > 1) {
+ andConditions.push({ $or: parkingConditions });
+ }
+ }
  }
 
  // AMENITIES
@@ -142,13 +185,17 @@ export async function GET(req: NextRequest) {
  // AREA FILTER
 
  if (minArea || maxArea) {
- filter["specs.area.superBuiltUp"] = {};
-
- if (minArea)
- filter["specs.area.superBuiltUp"].$gte = parseInt(minArea);
-
- if (maxArea)
- filter["specs.area.superBuiltUp"].$lte = parseInt(maxArea);
+ const areaRange: any = {};
+ if (minArea) areaRange.$gte = parseInt(minArea, 10);
+ if (maxArea) areaRange.$lte = parseInt(maxArea, 10);
+ andConditions.push({
+ $or: [
+ { "specs.area.superBuiltUp": { ...areaRange } },
+ { "specs.area.builtUp": { ...areaRange } },
+ { "specs.area.carpet": { ...areaRange } },
+ { "specs.area.plot": { ...areaRange } },
+ ],
+ });
  }
 
  // POSSESSION STATUS
@@ -176,6 +223,10 @@ export async function GET(req: NextRequest) {
  { title: { $regex: cleanQuery, $options:"i"} },
  { description: { $regex: cleanQuery, $options:"i"} },
  ];
+ }
+
+ if (andConditions.length > 0) {
+ filter.$and = andConditions;
  }
  }
 

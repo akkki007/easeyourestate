@@ -239,6 +239,12 @@
                 border-color 0.3s ease,
                 color 0.3s ease !important;
   }
+  .maplibregl-popup-content {
+    @apply bg-transparent! shadow-none! p-0! rounded-none!;
+  }
+  .maplibregl-popup-tip {
+    @apply hidden!;
+  }
 }
 
 /* ============================================
@@ -395,21 +401,20 @@
   background: var(--color-text-tertiary);
 }
 
-
 .price-marker {
   background: transparent;
   border: none;
 }
 
 .price-tag {
-  background: white;
-  color: black;
+  background: var(--color-card);
+  color: var(--color-text-primary);
   font-weight: 600;
   font-size: 12px;
   padding: 4px 8px;
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border);
   white-space: nowrap;
 }
 
@@ -418,8 +423,8 @@
 }
 
 .cluster-icon {
-  background: #1f2937;
-  color: white;
+  background: var(--color-surface-elevated);
+  color: var(--color-text-primary);
   border-radius: 50%;
   width: 40px;
   height: 40px;

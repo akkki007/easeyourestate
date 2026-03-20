@@ -1,7 +1,7 @@
 "use client";
 
-import Link from"next/link";
-import { Home, MapPin, Compass, Building2, Bath, Bike, Heart, Share2, ExternalLink } from"lucide-react";
+import Link from "next/link";
+import { Home, MapPin, Compass, Building2, Bath, Bike, User, Share2, ExternalLink } from "lucide-react";
 
 export type AdvancedPropertyCardProps = {
  id: string;
@@ -87,7 +87,7 @@ export default function AdvancedPropertyCard({
  </div>
 
  {/* Main Info Strip */}
- <div className="flex divide-x divide-gray-100 bg-background/50">
+ <div className="flex divide-x divide-border bg-background/50">
  <div className="flex-1 p-4 flex flex-col items-center">
  <div className="flex items-center gap-2 text-muted-foreground mb-1">
  <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold">₹</div>
@@ -108,7 +108,7 @@ export default function AdvancedPropertyCard({
  {/* Content Area */}
  <div className="flex flex-col md:flex-row p-4 gap-4">
  {/* Image Section */}
- <div className="w-full md:w-[240px] aspect-[4/3] relative rounded-lg overflow-hidden bg-muted">
+ <div className="w-full md:w-[240px] aspect-4/3 relative rounded-lg overflow-hidden bg-muted">
  {media?.primary ? (
  <img src={media.primary} alt={title} className="w-full h-full object-cover"/>
  ) : (
@@ -120,7 +120,7 @@ export default function AdvancedPropertyCard({
  <LucideStar className="w-3 h-3 fill-current"/>
  Exclusive Deal
  </div>
- <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-black/50 text-primary-foreground text-[10px] font-medium rounded">
+ <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-background/80 text-foreground text-[10px] font-medium rounded border border-border">
  1/15
  </div>
  </div>
@@ -168,15 +168,15 @@ export default function AdvancedPropertyCard({
  </div>
  </div>
 
- {/* Footer Actions */}
- <div className="px-4 py-3 bg-card border-t border-border flex items-center justify-end">
- <button className="flex items-center gap-2 px-6 py-2.5 bg-error hover:bg-error text-primary-foreground font-bold rounded-lg transition-colors text-sm shadow-sm">
- <Heart className="w-4 h-4"/>
- Shortlist
- </button>
- </div>
- </div>
- );
+            {/* Footer Actions */}
+            <div className="px-4 py-3 bg-card border-t border-border flex items-center justify-end">
+                <Link href={`/property/${slug}`} className="flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-lg transition-colors text-sm shadow-sm">
+                    <User className="w-4 h-4" />
+                    Get Owner Details
+                </Link>
+            </div>
+        </div>
+    );
 }
 
 function LucideStar({ className, fill }: { className?: string; fill?: string }) {

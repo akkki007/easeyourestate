@@ -1,26 +1,33 @@
 "use client";
 
-import { useState, useEffect, useCallback } from"react";
-import { useRouter } from"next/navigation";
-import Image from"next/image";
-import Link from"next/link";
-import EnquiryCard from"./EnquiryCard";
-import SiteVisitCard from"./SiteVisitCard";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { Search, MapPin, Home } from "lucide-react";
+import EnquiryCard from "./EnquiryCard";
+import SiteVisitCard from "./SiteVisitCard";
 
 interface BuyerDashboardProps {
  user: any;
 }
 
 export default function BuyerDashboard({ user }: BuyerDashboardProps) {
- const router = useRouter();
- const [activeTab, setActiveTab] = useState("enquiries");
- const [enquiries, setEnquiries] = useState<any[]>([]);
- const [savedProperties, setSavedProperties] = useState<any[]>([]);
- const [savedSearches, setSavedSearches] = useState<any[]>([]);
- const [siteVisits, setSiteVisits] = useState<any[]>([]);
- const [loading, setLoading] = useState(true);
+    const router = useRouter();
+    const [activeTab, setActiveTab] = useState("search");
+    const [enquiries, setEnquiries] = useState<any[]>([]);
+    const [savedProperties, setSavedProperties] = useState<any[]>([]);
+    const [savedSearches, setSavedSearches] = useState<any[]>([]);
+    const [siteVisits, setSiteVisits] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
- const getToken = () => localStorage.getItem("token");
+    // Search tab state
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedCity, setSelectedCity] = useState("");
+    const [selectedPurpose, setSelectedPurpose] = useState("");
+    const [selectedBhk, setSelectedBhk] = useState("");
+
+    const getToken = () => localStorage.getItem("token");
 
  const fetchData = useCallback(async () => {
  setLoading(true);
@@ -102,70 +109,256 @@ export default function BuyerDashboard({ user }: BuyerDashboardProps) {
  router.push(`/search?${params.toString()}`);
  };
 
- if (!user) {
- return (
- <div className="flex items-center justify-center min-h-[400px]">
- <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border"></div>
- </div>
- );
- }
+    const handleSearch = () => {
+        const params = new URLSearchParams();
+        if (searchQuery.trim()) params.set("query", searchQuery.trim());
+        if (selectedCity) params.set("city", selectedCity);
+        if (selectedPurpose) params.set("purpose", selectedPurpose);
+        if (selectedBhk) params.set("bhk", selectedBhk);
+        router.push(`/search?${params.toString()}`);
+    };
 
- const tabs = [
- { id:"enquiries", label:"My Enquiries", count: enquiries.length },
- { id:"saved", label:"Saved Properties", count: savedProperties.length },
- { id:"visits", label:"Scheduled Visits", count: siteVisits.length },
- { id:"searches", label:"Saved Searches", count: savedSearches.length },
- ];
+    const handleCityChip = (city: string) => {
+        setSelectedCity(city);
+        const params = new URLSearchParams();
+        params.set("city", city);
+        if (selectedPurpose) params.set("purpose", selectedPurpose);
+        if (selectedBhk) params.set("bhk", selectedBhk);
+        router.push(`/search?${params.toString()}`);
+    };
 
- return (
- <div className="space-y-6">
- {/* Tabs */}
- <div className="flex border-b border-border overflow-x-auto">
- {tabs.map((tab) => (
- <button
- key={tab.id}
- onClick={() => setActiveTab(tab.id)}
- className={`
- px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors
- ${activeTab === tab.id
- ?"border-border text-foreground"
- :"border-transparent text-muted-foreground hover:text-foreground hover:border-border"
- }
-`}
- >
- {tab.label}
- {tab.count > 0 && (
- <span className="ml-2 px-2 py-0.5 rounded-full bg-accent text-muted-foreground text-xs">
- {tab.count}
- </span>
- )}
- </button>
- ))}
- </div>
+    if (!user) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+            </div>
+        );
+    }
 
- {/* Content */}
- <div className="min-h-[400px]">
- {loading ? (
- <div className="flex items-center justify-center h-64">
- <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border"></div>
- </div>
- ) : (
- <>
- {/* Enquiries Tab */}
- {activeTab ==="enquiries"&& (
- <div className="grid md:grid-cols-2 gap-4">
- {enquiries.length > 0 ? (
- enquiries.map((enquiry: any) => (
- <EnquiryCard key={enquiry._id} enquiry={enquiry} />
- ))
- ) : (
- <EmptyState
- message="No enquiries yet"
- description="Submit an enquiry on a property to see it here"
- />
- )}
- </div>
- )}
+    const popularCities = ["Bangalore", "Mumbai", "Delhi", "Hyderabad", "Pune", "Chennai"];
+    const bhkOptions = ["1", "2", "3", "4+"];
+    const purposeOptions = ["Buy", "Rent"];
+
+    const tabs: { id: string; label: string; count?: number }[] = [
+        { id: "search", label: "Search" },
+        { id: "enquiries", label: "My Enquiries", count: enquiries.length },
+        { id: "saved", label: "Saved Properties", count: savedProperties.length },
+        { id: "visits", label: "Scheduled Visits", count: siteVisits.length },
+        { id: "searches", label: "Saved Searches", count: savedSearches.length },
+    ];
+
+    return (
+        <div className="space-y-6">
+            {/* Tabs */}
+            <div className="flex border-b border-border overflow-x-auto">
+                {tabs.map((tab) => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`
+                            px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors
+                            ${activeTab === tab.id
+                                ? "border-accent text-accent"
+                                : "border-transparent text-secondary hover:text-primary hover:border-border"
+                            }
+                        `}
+                    >
+                        {tab.label}
+                        {tab.count != null && tab.count > 0 && (
+                            <span className="ml-2 px-2 py-0.5 rounded-full bg-hover text-tertiary text-xs">
+                                {tab.count}
+                            </span>
+                        )}
+                    </button>
+                ))}
+            </div>
+
+            {/* Content */}
+            <div className="min-h-[400px]">
+                {loading ? (
+                    <div className="flex items-center justify-center h-64">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+                    </div>
+                ) : (
+                    <>
+                        {/* Search Tab */}
+                        {activeTab === "search" && (
+                            <div className="space-y-6">
+                                {/* Search Bar */}
+                                <div className="bg-card border border-border rounded-2xl p-6">
+                                    <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
+                                        <Search className="w-5 h-5 text-accent" />
+                                        Find Your Perfect Property
+                                    </h3>
+                                    <div className="flex flex-col sm:flex-row gap-3">
+                                        <div className="relative grow">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-tertiary" />
+                                            <input
+                                                type="text"
+                                                placeholder="Search by locality, project, or landmark..."
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                                                className="w-full pl-10 pr-4 py-3 bg-hover border border-border rounded-xl text-primary placeholder:text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all text-sm"
+                                            />
+                                        </div>
+                                        <div className="relative sm:w-48">
+                                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-tertiary" />
+                                            <select
+                                                value={selectedCity}
+                                                onChange={(e) => setSelectedCity(e.target.value)}
+                                                className="w-full pl-10 pr-4 py-3 bg-hover border border-border rounded-xl text-primary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all text-sm appearance-none cursor-pointer"
+                                            >
+                                                <option value="">All Cities</option>
+                                                {popularCities.map((city) => (
+                                                    <option key={city} value={city}>{city}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <button
+                                            onClick={handleSearch}
+                                            className="px-6 py-3 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors font-medium text-sm flex items-center justify-center gap-2 sm:w-auto"
+                                        >
+                                            <Search className="w-4 h-4" />
+                                            Search
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Quick Filters */}
+                                <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
+                                    {/* Purpose */}
+                                    <div>
+                                        <label className="text-xs font-semibold text-secondary uppercase tracking-wider mb-2.5 block">
+                                            Purpose
+                                        </label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {purposeOptions.map((purpose) => (
+                                                <button
+                                                    key={purpose}
+                                                    onClick={() =>
+                                                        setSelectedPurpose(
+                                                            selectedPurpose === purpose.toLowerCase() ? "" : purpose.toLowerCase()
+                                                        )
+                                                    }
+                                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+                                                        selectedPurpose === purpose.toLowerCase()
+                                                            ? "bg-accent text-white border-accent"
+                                                            : "bg-hover text-secondary border-border hover:border-accent/50 hover:text-primary"
+                                                    }`}
+                                                >
+                                                    <Home className="w-3.5 h-3.5 inline-block mr-1.5 -mt-0.5" />
+                                                    {purpose}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* BHK */}
+                                    <div>
+                                        <label className="text-xs font-semibold text-secondary uppercase tracking-wider mb-2.5 block">
+                                            BHK
+                                        </label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {bhkOptions.map((bhk) => (
+                                                <button
+                                                    key={bhk}
+                                                    onClick={() =>
+                                                        setSelectedBhk(selectedBhk === bhk ? "" : bhk)
+                                                    }
+                                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+                                                        selectedBhk === bhk
+                                                            ? "bg-accent text-white border-accent"
+                                                            : "bg-hover text-secondary border-border hover:border-accent/50 hover:text-primary"
+                                                    }`}
+                                                >
+                                                    {bhk} BHK
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Popular Cities */}
+                                <div className="bg-card border border-border rounded-2xl p-6">
+                                    <h4 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <MapPin className="w-3.5 h-3.5" />
+                                        Popular Cities
+                                    </h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {popularCities.map((city) => (
+                                            <button
+                                                key={city}
+                                                onClick={() => handleCityChip(city)}
+                                                className="group flex items-center gap-2 px-4 py-2.5 bg-hover border border-border rounded-xl hover:border-accent hover:bg-accent/5 transition-all"
+                                            >
+                                                <MapPin className="w-3.5 h-3.5 text-tertiary group-hover:text-accent transition-colors" />
+                                                <span className="text-sm font-medium text-primary group-hover:text-accent transition-colors">
+                                                    {city}
+                                                </span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Recent Saved Searches */}
+                                {savedSearches.length > 0 && (
+                                    <div className="bg-card border border-border rounded-2xl p-6">
+                                        <h4 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                            <Search className="w-3.5 h-3.5" />
+                                            Recent Searches
+                                        </h4>
+                                        <div className="space-y-2">
+                                            {savedSearches.slice(0, 5).map((search: any) => {
+                                                const filters = search.filters || {};
+                                                const summary = Object.entries(filters)
+                                                    .filter(([, v]) => v !== undefined && v !== null && v !== "")
+                                                    .map(([k, v]) => `${k}: ${v}`)
+                                                    .join(" | ");
+                                                return (
+                                                    <button
+                                                        key={search._id}
+                                                        onClick={() => handleViewSearchResults(search)}
+                                                        className="w-full flex items-center gap-3 p-3 rounded-xl bg-hover hover:bg-accent/5 border border-transparent hover:border-accent/30 transition-all text-left group"
+                                                    >
+                                                        <Search className="w-4 h-4 text-tertiary group-hover:text-accent transition-colors shrink-0" />
+                                                        <div className="min-w-0 grow">
+                                                            <p className="text-sm font-medium text-primary truncate group-hover:text-accent transition-colors">
+                                                                {search.name}
+                                                            </p>
+                                                            {summary && (
+                                                                <p className="text-xs text-tertiary truncate mt-0.5">
+                                                                    {summary}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                        <svg className="w-4 h-4 text-tertiary group-hover:text-accent transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                        </svg>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Enquiries Tab */}
+                        {activeTab === "enquiries" && (
+                            <div className="grid md:grid-cols-2 gap-4">
+                                {enquiries.length > 0 ? (
+                                    enquiries.map((enquiry: any) => (
+                                        <EnquiryCard key={enquiry._id} enquiry={enquiry} />
+                                    ))
+                                ) : (
+                                    <EmptyState
+                                        message="No enquiries yet"
+                                        description="Submit an enquiry on a property to see it here"
+                                    />
+                                )}
+                            </div>
+                        )}
 
  {/* Saved Properties Tab */}
  {activeTab ==="saved"&& (
@@ -246,7 +439,7 @@ function SavedPropertyCard({ property, onUnsave }: { property: any; onUnsave: (i
  return (
  <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-border transition-colors group relative">
  <Link href={`/property/${property.slug}`}>
- <div className="aspect-[16/10] relative overflow-hidden bg-accent">
+<div className="aspect-16/10 relative overflow-hidden bg-accent">
  <Image
  src={thumbnail}
  alt={property.title ||"Property"}
@@ -314,7 +507,7 @@ function SavedSearchCard({
  return (
  <div className="p-4 bg-card border border-border rounded-xl hover:border-border transition-colors">
  <div className="flex justify-between items-start gap-4">
- <div className="min-w-0 flex-grow">
+<div className="min-w-0 grow">
  <h4 className="font-semibold text-foreground">{search.name}</h4>
  <p className="text-[10px] text-muted-foreground mt-0.5">
  Saved on {new Date(search.createdAt).toLocaleDateString()}
@@ -325,7 +518,7 @@ function SavedSearchCard({
  </div>
  )}
  </div>
- <div className="flex items-center gap-2 flex-shrink-0">
+<div className="flex items-center gap-2 shrink-0">
  <button
  onClick={() => onView(search)}
  className="px-3 py-1.5 text-xs bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"

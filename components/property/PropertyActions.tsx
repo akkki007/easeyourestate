@@ -66,14 +66,14 @@ export default function PropertyActions({ property, token, isAuthenticated }: Pr
  <div className="grid grid-cols-2 gap-3">
  <button
  onClick={() => setShowEnquiryModal(true)}
- className="flex flex-col items-center justify-center p-4 bg-primary rounded-2xl border border-primary text-primary hover:bg-primary transition-colors"
+ className="flex flex-col items-center justify-center p-4 bg-primary rounded-2xl border border-primary text-primary-foreground hover:bg-primary transition-colors"
  >
  <MessageSquare className="w-6 h-6 mb-1"/>
  <span className="text-xs font-bold uppercase tracking-wider">Enquire</span>
  </button>
  <button
  onClick={() => setShowVisitModal(true)}
- className="flex flex-col items-center justify-center p-4 bg-primary rounded-2xl border border-primary text-primary hover:bg-primary transition-colors"
+ className="flex flex-col items-center justify-center p-4 bg-primary rounded-2xl border border-primary text-primary-foreground hover:bg-primary transition-colors"
  >
  <Calendar className="w-6 h-6 mb-1"/>
  <span className="text-xs font-bold uppercase tracking-wider">Book Visit</span>
@@ -84,7 +84,7 @@ export default function PropertyActions({ property, token, isAuthenticated }: Pr
  <div className="flex gap-2">
  <button
  onClick={handleCompareToggle}
- className={`flex-grow py-3 px-4 rounded-xl border flex items-center justify-center gap-2 text-sm font-bold transition-all ${isCompared
+ className={`grow py-3 px-4 rounded-xl border flex items-center justify-center gap-2 text-sm font-bold transition-all ${isCompared
  ?"bg-primary border-primary text-primary-foreground"
  :"bg-card border-border text-foreground hover:border-primary hover:text-primary"
  }`}
@@ -170,7 +170,7 @@ function EnquiryModal({ property, onClose, token }: any) {
  };
 
  return (
- <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+ <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
  <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"onClick={onClose} />
  <div className="relative bg-card rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
  <div className="p-6 border-b border-border flex justify-between items-center">
@@ -281,7 +281,7 @@ function VisitModal({ property, onClose, token }: any) {
  };
 
  return (
- <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+ <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
  <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"onClick={onClose} />
  <div className="relative bg-card rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
  <div className="p-6 border-b border-border flex justify-between items-center">

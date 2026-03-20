@@ -12,6 +12,17 @@
 | Landing Page Search (NoBroker-style) | ✅ Done |
 | MODULE 1 — User Profile & Role Management | ✅ Done |
 | MODULE 8 — Admin Panel | ✅ Done |
+| MODULE 2 — Search Filters (Budget, BHK, Area, Furnishing, Property Type, Parking, Possession Status) | ✅ Done |
+| MODULE 2 — Search Results Sort (Relevance, Price, Date, Popularity) | ✅ Done |
+| MODULE 2 — Map-based Search (MapCN / MapLibre with markers & popups) | ✅ Done |
+| MODULE 2 — Featured/Sponsored Listings in Results | ✅ Done |
+| MODULE 3 — Buyer Dashboard with Search Tab, Enquiries, Saved Properties, Visits, Saved Searches | ✅ Done |
+| MODULE 3 — Enquire / Contact Seller (Leads) | ✅ Done |
+| MODULE 3 — Schedule Site Visit | ✅ Done |
+| MODULE 3 — Compare Properties | ✅ Done |
+| MODULE 3 — Price Trend Charts | ✅ Done |
+| MODULE 3 — Get Owner Details (on property cards & detail page) | ✅ Done |
+| MODULE 10 — Property Map View with auto-fit bounds & controls | ✅ Done |
 
 ---
 

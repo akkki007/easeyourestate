@@ -1,12 +1,46 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown, RotateCcw, Info } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 
 interface SearchSidebarProps {
     onFilterChange: (filters: any) => void;
     initialFilters: any;
+}
+
+const budgetRanges = [
+    { label: "₹10k – ₹50k", minPrice: "10000", maxPrice: "50000" },
+    { label: "₹50k – ₹1L", minPrice: "50000", maxPrice: "100000" },
+    { label: "₹1L – ₹2L", minPrice: "100000", maxPrice: "200000" },
+    { label: "₹5L – ₹20L", minPrice: "500000", maxPrice: "2000000" },
+    { label: "₹20L – ₹50L", minPrice: "2000000", maxPrice: "5000000" },
+    { label: "₹50L – ₹1Cr", minPrice: "5000000", maxPrice: "10000000" },
+    { label: "₹1Cr – ₹2Cr", minPrice: "10000000", maxPrice: "20000000" },
+    { label: "₹2Cr+", minPrice: "20000000", maxPrice: "" },
+];
+
+const areaRanges = [
+    { label: "500 – 1000 sqft", min_area: "500", max_area: "1000" },
+    { label: "1000 – 2000 sqft", min_area: "1000", max_area: "2000" },
+    { label: "2000 – 4000 sqft", min_area: "2000", max_area: "4000" },
+    { label: "4000+ sqft", min_area: "4000", max_area: "" },
+];
+
+const bhkOptions = [
+    { label: "1 RK", value: "1" },
+    { label: "1 BHK", value: "1" },
+    { label: "2 BHK", value: "2" },
+    { label: "3 BHK", value: "3" },
+    { label: "4 BHK", value: "4" },
+    { label: "4+ BHK", value: "4+" },
+];
+
+function getBudgetKey(minPrice: string, maxPrice: string) {
+    return `${minPrice}-${maxPrice}`;
+}
+
+function getAreaKey(min_area: string, max_area: string) {
+    return `${min_area}-${max_area}`;
 }
 
 export default function SearchSidebar({ onFilterChange, initialFilters }: SearchSidebarProps) {
@@ -15,18 +49,49 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
     const [furnishing, setFurnishing] = useState<string[]>(initialFilters.furnishing ? initialFilters.furnishing.split(",") : []);
     const [propertyType, setPropertyType] = useState<string[]>(initialFilters.type ? initialFilters.type.split(",") : []);
     const [parking, setParking] = useState<string[]>(initialFilters.parking ? initialFilters.parking.split(",") : []);
-    const [priceRange, setPriceRange] = useState<string>("");
+    const [selectedBudget, setSelectedBudget] = useState<string>(
+        initialFilters.minPrice && initialFilters.maxPrice
+            ? getBudgetKey(initialFilters.minPrice, initialFilters.maxPrice)
+            : initialFilters.minPrice
+                ? getBudgetKey(initialFilters.minPrice, "")
+                : ""
+    );
+    const [selectedArea, setSelectedArea] = useState<string>(
+        initialFilters.min_area && initialFilters.max_area
+            ? getAreaKey(initialFilters.min_area, initialFilters.max_area)
+            : initialFilters.min_area
+                ? getAreaKey(initialFilters.min_area, "")
+                : ""
+    );
 
-    const handleBhkToggle = (val: string) => {
-        const newBhk = bhk.includes(val)
-            ? bhk.filter((item) => item !== val)
-            : [...bhk, val];
-
+    const handleBhkToggle = (value: string) => {
+        const newBhk = bhk.includes(value) ? bhk.filter((item) => item !== value) : [...bhk, value];
         setBhk(newBhk);
+        onFilterChange({ bhk: newBhk.length ? newBhk.join(",") : "" });
+    };
 
-        onFilterChange({
-            bhk: newBhk.length ? newBhk.join(",") : ""
-        });
+    const handleBudgetSelect = (minPrice: string, maxPrice: string) => {
+        const key = getBudgetKey(minPrice, maxPrice);
+        if (selectedBudget === key) {
+            // Deselect if clicking the same budget
+            setSelectedBudget("");
+            onFilterChange({ minPrice: "", maxPrice: "" });
+        } else {
+            setSelectedBudget(key);
+            onFilterChange({ minPrice, maxPrice });
+        }
+    };
+
+    const handleAreaSelect = (min_area: string, max_area: string) => {
+        const key = getAreaKey(min_area, max_area);
+        if (selectedArea === key) {
+            // Deselect if clicking the same area
+            setSelectedArea("");
+            onFilterChange({ min_area: "", max_area: "" });
+        } else {
+            setSelectedArea(key);
+            onFilterChange({ min_area, max_area });
+        }
     };
 
     const handleFurnishingToggle = (val: string) => {
@@ -57,18 +122,15 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
         });
     };
 
-    const handlePriceSelect = (min: string, max: string) => {
-        const value = `${min}-${max}`;
-
-        const newValue = priceRange === value ? "" : value;
-
-        setPriceRange(newValue);
-
-        onFilterChange(
-            newValue
-                ? { minPrice: min, maxPrice: max }
-                : { minPrice: "", maxPrice: "" }
-        );
+    const handlePropertyStatusChange = (val: string) => {
+        if (propertyStatus === val) {
+            // Deselect if clicking the same status
+            setPropertyStatus("");
+            onFilterChange({ possession: "" });
+        } else {
+            setPropertyStatus(val);
+            onFilterChange({ possession: val });
+        }
     };
 
     const resetFilters = () => {
@@ -77,155 +139,135 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
         setFurnishing([]);
         setPropertyType([]);
         setParking([]);
-        onFilterChange({});
+        setSelectedBudget("");
+        setSelectedArea("");
+        onFilterChange({
+            bhk: "",
+            possession: "",
+            furnishing: "",
+            type: "",
+            parking: "",
+            minPrice: "",
+            maxPrice: "",
+            min_area: "",
+            max_area: "",
+        });
     };
 
     return (
-        <div className="w-80 flex-shrink-0 bg-card border border-border rounded-lg overflow-hidden hidden lg:block h-fit sticky top-24">
+        <div className="w-80 shrink-0 bg-card border border-border rounded-lg overflow-hidden hidden lg:block h-fit sticky top-24">
             <div className="p-5 border-b border-border flex items-center justify-between bg-card sticky top-0 z-10">
                 <span className="text-sm font-bold text-primary uppercase tracking-wider">Filters</span>
-                <button onClick={resetFilters} className="text-xs font-semibold text-muted-foreground hover:text-primary flex items-center gap-1">
+                <button onClick={resetFilters} className="text-xs font-semibold text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
                     <RotateCcw className="w-3 h-3" />
                     Reset
                 </button>
             </div>
 
-            <div className="p-5 space-y-8">
+            <div className="p-5 space-y-6 max-h-[calc(100vh-8rem)] overflow-y-auto">
                 {/* BHK Type */}
                 <div>
-                    <h3 className="text-sm font-bold text-foreground mb-4">BHK Type</h3>
+                    <h3 className="text-sm font-bold text-foreground mb-3">BHK Type</h3>
                     <div className="grid grid-cols-3 gap-2">
-                        {["1 RK", "1 BHK", "2 BHK", "3 BHK", "4 BHK", "4+ BHK"].map((val) => (
+                        {bhkOptions.map((option) => (
                             <button
-                                key={val}
-                                onClick={() => handleBhkToggle(val)}
-                                className={`py-2 text-xs font-semibold rounded-md border transition-all ${bhk.includes(val)
+                                key={`${option.label}-${option.value}`}
+                                onClick={() => handleBhkToggle(option.value)}
+                                className={`py-2 text-xs font-semibold rounded-md border transition-all ${bhk.includes(option.value)
                                     ? "bg-primary/10 border-primary text-primary"
                                     : "bg-card border-border text-muted-foreground hover:border-border"
                                     }`}
                             >
-                                {val}
+                                {option.label}
                             </button>
                         ))}
                     </div>
                 </div>
 
+                <hr className="border-border" />
+
+                {/* Budget */}
                 <div>
-                    <h3 className="text-sm font-bold text-foreground mb-4">Budget</h3>
-
+                    <h3 className="text-sm font-bold text-foreground mb-3">Budget</h3>
                     <div className="space-y-2">
-
-                        {[
-                            { label: "₹10k – ₹50k", min: "10000", max: "50000" },
-                            { label: "₹50k – ₹1L", min: "50000", max: "100000" },
-                            { label: "₹1L – ₹2L", min: "100000", max: "200000" }
-                        ].map(({ label, min, max }) => {
-                            const value = `${min}-${max}`;
-                            const selected = priceRange === value;
-
+                        {budgetRanges.map((range) => {
+                            const key = getBudgetKey(range.minPrice, range.maxPrice);
+                            const isActive = selectedBudget === key;
                             return (
                                 <button
-                                    key={value}
-                                    onClick={() => handlePriceSelect(min, max)}
-                                    className={`block w-full text-left px-3 py-2 rounded-md border text-sm transition-all ${selected
-                                        ? "bg-primary/10 border-primary text-primary"
-                                        : "bg-card border-border text-foreground hover:bg-accent"
+                                    key={key}
+                                    onClick={() => handleBudgetSelect(range.minPrice, range.maxPrice)}
+                                    className={`block w-full text-left px-3 py-2 rounded-md border text-sm transition-all ${isActive
+                                        ? "bg-primary/10 border-primary text-primary font-semibold shadow-sm"
+                                        : "bg-secondary border-border text-muted-foreground hover:border-border hover:bg-accent"
                                         }`}
                                 >
-                                    {label}
+                                    {range.label}
                                 </button>
                             );
                         })}
-
                     </div>
                 </div>
 
+                <hr className="border-border" />
+
+                {/* Area */}
                 <div>
-                    <h3 className="text-sm font-bold text-foreground mb-4">Area (sq ft)</h3>
-
+                    <h3 className="text-sm font-bold text-foreground mb-3">Area (sq ft)</h3>
                     <div className="space-y-2">
-
-                        <button
-                            onClick={() => onFilterChange({ min_area: "500", max_area: "1000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-foreground hover:bg-muted"
-                        >
-                            500 – 1000 sqft
-                        </button>
-
-                        <button
-                            onClick={() => onFilterChange({ min_area: "1000", max_area: "2000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-foreground hover:bg-muted"
-                        >
-                            1000 – 2000 sqft
-                        </button>
-
-                        <button
-                            onClick={() => onFilterChange({ min_area: "2000", max_area: "4000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-foreground hover:bg-muted"
-                        >
-                            2000 – 4000 sqft
-                        </button>
-
-                        <button
-                            onClick={() => onFilterChange({ min_area: "4000" })}
-                            className="block w-full text-left px-3 py-2 rounded-md border text-sm text-foreground hover:bg-muted"
-                        >
-                            4000+ sqft
-                        </button>
-
+                        {areaRanges.map((range) => {
+                            const key = getAreaKey(range.min_area, range.max_area);
+                            const isActive = selectedArea === key;
+                            return (
+                                <button
+                                    key={key}
+                                    onClick={() => handleAreaSelect(range.min_area, range.max_area)}
+                                    className={`block w-full text-left px-3 py-2 rounded-md border text-sm transition-all ${isActive
+                                        ? "bg-primary/10 border-primary text-primary font-semibold shadow-sm"
+                                        : "bg-secondary border-border text-muted-foreground hover:border-border hover:bg-accent"
+                                        }`}
+                                >
+                                    {range.label}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
-                {/* New Builder Projects */}
-                <label className="flex items-center gap-3 cursor-pointer group">
-                    <input type="checkbox" className="w-4 h-4 rounded border-border text-primary focus:ring-primary" />
-                    <span className="text-sm font-medium text-foreground">New Builder Projects</span>
-                    <span className="px-1.5 py-0.5 bg-error text-error text-[9px] font-bold rounded flex items-center gap-0.5 uppercase">
-                        Offer
-                    </span>
-                </label>
+                <hr className="border-border" />
 
                 {/* Property Status */}
                 <div>
-                    <h3 className="text-sm font-bold text-foreground mb-4">Property Status</h3>
-                    <div className="flex items-center gap-6">
-                        <label className="flex items-center gap-2 cursor-pointer group">
-                            <input
-                                type="radio"
-                                name="status"
-                                checked={propertyStatus === "under_construction"}
-                                onChange={() => {
-                                    setPropertyStatus("under_construction");
-                                    onFilterChange({ possession: "under_construction" });
-                                }}
-                                className="w-4 h-4 border-border text-primary focus:ring-primary"
-                            />
-                            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Under Construction</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer group">
-                            <input
-                                type="radio"
-                                name="status"
-                                checked={propertyStatus === "ready"}
-                                onChange={() => {
-                                    setPropertyStatus("ready");
-                                    onFilterChange({ possession: "ready" });
-                                }}
-                                className="w-4 h-4 border-border text-primary focus:ring-primary"
-                            />
-                            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Ready</span>
-                        </label>
+                    <h3 className="text-sm font-bold text-foreground mb-3">Property Status</h3>
+                    <div className="flex flex-wrap items-center gap-4">
+                        {[
+                            { label: "Under Construction", value: "under_construction" },
+                            { label: "Ready to Move", value: "ready" },
+                        ].map((item) => (
+                            <button
+                                key={item.value}
+                                onClick={() => handlePropertyStatusChange(item.value)}
+                                className={`px-3 py-1.5 rounded-md border text-sm transition-all ${propertyStatus === item.value
+                                    ? "bg-primary/10 border-primary text-primary font-semibold shadow-sm"
+                                    : "bg-secondary border-border text-muted-foreground hover:border-border"
+                                    }`}
+                            >
+                                {item.label}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
+                <hr className="border-border" />
+
                 {/* Furnishing */}
                 <div>
-                    <h3 className="text-sm font-bold text-foreground mb-4">Furnishing</h3>
-                    <div className="flex items-center gap-6">
+                    <h3 className="text-sm font-bold text-foreground mb-3">Furnishing</h3>
+                    <div className="flex items-center gap-4">
                         {[
                             { label: "Full", value: "fully" },
                             { label: "Semi", value: "semi" },
-                            { label: "None", value: "unfurnished" }
+                            { label: "None", value: "unfurnished" },
                         ].map((item) => (
                             <label key={item.value} className="flex items-center gap-2 cursor-pointer group">
                                 <input
@@ -234,21 +276,24 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                                     onChange={() => handleFurnishingToggle(item.value)}
                                     className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                                 />
-                                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">{item.value}</span>
+                                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">{item.label}</span>
                             </label>
                         ))}
                     </div>
                 </div>
 
+                <hr className="border-border" />
+
                 {/* Property Type */}
                 <div>
-                    <h3 className="text-sm font-bold text-foreground mb-4">Property Type</h3>
+                    <h3 className="text-sm font-bold text-foreground mb-3">Property Type</h3>
                     <div className="space-y-3">
                         {[
-                            { id: "apartment", label: "Apartment" },
-                            { id: "villa", label: "Independent House/Villa" },
-                            { id: "gated_villa", label: "Gated Community Villa" },
-                            { id: "standalone", label: "Standalone Building" }
+                            { id: "flat", label: "Flat / Apartment" },
+                            { id: "house", label: "House" },
+                            { id: "villa", label: "Villa" },
+                            { id: "penthouse", label: "Penthouse" },
+                            { id: "plot", label: "Plot" },
                         ].map((type) => (
                             <label key={type.id} className="flex items-center gap-3 cursor-pointer group">
                                 <input
@@ -263,16 +308,18 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                     </div>
                 </div>
 
+                <hr className="border-border" />
+
                 {/* Parking */}
                 <div>
-                    <h3 className="text-sm font-bold text-foreground mb-4">Parking</h3>
+                    <h3 className="text-sm font-bold text-foreground mb-3">Parking</h3>
                     <div className="flex items-center gap-6">
                         <label className="flex items-center gap-2 cursor-pointer group">
                             <input
                                 type="checkbox"
-                                checked={parking.includes("two_wheeler")}
+                                checked={parking.includes("open")}
                                 onChange={(e) => {
-                                    const newParking = e.target.checked ? [...parking, "two_wheeler"] : parking.filter(p => p !== "two_wheeler");
+                                    const newParking = e.target.checked ? [...parking, "open"] : parking.filter(p => p !== "open");
                                     setParking(newParking);
                                     onFilterChange({ parking: newParking.join(",") });
                                 }}
@@ -283,9 +330,9 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                         <label className="flex items-center gap-2 cursor-pointer group">
                             <input
                                 type="checkbox"
-                                checked={parking.includes("four_wheeler")}
+                                checked={parking.includes("covered")}
                                 onChange={(e) => {
-                                    const newParking = e.target.checked ? [...parking, "four_wheeler"] : parking.filter(p => p !== "four_wheeler");
+                                    const newParking = e.target.checked ? [...parking, "covered"] : parking.filter(p => p !== "covered");
                                     setParking(newParking);
                                     onFilterChange({ parking: newParking.join(",") });
                                 }}
