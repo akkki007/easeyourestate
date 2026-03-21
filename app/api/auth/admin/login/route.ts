@@ -1,55 +1,138 @@
-import { NextResponse } from"next/server";
-import { signToken } from"@/lib/jwt";
-import { dbConnect } from"@/lib/db/connection";
-import User from"@/lib/db/models/User";
-import bcrypt from"bcryptjs";
+import { NextResponse } from "next/server";
+import { signToken } from "@/lib/jwt";
+import { dbConnect } from "@/lib/db/connection";
+import User from "@/lib/db/models/User";
+import bcrypt from "bcryptjs";
 
-// Hard-coded admin credentials
-const ADMIN_USERNAME ="admin";
-const ADMIN_PASSWORD ="admin";
+export async function GET() {
+  try {
+    await dbConnect();
+    const admin = await User.findOne({ role: "admin" }).select("_id");
+    return NextResponse.json({ adminExists: !!admin });
+  } catch {
+    return NextResponse.json({ adminExists: false });
+  }
+}
 
 export async function POST(req: Request) {
- try {
- const { username, password } = await req.json();
+  try {
+    const body = await req.json();
+    const { mode } = body;
 
- if (!username || !password) {
- return NextResponse.json({ error:"Username and password required"}, { status: 400 });
- }
+    await dbConnect();
 
- if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
- return NextResponse.json({ error:"Invalid admin credentials"}, { status: 401 });
- }
+    if (mode === "setup") {
+      return handleSetup(body);
+    }
 
- await dbConnect();
+    return handleLogin(body);
+  } catch (err) {
+    console.error("Admin auth error:", err);
+    return NextResponse.json({ error: "Authentication failed" }, { status: 500 });
+  }
+}
 
- // Find or create the admin user in DB so JWT/auth works consistently
- let admin = await User.findOne({ role:"admin", email:"admin@easeyourestate.com"});
+async function handleSetup(body: {
+  setupKey?: string;
+  email?: string;
+  password?: string;
+  name?: string;
+}) {
+  const { setupKey, email, password, name } = body;
 
- if (!admin) {
- const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 10);
- admin = await User.create({
- name: { first:"Admin", last:""},
- email:"admin@easeyourestate.com",
- password: hashedPassword,
- role:"admin",
- phone:"0000000000",
- });
- }
+  const requiredKey = process.env.ADMIN_SETUP_KEY;
+  if (!requiredKey) {
+    return NextResponse.json(
+      { error: "Admin setup is not configured. Set ADMIN_SETUP_KEY in .env" },
+      { status: 503 },
+    );
+  }
 
- const token = signToken({ id: admin._id, role:"admin"});
+  if (!setupKey || setupKey !== requiredKey) {
+    return NextResponse.json({ error: "Invalid setup key" }, { status: 403 });
+  }
 
- return NextResponse.json({
- message:"Admin login successful",
- token,
- user: {
- _id: admin._id,
- name: admin.name,
- email: admin.email,
- role:"admin",
- },
- });
- } catch (err) {
- console.error("Admin login error:", err);
- return NextResponse.json({ error:"Login failed"}, { status: 500 });
- }
+  if (!email || !password || !name) {
+    return NextResponse.json(
+      { error: "Email, password, and name are required" },
+      { status: 400 },
+    );
+  }
+
+  if (password.length < 8) {
+    return NextResponse.json(
+      { error: "Password must be at least 8 characters" },
+      { status: 400 },
+    );
+  }
+
+  const existing = await User.findOne({ role: "admin" });
+  if (existing) {
+    return NextResponse.json(
+      { error: "Admin account already exists. Use login instead." },
+      { status: 409 },
+    );
+  }
+
+  const [first, ...lastParts] = name.trim().split(/\s+/);
+  const hashedPassword = await bcrypt.hash(password, 12);
+
+  const admin = await User.create({
+    name: { first, last: lastParts.join(" ") },
+    email: email.toLowerCase().trim(),
+    password: hashedPassword,
+    role: "admin",
+    phone: "0000000000",
+  });
+
+  const token = signToken({ id: admin._id, role: "admin" });
+
+  return NextResponse.json({
+    message: "Admin account created successfully",
+    token,
+    user: {
+      _id: admin._id,
+      name: admin.name,
+      email: admin.email,
+      role: "admin",
+    },
+  });
+}
+
+async function handleLogin(body: { email?: string; password?: string }) {
+  const { email, password } = body;
+
+  if (!email || !password) {
+    return NextResponse.json(
+      { error: "Email and password are required" },
+      { status: 400 },
+    );
+  }
+
+  const admin = await User.findOne({
+    role: "admin",
+    email: email.toLowerCase().trim(),
+  }).select("+password");
+
+  if (!admin || !admin.password) {
+    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+  }
+
+  const isMatch = await bcrypt.compare(password, admin.password);
+  if (!isMatch) {
+    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+  }
+
+  const token = signToken({ id: admin._id, role: "admin" });
+
+  return NextResponse.json({
+    message: "Admin login successful",
+    token,
+    user: {
+      _id: admin._id,
+      name: admin.name,
+      email: admin.email,
+      role: "admin",
+    },
+  });
 }

@@ -45,10 +45,10 @@ export default function BuyerDashboard({ user }: BuyerDashboardProps) {
  ]);
 
  const [enquiriesData, visitsData, savedData, searchesData] = await Promise.all([
- enquiriesRes.json(),
- visitsRes.json(),
- savedRes.json(),
- searchesRes.json(),
+ enquiriesRes.ok ? enquiriesRes.json() : Promise.resolve({ leads: [] }),
+ visitsRes.ok ? visitsRes.json() : Promise.resolve({ siteVisits: [] }),
+ savedRes.ok ? savedRes.json() : Promise.resolve({ properties: [] }),
+ searchesRes.ok ? searchesRes.json() : Promise.resolve({ savedSearches: [] }),
  ]);
 
  setEnquiries(enquiriesData.leads || []);

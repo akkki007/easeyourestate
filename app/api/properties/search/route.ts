@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from"next/server";
-import { dbConnect } from"@/lib/db/connection";
-import Property from"@/lib/db/models/Property";
-import { parseSearchQuery } from"@/lib/helpers/parseSearchQuery";
+import { NextRequest, NextResponse } from "next/server";
+import { dbConnect } from "@/lib/db/connection";
+import Property from "@/lib/db/models/Property";
+import { parseSearchQuery } from "@/lib/helpers/parseSearchQuery";
+import { escapeRegex } from "@/lib/helpers/sanitize";
 
 export async function GET(req: NextRequest) {
  try {
@@ -46,7 +47,7 @@ export async function GET(req: NextRequest) {
 
  // CITY FILTER
  if (city) {
- filter["location.city"] = { $regex: new RegExp(city,"i") };
+ filter["location.city"] = { $regex: new RegExp(escapeRegex(city),"i") };
  }
 
  // PURPOSE
@@ -86,14 +87,14 @@ export async function GET(req: NextRequest) {
 
  if (parsedQuery.locality) {
  filter["location.locality"] = {
- $regex: parsedQuery.locality,
+ $regex: escapeRegex(parsedQuery.locality),
  $options:"i",
  };
  }
 
  if (parsedQuery.city) {
  filter["location.city"] = {
- $regex: parsedQuery.city,
+ $regex: escapeRegex(parsedQuery.city),
  $options:"i"
  };
  }
@@ -219,9 +220,10 @@ export async function GET(req: NextRequest) {
  .trim();
 
  if (cleanQuery.length > 2) {
+ const escaped = escapeRegex(cleanQuery);
  filter.$or = [
- { title: { $regex: cleanQuery, $options:"i"} },
- { description: { $regex: cleanQuery, $options:"i"} },
+ { title: { $regex: escaped, $options:"i"} },
+ { description: { $regex: escaped, $options:"i"} },
  ];
  }
 

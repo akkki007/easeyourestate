@@ -21,12 +21,12 @@ export default function Signup() {
  const [isLoading, setIsLoading] = useState(false);
  const [resendTimer, setResendTimer] = useState(0);
 
- // If redirected from login with phone pre-filled, skip to profile
+ // If redirected from login with phone pre-filled, pre-fill the phone field
+ // but still require OTP verification (never skip to profile)
  useEffect(() => {
  const prefilled = searchParams.get("phone");
  if (prefilled && /^[6-9]\d{9}$/.test(prefilled)) {
  setPhone(prefilled);
- setStep("profile");
  }
  }, [searchParams]);
 

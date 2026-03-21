@@ -1,62 +1,67 @@
-import { NextRequest, NextResponse } from"next/server";
-import { dbConnect } from"@/lib/db/connection";
-import { requireAuth } from"@/lib/auth/auth";
-import SiteVisit from"@/lib/db/models/SiteVisit";
-import Property from"@/lib/db/models/Property";
+import { NextRequest, NextResponse } from "next/server";
+import { dbConnect } from "@/lib/db/connection";
+import { requireAuth } from "@/lib/auth/auth";
+import SiteVisit from "@/lib/db/models/SiteVisit";
+import Property from "@/lib/db/models/Property";
+import { isValidObjectId } from "@/lib/helpers/sanitize";
 
 export async function POST(req: NextRequest) {
- try {
- const user = await requireAuth(req);
- if (!user) {
- return NextResponse.json({ error:"Unauthorized"}, { status: 401 });
- }
+  try {
+    const user = await requireAuth(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
- const body = await req.json();
- const { propertyId, preferredDate, preferredTime, notes } = body;
+    const body = await req.json();
+    const { propertyId, preferredDate, preferredTime, notes } = body;
 
- if (!propertyId || !preferredDate || !preferredTime) {
- return NextResponse.json({ error:"Missing required fields"}, { status: 400 });
- }
+    if (!propertyId || !preferredDate || !preferredTime) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
 
- await dbConnect();
+    if (!isValidObjectId(propertyId)) {
+      return NextResponse.json({ error: "Invalid property ID" }, { status: 400 });
+    }
 
- const property = await Property.findById(propertyId);
- if (!property) {
- return NextResponse.json({ error:"Property not found"}, { status: 404 });
- }
+    await dbConnect();
 
- const siteVisit = await SiteVisit.create({
- propertyId,
- buyerId: user._id,
- preferredDate,
- preferredTime,
- notes,
- status:"pending",
- });
+    const property = await Property.findById(propertyId);
+    if (!property) {
+      return NextResponse.json({ error: "Property not found" }, { status: 404 });
+    }
 
- return NextResponse.json({ siteVisit }, { status: 201 });
- } catch (error) {
- console.error("POST /api/site-visits error:", error);
- return NextResponse.json({ error:"Internal Server Error"}, { status: 500 });
- }
+    const siteVisit = await SiteVisit.create({
+      propertyId,
+      buyerId: user._id,
+      preferredDate,
+      preferredTime,
+      notes: notes ? String(notes).slice(0, 1000) : undefined,
+      status: "pending",
+    });
+
+    return NextResponse.json({ siteVisit }, { status: 201 });
+  } catch (error) {
+    console.error("POST /api/site-visits error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
 
 export async function GET(req: NextRequest) {
- try {
- const user = await requireAuth(req);
- if (!user) {
- return NextResponse.json({ error:"Unauthorized"}, { status: 401 });
- }
+  try {
+    const user = await requireAuth(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
- await dbConnect();
+    await dbConnect();
 
- const siteVisits = await SiteVisit.find({ buyerId: user._id })
- .populate("propertyId","title location price media")
- .sort({ preferredDate: 1, preferredTime: 1 });
+    const siteVisits = await SiteVisit.find({ buyerId: user._id })
+      .populate("propertyId", "title location price media")
+      .sort({ preferredDate: 1, preferredTime: 1 });
 
- return NextResponse.json({ siteVisits });
- } catch (error) {
- console.error("GET /api/site-visits error:", error);
- return NextResponse.json({ error:"Internal Server Error"}, { status: 500 });
- }
+    return NextResponse.json({ siteVisits });
+  } catch (error) {
+    console.error("GET /api/site-visits error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
