@@ -12,7 +12,7 @@ export default function CompareBridgePage() {
  useEffect(() => {
  const compareIds = JSON.parse(localStorage.getItem("compareProperties") ||"[]");
  if (compareIds.length > 0) {
- router.push(`/properties/compare?ids=${compareIds.join(",")}`);
+ router.replace(`/properties/compare?ids=${compareIds.join(",")}`);
  } else {
  setStatus("empty");
  }
@@ -37,7 +37,7 @@ export default function CompareBridgePage() {
  Go to property listings and click"Add to Compare"on up to 3 properties to see them side-by-side.
  </p>
  <div className="flex flex-col sm:flex-row gap-4 justify-center">
- <Link href="/dashboard/search"className="btn-primary">
+ <Link href="/search"className="btn-primary">
  Browse Properties
  </Link>
  <Link href="/dashboard"className="px-6 py-3 border border-border rounded-xl font-bold hover:bg-hover transition-colors">

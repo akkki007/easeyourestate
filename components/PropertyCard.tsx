@@ -2,6 +2,7 @@
 
 import Link from"next/link";
 import { Home, MapPin } from"lucide-react";
+import SavedPropertyButton from "./SavedPropertyButton";
 
 export type PropertyCardProps = {
  id: string;
@@ -17,6 +18,7 @@ export type PropertyCardProps = {
 };
 
 export default function PropertyCard({
+ id,
  slug,
  title,
  purpose,
@@ -33,22 +35,29 @@ export default function PropertyCard({
  return`₹${(n / 1000).toFixed(0)}K`;
  };
 
- const statusBadge = (s: string) => {
- const styles: Record<string, string> = {
- draft:"bg-muted text-foreground",
- active:"bg-success text-success",
- pending_review:"bg-warning text-warning",
- sold:"bg-muted text-muted-foreground",
- rented:"bg-muted text-muted-foreground",
- archived:"bg-error text-error",
- };
- const label = s.replace(/_/g,"");
- return (
- <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium capitalize ${styles[s] ??"bg-muted text-muted-foreground"}`}>
- {label}
- </span>
- );
- };
+  const statusBadge = (s: string) => {
+    const styles: Record<string, string> = {
+      draft: "bg-muted text-secondary",
+      active: "bg-[#10b981] text-white shadow-sm",
+      pending_review: "bg-warning text-white shadow-sm",
+      sold: "bg-muted text-muted-foreground",
+      rented: "bg-muted text-muted-foreground",
+      archived: "bg-error text-white shadow-sm",
+    };
+    const labels: Record<string, string> = {
+      active: "Available",
+      pending_review: "Pending",
+      sold: "Sold",
+      rented: "Rented",
+      draft: "Draft",
+    };
+    const label = labels[s] || s.replace(/_/g, " ");
+    return (
+      <span className={`inline-flex px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${styles[s] ?? "bg-muted text-muted-foreground"}`}>
+        {label}
+      </span>
+    );
+  };
 
  return (
  <Link
@@ -67,17 +76,13 @@ export default function PropertyCard({
  <Home className="w-12 h-12 text-muted-foreground"/>
  </div>
  )}
- {status && (
- <div className="absolute top-3 left-3">
- {statusBadge(status)}
- </div>
- )}
- <div className="absolute bottom-3 left-3">
- <span className="inline-block px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-primary-foreground text-xs font-semibold capitalize">
- For {purpose}
- </span>
- </div>
- </div>
+  <SavedPropertyButton propertyId={id} />
+  {(status || purpose) && (
+    <div className="absolute top-3 left-3">
+      {statusBadge(status || (purpose === "Rent" ? "active" : "pending_review"))}
+    </div>
+  )}
+  </div>
  <div className="p-4">
  <h3 className="font-bold text-foreground line-clamp-1 mb-1 group-hover:text-primary transition-colors">{title}</h3>
  <div className="flex items-center gap-1.5 text-muted-foreground text-sm mb-3">

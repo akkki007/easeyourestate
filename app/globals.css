@@ -1,9 +1,10 @@
 @import "tailwindcss";
+
 /* SF Pro Display Font */
 @font-face {
   font-family: 'SF Pro Display';
   src: url('/fonts/SFPRODISPLAYREGULAR.woff2') format('woff2'),
-       url('/fonts/SFPRODISPLAYREGULAR.OTF') format('opentype');
+    url('/fonts/SFPRODISPLAYREGULAR.OTF') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -12,7 +13,7 @@
 @font-face {
   font-family: 'SF Pro Display';
   src: url('/fonts/SFPRODISPLAYMEDIUM.woff2') format('woff2'),
-       url('/fonts/SFPRODISPLAYMEDIUM.OTF') format('opentype');
+    url('/fonts/SFPRODISPLAYMEDIUM.OTF') format('opentype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -21,7 +22,7 @@
 @font-face {
   font-family: 'SF Pro Display';
   src: url('/fonts/SFPRODISPLAYBOLD.woff2') format('woff2'),
-       url('/fonts/SFPRODISPLAYBOLD.OTF') format('opentype');
+    url('/fonts/SFPRODISPLAYBOLD.OTF') format('opentype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -200,17 +201,17 @@
   --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 
   --color-primary: var(--color-accent);
---color-primary-foreground: #ffffff;
+  --color-primary-foreground: #ffffff;
 
---color-ring: var(--color-accent);
+  --color-ring: var(--color-accent);
 
---color-accent-foreground: #ffffff;
+  --color-accent-foreground: #ffffff;
 
---color-secondary: var(--color-bg-secondary);
---color-secondary-foreground: var(--color-text-primary);
+  --color-secondary: var(--color-bg-secondary);
+  --color-secondary-foreground: var(--color-text-primary);
 
---color-destructive: var(--color-error);
---color-destructive-foreground: #ffffff;
+  --color-destructive: var(--color-error);
+  --color-destructive-foreground: #ffffff;
 
   /* Radius */
   --radius-DEFAULT: 12px;
@@ -236,14 +237,19 @@
   html.transitioning *::before,
   html.transitioning *::after {
     transition: background-color 0.3s ease,
-                border-color 0.3s ease,
-                color 0.3s ease !important;
+      border-color 0.3s ease,
+      color 0.3s ease !important;
   }
+
   .maplibregl-popup-content {
-    @apply bg-transparent! shadow-none! p-0! rounded-none!;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
   }
+
   .maplibregl-popup-tip {
-    @apply hidden!;
+    display: none !important;
   }
 }
 
@@ -320,6 +326,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -331,6 +338,7 @@
     opacity: 0;
     transform: scale(0.8);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -342,6 +350,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -353,6 +362,7 @@
     stroke-dashoffset: 100;
     stroke-dasharray: 100;
   }
+
   to {
     stroke-dashoffset: 0;
     stroke-dasharray: 100;
@@ -413,7 +423,7 @@
   font-size: 12px;
   padding: 4px 8px;
   border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
   border: 1px solid var(--color-border);
   white-space: nowrap;
 }
@@ -432,5 +442,5 @@
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }

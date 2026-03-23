@@ -20,6 +20,7 @@ import {
  Home,
  Building2,
 } from"lucide-react";
+import SavedPropertyButton from "@/components/SavedPropertyButton";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 interface Property {
@@ -554,8 +555,9 @@ function PropertyCard({
  <span className="absolute top-3 left-3 px-2.5 py-1 text-xs font-semibold rounded-lg bg-card/90 backdrop-blur text-foreground shadow-sm">
  {purposeLabel(property.purpose)}
  </span>
+ <SavedPropertyButton propertyId={property._id} />
  {property.featured?.isFeatured && (
- <span className="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-lg bg-warning text-warning">
+ <span className="absolute top-14 right-3 px-2.5 py-1 text-xs font-semibold rounded-lg bg-warning text-warning">
  Featured
  </span>
  )}

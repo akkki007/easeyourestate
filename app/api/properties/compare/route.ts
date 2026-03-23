@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
     await dbConnect();
 
     const properties = await Property.find({ _id: { $in: ids } })
-      .select("title price specs amenities location media listedBy propertyType")
+      .select("title slug price specs amenities location media listedBy propertyType")
       .populate("listedBy", "name phone email avatar role");
 
     return NextResponse.json({ properties });
