@@ -1,31 +1,32 @@
-import type { Metadata } from'next'
-import'leaflet/dist/leaflet.css'
-import'./globals.css'
-import { ThemeProvider } from'@/components/ThemeProvider'
-import { ReduxProvider } from"@/store/ReduxProvider";
-import { AuthProvider } from"@/lib/auth/AuthContext";
+import type { Metadata } from 'next'
+import 'leaflet/dist/leaflet.css'
+import './globals.css'
+import { ThemeProvider } from '@/components/ThemeProvider'
+import { ReduxProvider } from "@/store/ReduxProvider";
+import { AuthProvider } from "@/lib/auth/AuthContext";
+import { SavedPropertiesProvider } from "@/lib/saved-properties/SavedPropertiesContext";
 
 export const metadata: Metadata = {
- title:'easeyourestate Properties - Your Dream Property Awaits',
- description:'Your journey to finding the perfect property begins here.',
+    title: 'easeyourestate Properties - Your Dream Property Awaits',
+    description: 'Your journey to finding the perfect property begins here.',
 }
 
 export default function RootLayout({
- children,
+    children,
 }: Readonly<{
- children: React.ReactNode
+    children: React.ReactNode
 }>) {
- return (
- <html lang="en"suppressHydrationWarning>
- <head>
- <link
- href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
- rel="stylesheet"
- />
- {/* Prevent flash of wrong theme */}
- <script
- dangerouslySetInnerHTML={{
- __html:`
+    return (
+        <html lang="en" suppressHydrationWarning>
+            <head>
+                <link
+                    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+                    rel="stylesheet"
+                />
+                {/* Prevent flash of wrong theme */}
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
  (function() {
  try {
  var theme = localStorage.getItem('easeyourestate-theme');
@@ -35,18 +36,20 @@ export default function RootLayout({
  } catch (e) {}
  })();
 `,
- }}
- />
- </head>
- <body className="font-display antialiased">
- <ReduxProvider>
- <AuthProvider>
- <ThemeProvider>
- {children}
- </ThemeProvider>
- </AuthProvider>
- </ReduxProvider>
- </body>
- </html>
- )
+                    }}
+                />
+            </head>
+            <body className="font-display antialiased">
+                <ReduxProvider>
+                    <AuthProvider>
+                        <SavedPropertiesProvider>
+                            <ThemeProvider>
+                                {children}
+                            </ThemeProvider>
+                        </SavedPropertiesProvider>
+                    </AuthProvider>
+                </ReduxProvider>
+            </body>
+        </html>
+    )
 }

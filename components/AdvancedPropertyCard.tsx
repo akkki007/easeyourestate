@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Home, MapPin, Compass, Building2, Bath, Bike, User, Share2, ExternalLink } from "lucide-react";
+import SavedPropertyButton from "./SavedPropertyButton";
 
 export type AdvancedPropertyCardProps = {
  id: string;
@@ -28,6 +29,7 @@ export type AdvancedPropertyCardProps = {
 };
 
 export default function AdvancedPropertyCard({
+ id,
  slug,
  title,
  purpose,
@@ -81,9 +83,11 @@ export default function AdvancedPropertyCard({
  </button>
  </div>
  </div>
- <button className="p-1.5 text-muted-foreground hover:text-error hover:bg-error rounded-lg transition-all">
+ <div className="flex items-center gap-1">
+ <button className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all">
  <Share2 className="w-5 h-5"/>
  </button>
+ </div>
  </div>
 
  {/* Main Info Strip */}
@@ -116,6 +120,7 @@ export default function AdvancedPropertyCard({
  <Home className="w-12 h-12 text-muted-foreground"/>
  </div>
  )}
+ <SavedPropertyButton propertyId={id} />
  <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded flex items-center gap-1">
  <LucideStar className="w-3 h-3 fill-current"/>
  Exclusive Deal

@@ -60,13 +60,13 @@ export default function DashboardPage() {
         switch (role) {
             case "buyer":
                 return [
-                    { label: "Search Properties", href: "/dashboard/search", icon: "search" },
+                    { label: "Search Properties", href: "/search", icon: "search" },
                     { label: "Compare Properties", href: "/dashboard/compare", icon: "repeat" },
                     { label: "My Appointments", href: "/dashboard/appointments", icon: "calendar" },
                 ];
             case "tenant":
                 return [
-                    { label: "Search Rentals", href: "/dashboard/search", icon: "search" },
+                    { label: "Search Rentals", href: "/search", icon: "search" },
                     { label: "View Saved", href: "/dashboard/saved", icon: "heart" },
                     { label: "Saved Searches", href: "/dashboard/saved-searches", icon: "list" },
                 ];
@@ -313,7 +313,7 @@ export default function DashboardPage() {
                                     }
                                 </p>
                                 <Link
-                                    href={userRole === "buyer" ? "/dashboard/search" : "/dashboard/settings"}
+                                    href={userRole === "buyer" ? "/search" : "/dashboard/settings"}
                                     className="text-sm font-medium text-accent hover:text-accent-hover inline-flex items-center gap-1"
                                 >
                                     Learn more
