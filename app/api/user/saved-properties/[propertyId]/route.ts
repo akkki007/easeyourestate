@@ -27,11 +27,17 @@ export async function POST(req: NextRequest, { params }: Params) {
  return NextResponse.json({ error:"Property not found"}, { status: 404 });
  }
 
- await User.findByIdAndUpdate(user._id, {
+ const result = await User.updateOne({ _id: user._id }, {
  $addToSet: {"preferences.favoriteProperties": propertyId },
  });
 
- return NextResponse.json({ message:"Property saved"});
+ if (result.modifiedCount > 0) {
+   await Property.updateOne({ _id: propertyId }, {
+     $inc: { "metrics.favorites": 1 },
+   });
+ }
+
+ return NextResponse.json({ message:"Property saved", saved: true });
 }
 
 // DELETE /api/user/saved-properties/:propertyId — Unsave a property
@@ -49,9 +55,16 @@ export async function DELETE(req: NextRequest, { params }: Params) {
 
  await dbConnect();
 
- await User.findByIdAndUpdate(user._id, {
+ const result = await User.updateOne({ _id: user._id }, {
  $pull: {"preferences.favoriteProperties": propertyId },
  });
 
- return NextResponse.json({ message:"Property unsaved"});
+ if (result.modifiedCount > 0) {
+   await Property.updateOne(
+     { _id: propertyId, "metrics.favorites": { $gt: 0 } },
+     { $inc: { "metrics.favorites": -1 } },
+   );
+ }
+
+ return NextResponse.json({ message:"Property unsaved", saved: false });
 }

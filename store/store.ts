@@ -3,10 +3,10 @@ import creditReducer from "./creditSlice";
 import propertyReducer from "./propertySlice";
 
 export const store = configureStore({
- reducer: {
-  credits: creditReducer,
-  properties: propertyReducer,
-},
+  reducer: {
+    credits: creditReducer,
+    properties: propertyReducer,
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
