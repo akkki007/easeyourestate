@@ -12,7 +12,9 @@ export type PropertyCardProps = {
  category: string;
  propertyType: string;
  status?: string;
- price: { amount: number; currency: string };
+ price?: { amount: number; currency?: string; deposit?: number };
+ rental_details?: { monthly_rent: number; security_deposit?: number };
+ pg_details?: { monthly_rent: number; security_deposit?: number };
  location: { city: string; locality: string };
  media: { primary: string | null } | null;
 };
@@ -26,6 +28,8 @@ export default function PropertyCard({
  propertyType,
  status,
  price,
+ rental_details,
+ pg_details,
  location,
  media,
 }: PropertyCardProps) {
@@ -91,7 +95,22 @@ export default function PropertyCard({
  </div>
  <div className="flex items-center justify-between mt-auto">
  <p className="text-xl font-bold text-primary">
- {formatPrice(price.amount)}
+ {(()=>{
+ const p = purpose.toLowerCase();
+ if (p === "rent" || p === "lease") {
+ const amount = rental_details?.monthly_rent || 0;
+ if (amount === 0) return "Price on Request";
+ return `₹${amount.toLocaleString('en-IN')} / month`;
+ }
+ if (p === "pg") {
+ const amount = pg_details?.monthly_rent || 0;
+ if (amount === 0) return "Price on Request";
+ return `₹${amount.toLocaleString('en-IN')} / month`;
+ }
+ const amount = price?.amount || 0;
+ if (amount === 0) return "Price on Request";
+ return formatPrice(amount);
+ })()}
  </p>
  <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
  {propertyType.replace(/_/g,"")} · {category}

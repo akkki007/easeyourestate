@@ -49,6 +49,19 @@ type Property = {
         maintenance?: number;
         deposit?: number;
     };
+    rental_details?: {
+        monthly_rent: number;
+        security_deposit: number;
+        available_from: Date;
+        pet_friendly: boolean;
+    };
+    pg_details?: {
+        monthly_rent: number;
+        security_deposit: number;
+        sharing_type: string[];
+        meals_included: boolean;
+        gender_preference: string;
+    };
     specs: {
         bedrooms?: number;
         bathrooms?: number;
@@ -321,8 +334,12 @@ export default function PropertyDetailPage() {
                                     </div>
                                 </div>
                                 <div className="hidden md:block text-right">
-                                    <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest mb-1">Total Price</p>
-                                    <p className="text-4xl font-black text-primary">₹{formatPrice(property.price.amount)}</p>
+                                    <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest mb-1">
+                                        {property.purpose === "sell" ? "Total Price" : "Monthly Rent"}
+                                    </p>
+                                    <p className="text-4xl font-black text-primary">
+                                        ₹{formatPrice(property.purpose === "sell" ? property.price.amount : property.rental_details?.monthly_rent || property.pg_details?.monthly_rent || 0)}
+                                    </p>
                                 </div>
                             </div>
 
@@ -458,8 +475,10 @@ export default function PropertyDetailPage() {
                             <div className="bg-card rounded-[2.5rem] border border-border shadow-2xl p-8 space-y-8">
                                 <div>
                                     <div className="flex items-end gap-1 mb-1">
-                                        <p className="text-4xl font-black text-foreground">₹{formatPrice(property.price.amount)}</p>
-                                        {property.price.pricePerSqft && (
+                                        <p className="text-4xl font-black text-foreground">
+                                            ₹{formatPrice(property.purpose === "sell" ? property.price.amount : property.rental_details?.monthly_rent || property.pg_details?.monthly_rent || 0)}
+                                        </p>
+                                        {property.purpose !== "sell" && (
                                             <span className="text-sm text-muted-foreground font-bold mb-1">/ Month</span>
                                         )}
                                     </div>
@@ -473,14 +492,48 @@ export default function PropertyDetailPage() {
 
                                 <div className="space-y-4">
                                     <div className="p-4 rounded-2xl bg-background border border-border space-y-3">
-                                        <div className="flex justify-between items-center text-sm">
-                                            <span className="text-muted-foreground font-medium">Estimated EMI</span>
-                                            <span className="text-foreground font-bold">₹{Math.round(property.price.amount * 0.0075).toLocaleString()}/mo</span>
-                                        </div>
-                                        <div className="flex justify-between items-center text-sm">
-                                            <span className="text-muted-foreground font-medium">Monthly Maintenance</span>
-                                            <span className="text-foreground font-bold">₹{property.price.maintenance || 0}</span>
-                                        </div>
+                                        {property.purpose === "sell" ? (
+                                            <>
+                                                <div className="flex justify-between items-center text-sm">
+                                                    <span className="text-muted-foreground font-medium">Estimated EMI</span>
+                                                    <span className="text-foreground font-bold">₹{Math.round(property.price.amount * 0.0075).toLocaleString()}/mo</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-sm">
+                                                    <span className="text-muted-foreground font-medium">Monthly Maintenance</span>
+                                                    <span className="text-foreground font-bold">₹{property.price.maintenance || 0}</span>
+                                                </div>
+                                            </>
+                                        ) : property.purpose === "pg" ? (
+                                            <>
+                                                <div className="flex justify-between items-center text-sm">
+                                                    <span className="text-muted-foreground font-medium">Security Deposit</span>
+                                                    <span className="text-foreground font-bold">₹{formatPrice(property.pg_details?.security_deposit || 0)}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-sm">
+                                                    <span className="text-muted-foreground font-medium">Sharing Type</span>
+                                                    <span className="text-foreground font-bold">{property.pg_details?.sharing_type?.join(", ")}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-sm">
+                                                    <span className="text-muted-foreground font-medium">Meals Included</span>
+                                                    <span className="text-foreground font-bold">{property.pg_details?.meals_included ? "Yes" : "No"}</span>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="flex justify-between items-center text-sm">
+                                                    <span className="text-muted-foreground font-medium">Security Deposit</span>
+                                                    <span className="text-foreground font-bold">₹{formatPrice(property.rental_details?.security_deposit || 0)}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-sm">
+                                                    <span className="text-muted-foreground font-medium">Pet Friendly</span>
+                                                    <span className="text-foreground font-bold">{property.rental_details?.pet_friendly ? "Yes" : "No"}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-sm">
+                                                    <span className="text-muted-foreground font-medium">Available From</span>
+                                                    <span className="text-foreground font-bold">{property.rental_details?.available_from ? new Date(property.rental_details.available_from).toLocaleDateString() : "Immediate"}</span>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
 
@@ -633,7 +686,8 @@ export default function PropertyDetailPage() {
                                             </div>
                                         )}
                                         <div className="absolute top-4 left-4 px-3 py-1.5 bg-card/90 backdrop-blur rounded-xl text-xs font-black text-foreground shadow-sm">
-                                            {formatPrice(p.price.amount)}
+                                            {formatPrice(p.purpose === "sell" ? p.price.amount : p.rental_details?.monthly_rent || p.pg_details?.monthly_rent || 0)}
+                                            {p.purpose !== "sell" && " / Mo"}
                                         </div>
                                     </div>
                                     <div>

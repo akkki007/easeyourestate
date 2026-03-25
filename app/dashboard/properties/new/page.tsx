@@ -71,12 +71,20 @@ export default function NewPropertyPage() {
  const [propertyType, setPropertyType] = useState<string>("flat");
  const [title, setTitle] = useState("");
  const [description, setDescription] = useState("");
- const [priceAmount, setPriceAmount] = useState("");
- const [negotiable, setNegotiable] = useState(false);
- const [maintenance, setMaintenance] = useState("");
- const [deposit, setDeposit] = useState("");
- const [bedrooms, setBedrooms] = useState("");
- const [bathrooms, setBathrooms] = useState("");
+  const [priceAmount, setPriceAmount] = useState("");
+  const [negotiable, setNegotiable] = useState(false);
+  const [maintenance, setMaintenance] = useState("");
+  const [deposit, setDeposit] = useState("");
+  const [monthlyRent, setMonthlyRent] = useState("");
+  const [availableFrom, setAvailableFrom] = useState("");
+  const [petFriendly, setPetFriendly] = useState(false);
+  const [preferredTenants, setPreferredTenants] = useState("");
+  const [sharingType, setSharingType] = useState("");
+  const [genderPreference, setGenderPreference] = useState("Any");
+  const [mealsIncluded, setMealsIncluded] = useState(false);
+
+  const [bedrooms, setBedrooms] = useState("");
+  const [bathrooms, setBathrooms] = useState("");
  const [furnishing, setFurnishing] = useState("unfurnished");
  const [parkingCovered, setParkingCovered] = useState(0);
  const [parkingOpen, setParkingOpen] = useState(0);
@@ -198,22 +206,26 @@ export default function NewPropertyPage() {
  if (trimmedTitle.length < 10) nextErrors.title ="Title must be at least 10 characters.";
  if (trimmedTitle.length > 200) nextErrors.title ="Title cannot exceed 200 characters.";
 
- if (trimmedDescription.length < 50) nextErrors.description ="Description must be at least 50 characters.";
- if (trimmedDescription.length > 5000) nextErrors.description ="Description cannot exceed 5000 characters.";
+  if (trimmedDescription.length < 50) nextErrors.description ="Description must be at least 50 characters.";
+  if (trimmedDescription.length > 5000) nextErrors.description ="Description cannot exceed 5000 characters.";
 
- if (!Number.isFinite(amount) || amount <= 0) nextErrors.priceAmount ="Price must be greater than 0.";
+  if (purpose === "sell") {
+    if (!Number.isFinite(amount) || amount <= 0) nextErrors.priceAmount ="Total Price must be greater than 0.";
+  } else {
+    const rentVal = Number(monthlyRent);
+    if (!Number.isFinite(rentVal) || rentVal <= 0) nextErrors.monthlyRent = "Monthly rent must be greater than 0.";
+    if (depositAmount === undefined || !Number.isFinite(depositAmount) || depositAmount < 0) nextErrors.deposit = "Deposit is required and must be 0 or more.";
+  }
 
- if ((purpose ==="rent"|| purpose ==="lease"|| purpose ==="pg") && maintenanceAmount !== undefined) {
- if (!Number.isFinite(maintenanceAmount) || maintenanceAmount < 0) {
- nextErrors.maintenance ="Maintenance must be 0 or more.";
- }
- }
+  if (purpose === "rent" || purpose === "lease") {
+    if (!availableFrom) nextErrors.availableFrom = "Available from date is required.";
+  }
 
- if ((purpose ==="rent"|| purpose ==="lease"|| purpose ==="pg") && depositAmount !== undefined) {
- if (!Number.isFinite(depositAmount) || depositAmount < 0) {
- nextErrors.deposit ="Deposit must be 0 or more.";
- }
- }
+  if (purpose === "pg") {
+    if (!sharingType.trim()) nextErrors.sharingType = "Sharing type is required.";
+  }
+
+  const rentVal = Number(monthlyRent);
 
  if (bedroomsCount !== undefined && (!Number.isInteger(bedroomsCount) || bedroomsCount < 0)) {
  nextErrors.bedrooms ="Bedrooms must be a whole number (0 or more).";
@@ -277,13 +289,27 @@ export default function NewPropertyPage() {
  propertyType,
  title: trimmedTitle,
  description: trimmedDescription,
- price: {
- amount,
- currency:"INR",
- negotiable,
- maintenance: maintenanceAmount,
- deposit: depositAmount,
- },
+        price: purpose === "sell" ? {
+          amount,
+          currency: "INR",
+          negotiable,
+          maintenance: maintenanceAmount,
+        } : undefined,
+        rental_details: (purpose === "rent" || purpose === "lease") ? {
+          monthly_rent: rentVal,
+          security_deposit: depositAmount || 0,
+          maintenance: maintenanceAmount,
+          available_from: new Date(availableFrom),
+          pet_friendly: petFriendly,
+          preferred_tenants: preferredTenants.split(",").map(s => s.trim()).filter(Boolean),
+        } : undefined,
+        pg_details: purpose === "pg" ? {
+          monthly_rent: rentVal,
+          security_deposit: depositAmount || 0,
+          sharing_type: sharingType.split(",").map(s => s.trim()).filter(Boolean),
+          meals_included: mealsIncluded,
+          gender_preference: genderPreference,
+        } : undefined,
  specs: {
  bedrooms: bedroomsCount,
  bathrooms: bathroomsCount,
@@ -438,71 +464,177 @@ export default function NewPropertyPage() {
  </section>
 
  <section className="bg-card rounded-2xl border border-border p-6">
- <h2 className="text-lg font-semibold text-primary mb-4">Pricing</h2>
- <div className="grid sm:grid-cols-2 gap-4">
- <div>
- <Label>Price (₹)</Label>
- <input
- type="number"
- value={priceAmount}
- onChange={(e) => {
- setPriceAmount(e.target.value);
- clearFieldError("priceAmount");
- setError(null);
- }}
- className={getFieldClass("priceAmount")}
- placeholder="e.g. 8500000"
- min={1}
- required
- />
- <FieldError message={fieldErrors.priceAmount} />
- </div>
- <div className="flex items-center gap-2 pt-8">
- <input
- type="checkbox"
- id="negotiable"
- checked={negotiable}
- onChange={(e) => setNegotiable(e.target.checked)}
- className="rounded border-border"
- />
- <label htmlFor="negotiable"className="text-sm text-secondary">Negotiable</label>
- </div>
- {(purpose ==="rent"|| purpose ==="lease"|| purpose ==="pg") && (
- <>
- <div>
- <Label>Maintenance (₹/month)</Label>
- <input
- type="number"
- value={maintenance}
- onChange={(e) => {
- setMaintenance(e.target.value);
- clearFieldError("maintenance");
- setError(null);
- }}
- className={getFieldClass("maintenance")}
- min={0}
- />
- <FieldError message={fieldErrors.maintenance} />
- </div>
- <div>
- <Label>Deposit (₹)</Label>
- <input
- type="number"
- value={deposit}
- onChange={(e) => {
- setDeposit(e.target.value);
- clearFieldError("deposit");
- setError(null);
- }}
- className={getFieldClass("deposit")}
- min={0}
- />
- <FieldError message={fieldErrors.deposit} />
- </div>
- </>
- )}
- </div>
- </section>
+  <h2 className="text-lg font-semibold text-primary mb-4">Pricing & Terms</h2>
+  <div className="grid sm:grid-cols-2 gap-4">
+    {purpose === "sell" ? (
+      <>
+        <div>
+          <Label>Total Price (₹)</Label>
+          <input
+            type="number"
+            value={priceAmount}
+            onChange={(e) => {
+              setPriceAmount(e.target.value);
+              clearFieldError("priceAmount");
+              setError(null);
+            }}
+            className={getFieldClass("priceAmount")}
+            placeholder="e.g. 8500000"
+            min={1}
+            required={purpose === "sell"}
+          />
+          <FieldError message={fieldErrors.priceAmount} />
+        </div>
+        <div className="flex items-center gap-2 pt-8">
+          <input
+            type="checkbox"
+            id="negotiable"
+            checked={negotiable}
+            onChange={(e) => setNegotiable(e.target.checked)}
+            className="rounded border-border"
+          />
+          <label htmlFor="negotiable" className="text-sm text-secondary">Negotiable</label>
+        </div>
+      </>
+    ) : (
+      <>
+        <div>
+          <Label>Monthly Rent (₹)</Label>
+          <input
+            type="number"
+            value={monthlyRent}
+            onChange={(e) => {
+              setMonthlyRent(e.target.value);
+              clearFieldError("monthlyRent");
+              setError(null);
+            }}
+            className={getFieldClass("monthlyRent")}
+            placeholder="e.g. 25000"
+            min={1}
+            required
+          />
+          <FieldError message={fieldErrors.monthlyRent} />
+        </div>
+        <div>
+          <Label>Security Deposit (₹)</Label>
+          <input
+            type="number"
+            value={deposit}
+            onChange={(e) => {
+              setDeposit(e.target.value);
+              clearFieldError("deposit");
+              setError(null);
+            }}
+            className={getFieldClass("deposit")}
+            placeholder="e.g. 100000"
+            min={0}
+            required
+          />
+          <FieldError message={fieldErrors.deposit} />
+        </div>
+      </>
+    )}
+
+    {Math.random() > 2 && ( /* Ensure old maintenance field code syntax doesn't conflict, removing previous logic gracefully. */ null )}
+
+    {(purpose === "rent" || purpose === "lease") && (
+      <>
+        <div>
+          <Label>Maintenance (₹/month) - Optional</Label>
+          <input
+            type="number"
+            value={maintenance}
+            onChange={(e) => {
+              setMaintenance(e.target.value);
+              clearFieldError("maintenance");
+              setError(null);
+            }}
+            className={getFieldClass("maintenance")}
+            min={0}
+          />
+        </div>
+        <div>
+          <Label>Available From</Label>
+          <input
+            type="date"
+            value={availableFrom}
+            onChange={(e) => {
+              setAvailableFrom(e.target.value);
+              clearFieldError("availableFrom");
+              setError(null);
+            }}
+            className={getFieldClass("availableFrom")}
+            required
+          />
+          <FieldError message={fieldErrors.availableFrom} />
+        </div>
+        <div>
+          <Label>Preferred Tenants</Label>
+          <input
+            type="text"
+            value={preferredTenants}
+            onChange={(e) => setPreferredTenants(e.target.value)}
+            className={getFieldClass("preferredTenants")}
+            placeholder="e.g. Family, Bachelors"
+          />
+        </div>
+        <div className="flex items-center gap-2 pt-8">
+          <input
+            type="checkbox"
+            id="petFriendly"
+            checked={petFriendly}
+            onChange={(e) => setPetFriendly(e.target.checked)}
+            className="rounded border-border"
+          />
+          <label htmlFor="petFriendly" className="text-sm text-secondary">Pet Friendly</label>
+        </div>
+      </>
+    )}
+
+    {purpose === "pg" && (
+      <>
+        <div>
+          <Label>Sharing Type</Label>
+          <input
+            type="text"
+            value={sharingType}
+            onChange={(e) => {
+              setSharingType(e.target.value);
+              clearFieldError("sharingType");
+              setError(null);
+            }}
+            className={getFieldClass("sharingType")}
+            placeholder="e.g. Single, Double, Triple"
+            required
+          />
+          <FieldError message={fieldErrors.sharingType} />
+        </div>
+        <div>
+          <Label>Gender Preference</Label>
+          <select
+            value={genderPreference}
+            onChange={(e) => setGenderPreference(e.target.value)}
+            className="w-full px-4 py-2.5 rounded-xl theme-input border border-border focus:outline-none focus:ring-2 focus:ring-accent/20"
+          >
+            <option value="Any">Any</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-2 pt-8">
+          <input
+            type="checkbox"
+            id="mealsIncluded"
+            checked={mealsIncluded}
+            onChange={(e) => setMealsIncluded(e.target.checked)}
+            className="rounded border-border"
+          />
+          <label htmlFor="mealsIncluded" className="text-sm text-secondary">Meals Included</label>
+        </div>
+      </>
+    )}
+  </div>
+</section>
 
  <section className="bg-card rounded-2xl border border-border p-6">
  <h2 className="text-lg font-semibold text-primary mb-4">Specifications</h2>

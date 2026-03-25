@@ -106,6 +106,32 @@ const metricsSchema = new Schema(
   { _id: false }
 );
 
+const rentalDetailsSchema = new Schema(
+  {
+    monthly_rent: { type: Number, required: true },
+    security_deposit: { type: Number, required: true },
+    maintenance: Number,
+    lock_in_period: String,
+    available_from: { type: Date, required: true },
+    pet_friendly: { type: Boolean, default: false },
+    preferred_tenants: { type: [String], default: [] },
+  },
+  { _id: false }
+);
+
+const pgDetailsSchema = new Schema(
+  {
+    monthly_rent: { type: Number, required: true },
+    security_deposit: { type: Number, required: true },
+    sharing_type: { type: [String], required: true },
+    meals_included: { type: Boolean, default: false },
+    gender_preference: { type: String, enum: ["Male", "Female", "Any"], required: true },
+    rules: [String],
+  },
+  { _id: false }
+);
+
+
 const propertySchema = new Schema(
   {
     slug: { type: String, required: true, unique: true },
@@ -120,11 +146,16 @@ const propertySchema = new Schema(
     },
     title: { type: String, required: true },
     description: { type: String, required: true },
-    price: { type: priceSchema, required: true },
+    price: { 
+      type: priceSchema, 
+      required: function(this: any) { return this.purpose === 'sell'; } 
+    },
     specs: { type: specsSchema, default: () => ({}) },
     amenities: { type: [String], default: [] },
     location: { type: locationSchema, required: true },
     media: { type: mediaSchema, default: () => ({}) },
+    rental_details: { type: rentalDetailsSchema, default: undefined },
+    pg_details: { type: pgDetailsSchema, default: undefined },
     project: { type: Schema.Types.ObjectId, ref: "Project" },
     status: {
       type: String,
@@ -160,7 +191,7 @@ export interface IProperty {
   propertyType: string;
   title: string;
   description: string;
-  price: {
+  price?: {
     amount: number;
     currency: string;
     pricePerSqft?: number;
@@ -184,6 +215,26 @@ export interface IProperty {
     floorPlan?: { url: string; publicId: string };
     brochure?: { url: string; publicId: string };
   };
+
+  rental_details?: {
+    monthly_rent: number;
+    security_deposit: number;
+    maintenance?: number;
+    lock_in_period?: string;
+    available_from: Date;
+    pet_friendly: boolean;
+    preferred_tenants: string[];
+  };
+
+  pg_details?: {
+    monthly_rent: number;
+    security_deposit: number;
+    sharing_type: string[];
+    meals_included: boolean;
+    gender_preference: "Male" | "Female" | "Any";
+    rules?: string[];
+  };
+
   status: string;
   featured: { isFeatured: boolean; featuredUntil?: Date; plan?: string };
   metrics: Record<string, number>;

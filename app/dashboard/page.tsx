@@ -241,7 +241,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Main Content Grid */}
-                {userRole === "buyer" ? (
+                {(userRole === "buyer" || userRole === "tenant") ? (
                     <BuyerDashboard user={user} />
                 ) : (
                     <div className="grid lg:grid-cols-3 gap-6">

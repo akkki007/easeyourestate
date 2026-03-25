@@ -59,13 +59,32 @@ const locationSchema = z.object({
   coordinates: coordinatesSchema,
 });
 
+const rentalDetailsSchema = z.object({
+  monthly_rent: z.number().positive(),
+  security_deposit: z.number().nonnegative(),
+  maintenance: z.number().nonnegative().optional(),
+  lock_in_period: z.string().optional(),
+  available_from: z.coerce.date(),
+  pet_friendly: z.boolean().default(false),
+  preferred_tenants: z.array(z.string()).default([]),
+});
+
+const pgDetailsSchema = z.object({
+  monthly_rent: z.number().positive(),
+  security_deposit: z.number().nonnegative(),
+  sharing_type: z.array(z.string()).min(1),
+  meals_included: z.boolean().default(false),
+  gender_preference: z.enum(["Male", "Female", "Any"]),
+  rules: z.array(z.string()).default([]),
+});
+
 export const createPropertySchema = z.object({
   purpose: purposeEnum,
   category: categoryEnum,
   propertyType: propertyTypeEnum,
   title: z.string().min(10).max(200),
   description: z.string().min(50).max(5000),
-  price: priceSchema,
+  price: priceSchema.optional(),
   specs: specsSchema.default({ furnishing: "unfurnished", parking: { covered: 0, open: 0 }, possessionStatus: "ready" }),
   amenities: z.array(z.string()).max(30).default([]),
   location: locationSchema,
@@ -85,6 +104,34 @@ export const createPropertySchema = z.object({
         .default([]),
     })
     .default({ images: [] }),
+  rental_details: rentalDetailsSchema.optional(),
+  pg_details: pgDetailsSchema.optional(),
+}).superRefine((data, ctx) => {
+  if (data.purpose === "rent" || data.purpose === "lease") {
+    if (!data.rental_details) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Rental details are required when purpose is 'rent' or 'lease'",
+        path: ["rental_details"],
+      });
+    }
+  } else if (data.purpose === "pg") {
+    if (!data.pg_details) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "PG details are required when purpose is 'pg'",
+        path: ["pg_details"],
+      });
+    }
+  } else if (data.purpose === "sell") {
+    if (!data.price) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Price details are required when purpose is 'sell'",
+        path: ["price"],
+      });
+    }
+  }
 });
 
 export type CreatePropertyInput = z.infer<typeof createPropertySchema>;

@@ -8,15 +8,20 @@ interface SearchSidebarProps {
     initialFilters: any;
 }
 
-const budgetRanges = [
-    { label: "₹10k – ₹50k", minPrice: "10000", maxPrice: "50000" },
-    { label: "₹50k – ₹1L", minPrice: "50000", maxPrice: "100000" },
-    { label: "₹1L – ₹2L", minPrice: "100000", maxPrice: "200000" },
-    { label: "₹5L – ₹20L", minPrice: "500000", maxPrice: "2000000" },
+const buyBudgetRanges = [
+    { label: "₹10L – ₹20L", minPrice: "1000000", maxPrice: "2000000" },
     { label: "₹20L – ₹50L", minPrice: "2000000", maxPrice: "5000000" },
     { label: "₹50L – ₹1Cr", minPrice: "5000000", maxPrice: "10000000" },
     { label: "₹1Cr – ₹2Cr", minPrice: "10000000", maxPrice: "20000000" },
     { label: "₹2Cr+", minPrice: "20000000", maxPrice: "" },
+];
+
+const rentBudgetRanges = [
+    { label: "₹5k – ₹10k", minPrice: "5000", maxPrice: "10000" },
+    { label: "₹10k – ₹20k", minPrice: "10000", maxPrice: "20000" },
+    { label: "₹20k – ₹50k", minPrice: "20000", maxPrice: "50000" },
+    { label: "₹50k – ₹1L", minPrice: "50000", maxPrice: "100000" },
+    { label: "₹1L+", minPrice: "100000", maxPrice: "" },
 ];
 
 const areaRanges = [
@@ -63,6 +68,12 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                 ? getAreaKey(initialFilters.min_area, "")
                 : ""
     );
+    const [petFriendly, setPetFriendly] = useState<boolean>(initialFilters.petFriendly === "true");
+    const [genderPreference, setGenderPreference] = useState<string>(initialFilters.genderPreference || "");
+    const [pgSharing, setPgSharing] = useState<string[]>(initialFilters.pgSharing ? initialFilters.pgSharing.split(",") : []);
+
+    const purpose = initialFilters.purpose || "sell";
+    const budgetRanges = (purpose === "rent" || purpose === "lease" || purpose === "pg") ? rentBudgetRanges : buyBudgetRanges;
 
     const handleBhkToggle = (value: string) => {
         const newBhk = bhk.includes(value) ? bhk.filter((item) => item !== value) : [...bhk, value];
@@ -141,6 +152,9 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
         setParking([]);
         setSelectedBudget("");
         setSelectedArea("");
+        setPetFriendly(false);
+        setGenderPreference("");
+        setPgSharing([]);
         onFilterChange({
             bhk: "",
             possession: "",
@@ -151,6 +165,9 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
             maxPrice: "",
             min_area: "",
             max_area: "",
+            petFriendly: "",
+            genderPreference: "",
+            pgSharing: "",
         });
     };
 
@@ -210,6 +227,74 @@ export default function SearchSidebar({ onFilterChange, initialFilters }: Search
                 </div>
 
                 <hr className="border-border" />
+
+                {(purpose === "rent" || purpose === "lease") && (
+                    <>
+                        <div>
+                            <h3 className="text-sm font-bold text-foreground mb-3">Tenant Preferences</h3>
+                            <label className="flex items-center gap-2 cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    checked={petFriendly}
+                                    onChange={(e) => {
+                                        setPetFriendly(e.target.checked);
+                                        onFilterChange({ petFriendly: e.target.checked ? "true" : "" });
+                                    }}
+                                    className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+                                />
+                                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Pet Friendly</span>
+                            </label>
+                        </div>
+                        <hr className="border-border" />
+                    </>
+                )}
+
+                {purpose === "pg" && (
+                    <>
+                        <div>
+                            <h3 className="text-sm font-bold text-foreground mb-3">PG Preferences</h3>
+                            <div className="space-y-4">
+                                <div>
+                                    <span className="text-xs font-semibold text-muted-foreground mb-2 block">Gender</span>
+                                    <div className="flex gap-2">
+                                        {["Any", "Male", "Female"].map((g) => (
+                                            <button
+                                                key={g}
+                                                onClick={() => {
+                                                    const val = genderPreference === g ? "" : g;
+                                                    setGenderPreference(val);
+                                                    onFilterChange({ genderPreference: val });
+                                                }}
+                                                className={`px-3 py-1.5 text-xs font-semibold border rounded-md transition-all ${genderPreference === g ? "bg-primary/10 border-primary text-primary" : "bg-card border-border text-muted-foreground hover:border-border"}`}
+                                            >
+                                                {g}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <span className="text-xs font-semibold text-muted-foreground mb-2 block">Sharing Type</span>
+                                    <div className="flex flex-wrap gap-2">
+                                        {["Single", "Double", "Triple", "Four+"].map((s) => (
+                                            <button
+                                                key={s}
+                                                onClick={() => {
+                                                    const updated = pgSharing.includes(s) ? pgSharing.filter((val) => val !== s) : [...pgSharing, s];
+                                                    setPgSharing(updated);
+                                                    onFilterChange({ pgSharing: updated.length ? updated.join(",") : "" });
+                                                }}
+                                                className={`px-3 py-1.5 text-xs font-semibold border rounded-md transition-all ${pgSharing.includes(s) ? "bg-primary/10 border-primary text-primary" : "bg-card border-border text-muted-foreground hover:border-border"}`}
+                                            >
+                                                {s}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr className="border-border" />
+                    </>
+                )}
 
                 {/* Area */}
                 <div>
