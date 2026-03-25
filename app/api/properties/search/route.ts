@@ -5,279 +5,325 @@ import { parseSearchQuery } from "@/lib/helpers/parseSearchQuery";
 import { escapeRegex } from "@/lib/helpers/sanitize";
 
 export async function GET(req: NextRequest) {
- try {
- await dbConnect();
+  try {
+    await dbConnect();
 
- const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(req.url);
 
- const city = searchParams.get("city");
- const query = searchParams.get("query");
+    const city = searchParams.get("city");
+    const query = searchParams.get("query");
 
- const parsedQuery = query ? parseSearchQuery(query) : {};
+    const parsedQuery = query ? parseSearchQuery(query) : {};
 
- const purpose = searchParams.get("purpose");
- const type = searchParams.get("type");
- const bhk = searchParams.get("bhk");
- const minPrice = searchParams.get("minPrice");
- const maxPrice = searchParams.get("maxPrice");
- const minArea = searchParams.get("min_area");
- const maxArea = searchParams.get("max_area");
- const furnishing = searchParams.get("furnishing");
- const parking = searchParams.get("parking");
- const amenities = searchParams.get("amenities");
- const possession = searchParams.get("possession");
- const sort = searchParams.get("sort");
+    const purpose = searchParams.get("purpose");
+    const type = searchParams.get("type");
+    const bhk = searchParams.get("bhk");
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
+    const minArea = searchParams.get("min_area");
+    const maxArea = searchParams.get("max_area");
+    const furnishing = searchParams.get("furnishing");
+    const parking = searchParams.get("parking");
+    const amenities = searchParams.get("amenities");
+    const possession = searchParams.get("possession");
+    const sort = searchParams.get("sort");
 
- const limit = Math.min(Number(searchParams.get("limit")) || 20, 50);
- const page = Math.max(Number(searchParams.get("page")) || 1, 1);
- const skip = (page - 1) * limit;
+    const limit = Math.min(Number(searchParams.get("limit")) || 20, 50);
+    const page = Math.max(Number(searchParams.get("page")) || 1, 1);
+    const skip = (page - 1) * limit;
 
- const filter: any = {
- status:"active",
- deletedAt: null,
- };
- const andConditions: any[] = [];
+    const filter: any = {
+      status: "active",
+      deletedAt: null,
+    };
+    const andConditions: any[] = [];
 
- let sortOption: any = { updatedAt: -1 };
+    const petFriendly = searchParams.get("petFriendly");
+    const genderPreference = searchParams.get("genderPreference");
+    const pgSharing = searchParams.get("pgSharing");
 
- if (sort ==="price_asc") sortOption = {"price.amount": 1 };
- else if (sort ==="price_desc") sortOption = {"price.amount": -1 };
- else if (sort ==="date") sortOption = { createdAt: -1 };
- else if (sort ==="popularity") sortOption = {"metrics.views": -1 };
+    let sortOption: any = { updatedAt: -1 };
 
- // CITY FILTER
- if (city) {
- filter["location.city"] = { $regex: new RegExp(escapeRegex(city),"i") };
- }
+    if (sort === "price_asc") {
+      if (purpose === "rent" || purpose === "lease") sortOption = { "rental_details.monthly_rent": 1 };
+      else if (purpose === "pg") sortOption = { "pg_details.monthly_rent": 1 };
+      else sortOption = { "price.amount": 1 };
+    } else if (sort === "price_desc") {
+      if (purpose === "rent" || purpose === "lease") sortOption = { "rental_details.monthly_rent": -1 };
+      else if (purpose === "pg") sortOption = { "pg_details.monthly_rent": -1 };
+      else sortOption = { "price.amount": -1 };
+    } else if (sort === "date") sortOption = { createdAt: -1 };
+    else if (sort === "popularity") sortOption = { "metrics.views": -1 };
 
- // PURPOSE
- if (purpose) {
- const p = purpose.toLowerCase();
- filter.purpose = p ==="buy"?"sell": p;
- }
+    // CITY FILTER
+    if (city) {
+      filter["location.city"] = { $regex: new RegExp(escapeRegex(city), "i") };
+    }
 
- // PROPERTY TYPE
- if (type) {
- if (type ==="Full House") {
- filter.propertyType = { $in: ["flat","house","villa","penthouse"] };
- } else if (type ==="PG/Hostel") {
- filter.purpose ="pg";
- } else if (type ==="Flatmates") {
- filter.propertyType ="flat";
- } else {
- const typeValues = type
- .split(",")
- .map((v) => v.trim())
- .filter(Boolean);
- if (typeValues.length > 0) {
- filter.propertyType = { $in: typeValues };
- }
- }
- }
+    // PURPOSE
+    if (purpose) {
+      const p = purpose.toLowerCase();
+      filter.purpose = p === "buy" ? "sell" : p;
+    }
 
- // SMART SEARCH PARSER RESULTS
+    // PROPERTY TYPE
+    if (type) {
+      if (type === "Full House") {
+        filter.propertyType = { $in: ["flat", "house", "villa", "penthouse"] };
+      } else if (type === "PG/Hostel") {
+        filter.purpose = "pg";
+      } else if (type === "Flatmates") {
+        filter.propertyType = "flat";
+      } else {
+        const typeValues = type
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean);
+        if (typeValues.length > 0) {
+          filter.propertyType = { $in: typeValues };
+        }
+      }
+    }
 
- if (parsedQuery.bhk) {
- filter["specs.bedrooms"] = parsedQuery.bhk;
- }
+    // SMART SEARCH PARSER RESULTS
 
- if (parsedQuery.propertyType) {
- filter.propertyType = parsedQuery.propertyType;
- }
+    if (parsedQuery.bhk) {
+      filter["specs.bedrooms"] = parsedQuery.bhk;
+    }
 
- if (parsedQuery.locality) {
- filter["location.locality"] = {
- $regex: escapeRegex(parsedQuery.locality),
- $options:"i",
- };
- }
+    if (parsedQuery.propertyType) {
+      filter.propertyType = parsedQuery.propertyType;
+    }
 
- if (parsedQuery.city) {
- filter["location.city"] = {
- $regex: escapeRegex(parsedQuery.city),
- $options:"i"
- };
- }
+    if (parsedQuery.locality) {
+      filter["location.locality"] = {
+        $regex: escapeRegex(parsedQuery.locality),
+        $options: "i",
+      };
+    }
 
- if (parsedQuery.maxPrice) {
- filter["price.amount"] = { $lte: parsedQuery.maxPrice };
- }
+    if (parsedQuery.city) {
+      filter["location.city"] = {
+        $regex: escapeRegex(parsedQuery.city),
+        $options: "i"
+      };
+    }
 
- if (parsedQuery.parking) {
- andConditions.push({
- $or: [
- { "specs.parking.covered": { $gt: 0 } },
- { "specs.parking.open": { $gt: 0 } },
- ],
- });
- }
+    if (parsedQuery.maxPrice) {
+      filter["price.amount"] = { $lte: parsedQuery.maxPrice };
+    }
 
- // BHK FILTER FROM UI
+    if (parsedQuery.parking) {
+      andConditions.push({
+        $or: [
+          { "specs.parking.covered": { $gt: 0 } },
+          { "specs.parking.open": { $gt: 0 } },
+        ],
+      });
+    }
 
- if (bhk) {
- const bhkValues = bhk
- .split(",")
- .map((v) => parseInt(v, 10))
- .filter((v) => !isNaN(v));
+    // BHK FILTER FROM UI
 
- if (bhkValues.length > 0) {
- filter["specs.bedrooms"] = { $in: bhkValues };
- }
- }
+    if (bhk) {
+      const bhkValues = bhk
+        .split(",")
+        .map((v) => parseInt(v, 10))
+        .filter((v) => !isNaN(v));
 
- // FURNISHING
+      if (bhkValues.length > 0) {
+        filter["specs.bedrooms"] = { $in: bhkValues };
+      }
+    }
 
- if (furnishing) {
- filter["specs.furnishing"] = { $in: furnishing.split(",") };
- }
+    // FURNISHING
 
- // PARKING
+    if (furnishing) {
+      filter["specs.furnishing"] = { $in: furnishing.split(",") };
+    }
 
- if (parking) {
- if (parking ==="true") {
- andConditions.push({
- $or: [
- { "specs.parking.covered": { $gt: 0 } },
- { "specs.parking.open": { $gt: 0 } },
- ],
- });
- } else {
- const parkingValues = parking
- .split(",")
- .map((v) => v.trim())
- .filter(Boolean);
- const normalizedParkingValues = parkingValues.map((v) => {
- if (v ==="two_wheeler") return"open";
- if (v ==="four_wheeler") return"covered";
- return v;
- });
- const parkingConditions: any[] = [];
- if (normalizedParkingValues.includes("covered")) {
- parkingConditions.push({ "specs.parking.covered": { $gt: 0 } });
- }
- if (normalizedParkingValues.includes("open")) {
- parkingConditions.push({ "specs.parking.open": { $gt: 0 } });
- }
- if (parkingConditions.length === 1) {
- andConditions.push(parkingConditions[0]);
- } else if (parkingConditions.length > 1) {
- andConditions.push({ $or: parkingConditions });
- }
- }
- }
+    // PARKING
 
- // AMENITIES
+    if (parking) {
+      if (parking === "true") {
+        andConditions.push({
+          $or: [
+            { "specs.parking.covered": { $gt: 0 } },
+            { "specs.parking.open": { $gt: 0 } },
+          ],
+        });
+      } else {
+        const parkingValues = parking
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean);
+        const normalizedParkingValues = parkingValues.map((v) => {
+          if (v === "two_wheeler") return "open";
+          if (v === "four_wheeler") return "covered";
+          return v;
+        });
+        const parkingConditions: any[] = [];
+        if (normalizedParkingValues.includes("covered")) {
+          parkingConditions.push({ "specs.parking.covered": { $gt: 0 } });
+        }
+        if (normalizedParkingValues.includes("open")) {
+          parkingConditions.push({ "specs.parking.open": { $gt: 0 } });
+        }
+        if (parkingConditions.length === 1) {
+          andConditions.push(parkingConditions[0]);
+        } else if (parkingConditions.length > 1) {
+          andConditions.push({ $or: parkingConditions });
+        }
+      }
+    }
 
- if (amenities) {
- filter.amenities = {
- $all: amenities.split(","),
- };
- }
+    // AMENITIES
 
- // PRICE FILTER (merge with any existing price filter from parsedQuery)
+    if (amenities) {
+      filter.amenities = {
+        $all: amenities.split(","),
+      };
+    }
 
- if (minPrice || maxPrice) {
- const existing = filter["price.amount"] ?? {};
- if (minPrice) existing.$gte = parseInt(minPrice);
- if (maxPrice) existing.$lte = parseInt(maxPrice);
- filter["price.amount"] = existing;
- }
+    // PRICE FILTER (merge with any existing price filter from parsedQuery)
 
- // AREA FILTER
+    if (minPrice || maxPrice) {
+      const minVal = minPrice ? parseInt(minPrice, 10) : undefined;
+      const maxVal = maxPrice ? parseInt(maxPrice, 10) : undefined;
+      const priceRange: any = {};
+      if (minVal !== undefined) priceRange.$gte = minVal;
+      if (maxVal !== undefined) priceRange.$lte = maxVal;
 
- if (minArea || maxArea) {
- const areaRange: any = {};
- if (minArea) areaRange.$gte = parseInt(minArea, 10);
- if (maxArea) areaRange.$lte = parseInt(maxArea, 10);
- andConditions.push({
- $or: [
- { "specs.area.superBuiltUp": { ...areaRange } },
- { "specs.area.builtUp": { ...areaRange } },
- { "specs.area.carpet": { ...areaRange } },
- { "specs.area.plot": { ...areaRange } },
- ],
- });
- }
+      if (purpose === "rent" || purpose === "lease") {
+        filter["rental_details.monthly_rent"] = { ...(filter["rental_details.monthly_rent"] || {}), ...priceRange };
+      } else if (purpose === "pg") {
+        filter["pg_details.monthly_rent"] = { ...(filter["pg_details.monthly_rent"] || {}), ...priceRange };
+      } else if (purpose === "sell") {
+        filter["price.amount"] = { ...(filter["price.amount"] || {}), ...priceRange };
+      } else {
+        andConditions.push({
+          $or: [
+            { "price.amount": priceRange },
+            { "rental_details.monthly_rent": priceRange },
+            { "pg_details.monthly_rent": priceRange },
+          ],
+        });
+      }
+    }
 
- // POSSESSION STATUS
+    // TENANT EXACT FILTERS
 
- if (possession) {
- filter["specs.possessionStatus"] = possession;
- }
+    if (petFriendly === "true") {
+      filter["rental_details.pet_friendly"] = true;
+    }
 
- // PROJECT FILTER
- const project = searchParams.get("project");
- if (project) {
- filter.project = project;
- }
+    if (genderPreference) {
+      filter["pg_details.gender_preference"] = genderPreference;
+    }
 
- // GENERIC TEXT SEARCH (TITLE + DESCRIPTION ONLY)
+    if (pgSharing) {
+      const types = pgSharing.split(",").map((v) => v.trim()).filter(Boolean);
+      if (types.length > 0) {
+        filter["pg_details.sharing_type"] = { $in: types };
+      }
+    }
 
- if (query) {
- const cleanQuery = query
- .replace(/\d+\s*bhk/gi,"")
- .replace(/in\s+[a-zA-Z\s]+/gi,"")
- .trim();
+    // AREA FILTER
 
- if (cleanQuery.length > 2) {
- const escaped = escapeRegex(cleanQuery);
- filter.$or = [
- { title: { $regex: escaped, $options:"i"} },
- { description: { $regex: escaped, $options:"i"} },
- ];
- }
+    if (minArea || maxArea) {
+      const areaRange: any = {};
+      if (minArea) areaRange.$gte = parseInt(minArea, 10);
+      if (maxArea) areaRange.$lte = parseInt(maxArea, 10);
+      andConditions.push({
+        $or: [
+          { "specs.area.superBuiltUp": { ...areaRange } },
+          { "specs.area.builtUp": { ...areaRange } },
+          { "specs.area.carpet": { ...areaRange } },
+          { "specs.area.plot": { ...areaRange } },
+        ],
+      });
+    }
 
- if (andConditions.length > 0) {
- filter.$and = andConditions;
- }
- }
+    // POSSESSION STATUS
 
- // DATABASE QUERY
+    if (possession) {
+      filter["specs.possessionStatus"] = possession;
+    }
 
- const [list, total] = await Promise.all([
- Property.find(filter)
- .sort(sortOption)
- .skip(skip)
- .limit(limit)
- .lean(),
+    // PROJECT FILTER
+    const project = searchParams.get("project");
+    if (project) {
+      filter.project = project;
+    }
 
- Property.countDocuments(filter),
- ]);
+    // GENERIC TEXT SEARCH (TITLE + DESCRIPTION ONLY)
 
- const listings = list.map((p: any) => ({
- id: p._id.toString(),
- slug: p.slug,
- title: p.title,
- purpose: p.purpose,
- category: p.category,
- propertyType: p.propertyType,
- price: p.price,
- location: {
- city: p.location.city,
- locality: p.location.locality,
- address: p.location.address,
- },
- specs: p.specs,
- media: p.media?.images?.[0]
- ? { primary: p.media.images[0].url }
- : null,
- }));
+    if (query) {
+      const cleanQuery = query
+        .replace(/\d+\s*bhk/gi, "")
+        .replace(/in\s+[a-zA-Z\s]+/gi, "")
+        .trim();
 
- return NextResponse.json({
- listings,
- pagination: {
- total,
- page,
- limit,
- pages: Math.ceil(total / limit),
- },
- });
- } catch (error) {
- console.error("Search API Error:", error);
+      if (cleanQuery.length > 2) {
+        const escaped = escapeRegex(cleanQuery);
+        filter.$or = [
+          { title: { $regex: escaped, $options: "i" } },
+          { description: { $regex: escaped, $options: "i" } },
+        ];
+      }
 
- return NextResponse.json(
- { error:"Internal Server Error"},
- { status: 500 }
- );
- }
+      if (andConditions.length > 0) {
+        filter.$and = andConditions;
+      }
+    }
+
+    // DATABASE QUERY
+
+    const [list, total] = await Promise.all([
+      Property.find(filter)
+        .sort(sortOption)
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+
+      Property.countDocuments(filter),
+    ]);
+
+    const listings = list.map((p: any) => ({
+      id: p._id.toString(),
+      slug: p.slug,
+      title: p.title,
+      purpose: p.purpose,
+      category: p.category,
+      propertyType: p.propertyType,
+      price: p.price,
+      location: {
+        city: p.location.city,
+        locality: p.location.locality,
+        address: p.location.address,
+      },
+      specs: p.specs,
+      rental_details: p.rental_details,
+      pg_details: p.pg_details,
+      media: p.media?.images?.[0]
+        ? { primary: p.media.images[0].url }
+        : null,
+    }));
+
+    return NextResponse.json({
+      listings,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    console.error("Search API Error:", error);
+
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
 }

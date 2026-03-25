@@ -28,7 +28,7 @@ function SearchResults() {
  // Filters state from URL
  const city = searchParams.get("city") ||"Bangalore";
  const query = searchParams.get("query") ||"";
- const purpose = searchParams.get("purpose") ||"Rent";
+ const purpose = searchParams.get("purpose") || "sell";
 
  useEffect(() => {
  const fetchResults = async () => {
@@ -70,19 +70,27 @@ function SearchResults() {
  router.push(`/search?${params.toString()}`);
  };
 
- const handleFilterChange = (newFilters: any) => {
- const params = new URLSearchParams(searchParams.toString());
- Object.entries(newFilters).forEach(([key, value]) => {
- if (value) {
- params.set(key, value as string);
- } else {
- params.delete(key);
- }
- });
- router.push(`/search?${params.toString()}`);
- };
+  const handleFilterChange = (newFilters: any) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (value) {
+        params.set(key, value as string);
+      } else {
+        params.delete(key);
+      }
+    });
+    router.push(`/search?${params.toString()}`);
+  };
 
- return (
+  const handleTabSwitch = (newPurpose: string) => {
+    const params = new URLSearchParams();
+    if (city) params.set("city", city);
+    if (query) params.set("query", query);
+    params.set("purpose", newPurpose);
+    router.push(`/search?${params.toString()}`);
+  };
+
+  return (
  <div className="min-h-screen bg-background flex flex-col">
  <Navbar />
 
@@ -94,10 +102,38 @@ function SearchResults() {
  onFilterChange={handleFilterChange}
  />
 
- {/* Results Area */}
- <div className="flex-1 space-y-6">
- {/* Breadcrumbs & Sorting */}
- <div className="bg-card p-4 rounded-xl border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Results Area */}
+        <div className="flex-1 space-y-6">
+          {/* Transaction Tabs */}
+          <div className="flex bg-muted p-1 rounded-xl w-fit">
+            <button
+              onClick={() => handleTabSwitch("sell")}
+              className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${
+                purpose === "sell" || purpose === "buy" ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Buy
+            </button>
+            <button
+              onClick={() => handleTabSwitch("rent")}
+              className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${
+                purpose === "rent" || purpose === "lease" ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Rent
+            </button>
+            <button
+              onClick={() => handleTabSwitch("pg")}
+              className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${
+                purpose === "pg" ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              PG / Co-living
+            </button>
+          </div>
+
+          {/* Breadcrumbs & Sorting */}
+          <div className="bg-card p-4 rounded-xl border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
  <nav className="flex items-center gap-2 text-[13px] text-muted-foreground font-medium">
  <a href="/"className="hover:text-primary">Home</a>
  <span className="text-muted-foreground">/</span>
@@ -145,12 +181,12 @@ function SearchResults() {
 
 
 
- {/* Results Title */}
- <div>
- <h1 className="text-lg font-bold text-foreground leading-tight">
- {total} - Flats, Apartments for {purpose?.toLowerCase() ==="rent"?"Rent":"Sale"} in {query || city} | Flats in {query || city}
- </h1>
- </div>
+          {/* Results Title */}
+          <div>
+            <h1 className="text-lg font-bold text-foreground leading-tight">
+              {total} - Properties for {purpose === "sell" ? "Sale" : purpose === "pg" ? "PG" : "Rent"} in {query || city}
+            </h1>
+          </div>
 
  {loading ? (
  <div className="flex flex-col items-center justify-center py-20 bg-card rounded-2xl border border-border shadow-sm">
