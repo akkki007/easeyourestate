@@ -13,12 +13,15 @@ export default function EnquiryCard({ enquiry }: EnquiryCardProps) {
 
  const getStatusBadge = (status: string) => {
  const styles: Record<string, string> = {
+ new:"bg-warning-bg text-warning",
  pending:"bg-warning-bg text-warning",
  contacted:"bg-info-bg text-info",
+ follow_up:"bg-accent/15 text-accent",
  visited:"bg-success-bg text-success",
  open:"bg-info-bg text-info",
  closed:"bg-accent text-muted-foreground",
  converted:"bg-success-bg text-success",
+ lost:"bg-error/15 text-error",
  };
 
  return (

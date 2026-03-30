@@ -41,12 +41,23 @@ export async function POST(req: NextRequest) {
     const lead = await Lead.create({
       buyerId: user._id,
       ownerId: property.listedBy,
+      recipientId: property.listedBy,
+      recipientRole: property.listingType,
+      assignedToUserId: property.listedBy,
       propertyId,
       name: String(name).trim().slice(0, 200),
       phone,
       message: message.trim().slice(0, 2000),
       intent: intent || "info",
-      status: "pending",
+      status: "new",
+      statusHistory: [
+        {
+          status: "new",
+          changedBy: user._id,
+          note: "Lead created",
+          changedAt: new Date(),
+        },
+      ],
       messages: [
         {
           senderId: user._id,
@@ -55,6 +66,8 @@ export async function POST(req: NextRequest) {
         },
       ],
     });
+
+    await Property.updateOne({ _id: propertyId }, { $inc: { "metrics.inquiries": 1 } });
 
     return NextResponse.json({ lead }, { status: 201 });
   } catch (error) {
