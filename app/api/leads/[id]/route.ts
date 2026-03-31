@@ -24,7 +24,9 @@ export async function GET(
 
     const lead = await Lead.findById(id)
       .populate("propertyId", "title location price media")
-      .populate("ownerId", "name phone email avatar");
+      .populate("ownerId", "name phone email avatar")
+      .populate("recipientId", "name phone email avatar")
+      .populate("assignedToUserId", "name email");
 
     if (!lead) {
       return NextResponse.json({ error: "Lead not found" }, { status: 404 });
@@ -32,7 +34,9 @@ export async function GET(
 
     if (
       lead.buyerId.toString() !== user._id.toString() &&
-      lead.ownerId.toString() !== user._id.toString()
+      lead.ownerId.toString() !== user._id.toString() &&
+      lead.recipientId?.toString() !== user._id.toString() &&
+      lead.assignedToUserId?.toString() !== user._id.toString()
     ) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }

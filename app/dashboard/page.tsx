@@ -78,7 +78,7 @@ export default function DashboardPage() {
                 ];
             case "agent":
                 return [
-                    { label: "Add Listing", href: "/dashboard/listings/new", icon: "plus" },
+                    { label: "Add Listing", href: "/dashboard/properties/new", icon: "plus" },
                     { label: "Manage Leads", href: "/dashboard/leads", icon: "users" },
                     { label: "Schedule Visit", href: "/dashboard/appointments", icon: "calendar" },
                 ];

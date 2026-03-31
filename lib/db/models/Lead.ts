@@ -6,15 +6,45 @@ interface IMessage {
   sentAt: Date;
 }
 
+interface ILeadNote {
+  authorId: mongoose.Types.ObjectId;
+  text: string;
+  createdAt: Date;
+}
+
+interface ILeadStatusHistory {
+  status: string;
+  changedBy: mongoose.Types.ObjectId;
+  note?: string;
+  changedAt: Date;
+}
+
 export interface ILead extends Document {
   buyerId: mongoose.Types.ObjectId;
   ownerId: mongoose.Types.ObjectId;
+  recipientId?: mongoose.Types.ObjectId;
+  recipientRole?: "owner" | "agent" | "builder";
+  assignedToUserId?: mongoose.Types.ObjectId;
   propertyId: mongoose.Types.ObjectId;
   name: string;
   phone: string;
   message: string;
   intent: "buy" | "visit" | "info";
-  status: "open" | "closed" | "converted" | "pending" | "contacted" | "visited";
+  status:
+    | "new"
+    | "contacted"
+    | "follow_up"
+    | "visited"
+    | "converted"
+    | "lost"
+    | "open"
+    | "closed"
+    | "pending";
+  notes: ILeadNote[];
+  statusHistory: ILeadStatusHistory[];
+  followUpDate?: string;
+  lastContactedAt?: Date;
+  convertedAt?: Date;
   messages: IMessage[];
   createdAt: Date;
 }
@@ -37,6 +67,45 @@ const MessageSchema = new Schema<IMessage>({
   },
 });
 
+const LeadNoteSchema = new Schema<ILeadNote>(
+  {
+    authorId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    text: {
+      type: String,
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false }
+);
+
+const LeadStatusHistorySchema = new Schema<ILeadStatusHistory>(
+  {
+    status: {
+      type: String,
+      required: true,
+    },
+    changedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    note: String,
+    changedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false }
+);
+
 const LeadSchema = new Schema<ILead>(
   {
     buyerId: {
@@ -49,6 +118,21 @@ const LeadSchema = new Schema<ILead>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+
+    recipientId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    recipientRole: {
+      type: String,
+      enum: ["owner", "agent", "builder"],
+    },
+
+    assignedToUserId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
 
     propertyId: {
@@ -80,14 +164,40 @@ const LeadSchema = new Schema<ILead>(
 
     status: {
       type: String,
-      enum: ["open", "closed", "converted", "pending", "contacted", "visited"],
-      default: "pending",
+      enum: ["new", "contacted", "follow_up", "visited", "converted", "lost", "open", "closed", "pending"],
+      default: "new",
+    },
+
+    notes: {
+      type: [LeadNoteSchema],
+      default: [],
+    },
+
+    statusHistory: {
+      type: [LeadStatusHistorySchema],
+      default: [],
+    },
+
+    followUpDate: {
+      type: String,
+    },
+
+    lastContactedAt: {
+      type: Date,
+    },
+
+    convertedAt: {
+      type: Date,
     },
 
     messages: [MessageSchema],
   },
   { timestamps: true }
 );
+
+LeadSchema.index({ recipientId: 1, createdAt: -1 });
+LeadSchema.index({ assignedToUserId: 1, createdAt: -1 });
+LeadSchema.index({ propertyId: 1, createdAt: -1 });
 
 const Lead: Model<ILead> =
   mongoose.models.Lead || mongoose.model<ILead>("Lead", LeadSchema);
