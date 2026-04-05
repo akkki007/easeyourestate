@@ -605,7 +605,7 @@ export default function PropertyDetailPage() {
                                 )}
 
                                 {/* Buyer Actions */}
-                                {user?.role === "buyer" && (
+                                {(!user || user.role === "buyer" || user.role === "tenant") && (
                                     <div className="pt-6 border-t border-border">
                                         <PropertyActions
                                             property={property}

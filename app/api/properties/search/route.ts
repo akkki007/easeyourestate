@@ -268,12 +268,16 @@ export async function GET(req: NextRequest) {
         filter.$or = [
           { title: { $regex: escaped, $options: "i" } },
           { description: { $regex: escaped, $options: "i" } },
+          { "location.locality": { $regex: escaped, $options: "i" } },
+          { "location.address.line1": { $regex: escaped, $options: "i" } },
+          { "location.address.line2": { $regex: escaped, $options: "i" } },
+          { "location.address.landmark": { $regex: escaped, $options: "i" } },
         ];
       }
+    }
 
-      if (andConditions.length > 0) {
-        filter.$and = andConditions;
-      }
+    if (andConditions.length > 0) {
+      filter.$and = andConditions;
     }
 
     // DATABASE QUERY

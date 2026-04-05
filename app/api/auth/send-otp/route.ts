@@ -15,6 +15,10 @@ export async function POST(req: Request) {
     const otp = generateOTP();
     storeOTP(phone, otp);
 
+    if (process.env.NODE_ENV === "development") {
+      console.log(`\n=========================================\n[DEV MODE] OTP for ${phone} is: ${otp}\n=========================================\n`);
+    }
+
     const smsUser = process.env.SMS_API_USER;
     const smsAuthKey = process.env.SMS_API_AUTH_KEY;
     const smsSender = process.env.SMS_API_SENDER || "PREMIUM";
