@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npx ts-node --project tsconfig.server.json server.ts",
+    "dev:next": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node dist/server.js",
     "lint": "eslint",
     "test": "npx playwright test",
     "test:ui": "npx playwright test --ui",
@@ -34,6 +35,8 @@
     "react-redux": "^9.2.0",
     "react-simple-typewriter": "^5.0.1",
     "recharts": "^3.8.0",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "tailwind-merge": "^3.4.0",
     "zod": "^4.3.6"
   },
@@ -44,12 +47,14 @@
     "@tailwindcss/typography": "^0.5.19",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/leaflet": "^1.9.21",
-    "@types/node": "^20",
+    "@types/node": "^20.19.38",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/socket.io": "^3.0.1",
     "eslint": "^10.0.1",
     "eslint-config-next": "^0.2.4",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
