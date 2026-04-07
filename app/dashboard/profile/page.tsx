@@ -162,42 +162,6 @@ export default function ProfilePage() {
  }
  };
 
- const handleRoleChange = async (role: string) => {
- if (!token || role === profile?.role) return;
-
- setSaving(true);
- try {
- const res = await fetch("/api/user/role", {
- method:"PUT",
- headers: {
-"Content-Type":"application/json",
- Authorization:`Bearer ${token}`,
- },
- body: JSON.stringify({ role }),
- });
-
- if (!res.ok) {
- const err = await res.json();
- throw new Error(err.error ||"Failed to update role");
- }
-
- const data = await res.json();
- setProfile(data.user);
- setSelectedRole(role);
-
- // Update AuthContext
- if (user) {
- login(token, { ...user, role });
- }
-
- toast.success(`Role updated to ${role}`);
- } catch (err: unknown) {
- toast.error(err instanceof Error ? err.message :"Failed to update role");
- } finally {
- setSaving(false);
- }
- };
-
  const handleSaveAgentProfile = async () => {
  if (!token) return;
 
@@ -447,53 +411,38 @@ export default function ProfilePage() {
  </div>
  </div>
 
- {/* Role Selection */}
+ {/* Role Display (Read-only) */}
  <div className="bg-card rounded-2xl border border-border p-6">
- <h3 className="text-lg font-semibold text-primary mb-1">Role</h3>
- <p className="text-sm text-secondary mb-5">
- Select your primary role. This determines your dashboard experience and available features.
- </p>
+  <h3 className="text-lg font-semibold text-primary mb-1">Role</h3>
+  <p className="text-sm text-secondary mb-5">
+   Your current role determines your dashboard experience and available features.
+  </p>
 
- <div className="grid sm:grid-cols-2 gap-3">
- {ROLE_OPTIONS.map((role) => (
- <button
- key={role.value}
- onClick={() => handleRoleChange(role.value)}
- disabled={saving}
- className={`
- flex items-start gap-4 p-4 rounded-xl border-2 text-left transition-all
- ${
- selectedRole === role.value
- ?"border-accent bg-accent/5"
- :"border-border hover:border-accent/30 hover:bg-hover"
- }
- disabled:opacity-50
-`}
- >
- <div
- className={`
- w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0
- ${selectedRole === role.value ?"bg-accent text-primary-foreground":"bg-hover text-secondary"}
-`}
- >
- <svg className="w-5 h-5"fill="none"viewBox="0 0 24 24"stroke="currentColor"strokeWidth="1.5">
- <path strokeLinecap="round"strokeLinejoin="round"d={role.icon} />
- </svg>
- </div>
- <div className="min-w-0">
- <p className="font-medium text-primary text-sm">{role.label}</p>
- <p className="text-xs text-tertiary mt-0.5">{role.description}</p>
- </div>
- {selectedRole === role.value && (
- <div className="ml-auto flex-shrink-0">
- <svg className="w-5 h-5 text-accent"fill="none"viewBox="0 0 24 24"stroke="currentColor"strokeWidth="2">
- <path strokeLinecap="round"strokeLinejoin="round"d="M5 13l4 4L19 7"/>
- </svg>
- </div>
- )}
- </button>
- ))}
- </div>
+  {(() => {
+   const currentRole = ROLE_OPTIONS.find((r) => r.value === selectedRole) || ROLE_OPTIONS[0];
+   return (
+    <div className="flex items-start gap-4 p-4 rounded-xl border-2 border-accent bg-accent/5">
+     <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-accent text-primary-foreground">
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+       <path strokeLinecap="round" strokeLinejoin="round" d={currentRole.icon} />
+      </svg>
+     </div>
+     <div className="min-w-0">
+      <p className="font-medium text-primary text-sm">{currentRole.label}</p>
+      <p className="text-xs text-tertiary mt-0.5">{currentRole.description}</p>
+     </div>
+     <div className="ml-auto flex-shrink-0">
+      <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+     </div>
+    </div>
+   );
+  })()}
+
+  <p className="text-xs text-tertiary mt-3">
+   To change your role, please contact support.
+  </p>
  </div>
 
  {selectedRole ==="agent"&& (
