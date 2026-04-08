@@ -2,6 +2,7 @@
 
 import { FormEvent, useState, useEffect } from"react";
 import Link from"next/link";
+import OtpInput from"@/components/OtpInput";
 import { useRouter, useSearchParams } from"next/navigation";
 import { useAuth } from"@/lib/auth/AuthContext";
 
@@ -251,18 +252,10 @@ export default function Signup() {
  {step ==="otp"&& (
  <form onSubmit={handleVerifyOTP} className="space-y-4">
  <div>
- <label className="block text-sm font-medium text-foreground mb-1.5">
+ <label className="block text-sm font-medium text-foreground mb-3">
  Enter OTP
  </label>
- <input
- type="text"
- inputMode="numeric"
- placeholder="6-digit OTP"
- value={otp}
- onChange={(e) => setOtp(e.target.value.replace(/\D/g,"").slice(0, 6))}
- className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition tracking-[0.3em] text-center text-lg font-semibold"
- autoFocus
- />
+ <OtpInput value={otp} onChange={setOtp} />
  </div>
 
  <div className="flex items-center justify-between">
