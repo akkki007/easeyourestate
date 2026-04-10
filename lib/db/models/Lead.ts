@@ -23,7 +23,7 @@ export interface ILead extends Document {
   buyerId: mongoose.Types.ObjectId;
   ownerId: mongoose.Types.ObjectId;
   recipientId?: mongoose.Types.ObjectId;
-  recipientRole?: "owner" | "agent" | "builder";
+  recipientRole?: "owner";
   assignedToUserId?: mongoose.Types.ObjectId;
   propertyId: mongoose.Types.ObjectId;
   name: string;
@@ -127,7 +127,7 @@ const LeadSchema = new Schema<ILead>(
 
     recipientRole: {
       type: String,
-      enum: ["owner", "agent", "builder"],
+      enum: ["owner"],
     },
 
     assignedToUserId: {

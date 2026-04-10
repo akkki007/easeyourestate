@@ -69,7 +69,7 @@ export default function AgentLeadsPage() {
   const userRole = typeof user?.role === "string" ? user.role : "";
 
   useEffect(() => {
-    if (!token || userRole !== "agent") {
+    if (!token || userRole !== "owner") {
       setLoading(false);
       return;
     }
@@ -163,15 +163,15 @@ export default function AgentLeadsPage() {
     }
   };
 
-  if (userRole && userRole !== "agent") {
+  if (userRole && userRole !== "owner") {
     return (
       <>
         <DashboardHeader userName={userName} userEmail={userEmail} pageTitle="Leads" />
         <main className="p-6">
           <div className="bg-card rounded-2xl border border-border p-10 text-center">
-            <h2 className="text-xl font-semibold text-foreground">Agent access only</h2>
+            <h2 className="text-xl font-semibold text-foreground">Owner access only</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              This workspace is reserved for agent lead management.
+              This workspace is reserved for property owner lead management.
             </p>
           </div>
         </main>

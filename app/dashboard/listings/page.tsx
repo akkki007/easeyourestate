@@ -15,6 +15,7 @@ type Listing = {
  category: string;
  propertyType: string;
  status: string;
+ rejectionReason?: string | null;
  price: { amount: number; currency: string };
  location: { city: string; locality: string };
  media: { primary: string } | null;
@@ -38,7 +39,7 @@ export default function ListingsPage() {
  }
  }, []);
 
- const isAgent = storedUser?.role === "agent";
+ const isOwner = storedUser?.role === "owner";
 
  useEffect(() => {
  const fetchListings = async () => {
@@ -52,8 +53,7 @@ export default function ListingsPage() {
  return;
  }
 
- // Use agent-specific endpoint if user is agent, otherwise use general endpoint
- const baseUrl = isAgent ? "/api/agent/listings" : "/api/properties/my-listings";
+ const baseUrl = "/api/properties/my-listings";
  const url = statusFilter ?`${baseUrl}?status=${statusFilter}`:baseUrl;
 
  try {
@@ -82,14 +82,9 @@ export default function ListingsPage() {
  };
 
  fetchListings();
- }, [statusFilter, isAgent]);
+ }, [statusFilter]);
 
  const handleDelete = async (id: string) => {
- if (!isAgent) {
- toast.error("Only agents can delete listings");
- return;
- }
-
  if (!confirm("Are you sure you want to delete this listing? This action cannot be undone.")) {
  return;
  }
@@ -98,7 +93,7 @@ export default function ListingsPage() {
  const token = localStorage.getItem("token");
 
  try {
- const res = await fetch(`/api/agent/listings/${id}`, {
+ const res = await fetch(`/api/properties/my-listings?deleteId=${id}`, {
  method: "DELETE",
  headers: {
  Authorization: `Bearer ${token}`,
@@ -146,17 +141,6 @@ export default function ListingsPage() {
  <option value="rented">Rented</option>
  <option value="archived">Archived</option>
  </select>
- {isAgent && (
- <Link
- href="/dashboard/listings/bulk-upload"
- className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border text-foreground font-medium text-sm hover:bg-hover transition-colors"
- >
- <svg className="w-4 h-4"fill="none"viewBox="0 0 24 24"stroke="currentColor"strokeWidth="1.5">
- <path strokeLinecap="round"strokeLinejoin="round"d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
- </svg>
- Bulk Upload
- </Link>
- )}
  <Link
  href="/dashboard/properties/new"
  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent text-primary-foreground font-medium text-sm hover:bg-accent-hover transition-colors"
@@ -194,96 +178,24 @@ export default function ListingsPage() {
  </Link>
  </div>
  ) : (
- isAgent ? (
- // Agent listings view with metrics and actions
- <div className="space-y-3">
- {listings.map((listing) => {
- const views = listing.metrics?.views || 0;
- const inquiries = listing.metrics?.inquiries || 0;
- const statusColors: Record<string, string> = {
- draft: "bg-warning-bg text-warning",
- active: "bg-success-bg text-success",
- sold: "bg-secondary-bg text-muted-foreground",
- inactive: "bg-error/15 text-error",
- };
-
- return (
- <div
- key={listing.id}
- className="bg-card rounded-xl border border-border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:border-accent/50 transition-colors"
- >
- <Link
- href={`/property/${listing.slug}`}
- className="flex gap-3 flex-1 min-w-0 hover:opacity-80"
- >
- {listing.media?.primary && (
- <img src={listing.media.primary} alt={listing.title} className="w-20 h-20 rounded-lg object-cover flex-shrink-0" />
- )}
- <div className="flex-1 min-w-0">
- <h3 className="font-semibold text-foreground truncate">{listing.title}</h3>
- <p className="text-sm text-muted-foreground truncate">
- {listing.location.locality}, {listing.location.city}
- </p>
- <div className="flex items-center gap-2 mt-2 text-sm">
- <span className={`px-2 py-1 rounded-lg text-xs font-medium ${statusColors[listing.status] || statusColors.inactive}`}>
- {listing.status}
- </span>
- <span className="text-foreground font-semibold">
- ₹{new Intl.NumberFormat("en-IN").format(listing.price.amount)}
- </span>
- </div>
- </div>
- </Link>
-
- <div className="flex items-center gap-6 sm:gap-8">
- <div className="flex items-center gap-4 text-sm">
- <div className="text-center">
- <div className="flex items-center gap-1 text-muted-foreground">
- <Eye className="w-4 h-4"/>
- <span>{views}</span>
- </div>
- <p className="text-xs text-tertiary mt-0.5">Views</p>
- </div>
- <div className="text-center">
- <div className="flex items-center gap-1 text-muted-foreground">
- <MessageSquare className="w-4 h-4"/>
- <span>{inquiries}</span>
- </div>
- <p className="text-xs text-tertiary mt-0.5">Leads</p>
- </div>
- </div>
-
- <div className="flex items-center gap-2">
- <button
- title="Edit listing"
- className="p-2 rounded-lg hover:bg-hover text-muted-foreground transition-colors"
- >
- <Edit2 className="w-4 h-4"/>
- </button>
- <button
- onClick={() => handleDelete(listing.id)}
- disabled={deleting === listing.id}
- title="Delete listing"
- className="p-2 rounded-lg hover:bg-error/10 text-error transition-colors disabled:opacity-50"
- >
- {deleting === listing.id ? (
- <Loader2 className="w-4 h-4 animate-spin"/>
- ) : (
- <Trash2 className="w-4 h-4"/>
- )}
- </button>
- </div>
- </div>
- </div>
- );
- })}
- </div>
- ) : (
- // Generic listings view with PropertyCard
  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
  {listings.map((listing) => (
+ <div key={listing.id} className="flex flex-col gap-0">
+ {listing.status === "rejected" && (
+ <div className="bg-error/10 border border-error/20 rounded-t-xl px-4 py-3">
+ <p className="text-sm font-semibold text-error">Listing Rejected</p>
+ {listing.rejectionReason && (
+ <p className="text-xs text-error/80 mt-1">Reason: {listing.rejectionReason}</p>
+ )}
+ </div>
+ )}
+ {listing.status === "pending_review" && (
+ <div className="bg-warning/10 border border-warning/20 rounded-t-xl px-4 py-3">
+ <p className="text-sm font-semibold text-warning">Under Review</p>
+ <p className="text-xs text-warning/80 mt-1">Your property is being reviewed and will go live within 48 hours.</p>
+ </div>
+ )}
  <PropertyCard
- key={listing.id}
  id={listing.id}
  slug={listing.slug}
  title={listing.title}
@@ -295,9 +207,9 @@ export default function ListingsPage() {
  location={listing.location}
  media={listing.media}
  />
+ </div>
  ))}
  </div>
- )
  )}
  </main>
  </>

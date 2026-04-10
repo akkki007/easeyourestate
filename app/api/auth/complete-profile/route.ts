@@ -3,7 +3,7 @@ import connectDB from "@/lib/db/connection";
 import User from "@/lib/db/models/User";
 import { signToken } from "@/lib/jwt";
 
-const ALLOWED_ROLES = ["buyer", "tenant", "owner", "agent", "builder"] as const;
+const ALLOWED_ROLES = ["buyer", "tenant", "owner"] as const;
 
 export async function POST(req: Request) {
   try {

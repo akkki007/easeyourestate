@@ -9,5 +9,5 @@ export async function requireRole(req: NextRequest, roles: UserRole[]) {
 }
 
 export async function requireSellerRole(req: NextRequest) {
-  return requireRole(req, ["owner", "agent", "builder"]);
+  return requireRole(req, ["owner"]);
 }

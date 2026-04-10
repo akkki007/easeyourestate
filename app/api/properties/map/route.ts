@@ -13,6 +13,8 @@ export async function GET(req: NextRequest) {
 
  const city = searchParams.get("city");
  const query = searchParams.get("query");
+ const lat = searchParams.get("lat");
+ const lng = searchParams.get("lng");
  const parsedQuery = query ? parseSearchQuery(query) : {};
  const purpose = searchParams.get("purpose");
  const type = searchParams.get("type");
@@ -35,6 +37,22 @@ export async function GET(req: NextRequest) {
 
  if (city) {
  filter["location.city"] = { $regex: new RegExp(escapeRegex(city),"i") };
+ }
+
+ // GEO-BASED FILTER — find properties within ~5km of selected location
+ if (lat && lng) {
+   const parsedLat = parseFloat(lat);
+   const parsedLng = parseFloat(lng);
+   if (!isNaN(parsedLat) && !isNaN(parsedLng)) {
+     filter["location.coordinates"] = {
+       $geoWithin: {
+         $centerSphere: [
+           [parsedLng, parsedLat],
+           20 / 6378.1, // 20km in radians
+         ],
+       },
+     };
+   }
  }
 
  if (purpose) {

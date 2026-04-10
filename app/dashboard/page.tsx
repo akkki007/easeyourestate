@@ -76,18 +76,6 @@ export default function DashboardPage() {
                     { label: "View Listings", href: "/dashboard/listings", icon: "list" },
                     { label: "Check Messages", href: "/dashboard/messages", icon: "message" },
                 ];
-            case "agent":
-                return [
-                    { label: "Add Listing", href: "/dashboard/properties/new", icon: "plus" },
-                    { label: "Manage Leads", href: "/dashboard/leads", icon: "users" },
-                    { label: "Schedule Visit", href: "/dashboard/appointments", icon: "calendar" },
-                ];
-            case "builder":
-                return [
-                    { label: "Add Project", href: "/dashboard/projects/new", icon: "plus" },
-                    { label: "View Leads", href: "/dashboard/leads", icon: "users" },
-                    { label: "Documents", href: "/dashboard/documents", icon: "document" },
-                ];
             default:
                 return [];
         }

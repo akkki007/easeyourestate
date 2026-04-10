@@ -4,7 +4,7 @@ import { requireAdmin } from"@/lib/auth/adminAuth";
 import User from"@/lib/db/models/User";
 import mongoose from"mongoose";
 
-const VALID_ROLES = ["buyer","tenant","owner","agent","builder","admin"] as const;
+const VALID_ROLES = ["buyer","tenant","owner","admin"] as const;
 
 type Params = { params: Promise<{ id: string }> };
 

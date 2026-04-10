@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
  Property.countDocuments(filter),
  ]);
 
- const listings = list.map((p) => ({
+ const listings = list.map((p: any) => ({
  id: p._id.toString(),
  slug: p.slug,
  title: p.title,
@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
  category: p.category,
  propertyType: p.propertyType,
  status: p.status,
+ rejectionReason: p.rejectionReason || null,
  price: p.price,
  location: { city: p.location.city, locality: p.location.locality },
  media: p.media?.images?.[0] ? { primary: p.media.images[0].url } : null,

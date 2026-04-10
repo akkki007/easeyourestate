@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
  });
  }
 
- if (role ==="owner"|| role ==="agent"|| role ==="builder") {
+ if (role ==="owner") {
  const [activeListings, totalViews] = await Promise.all([
  Property.countDocuments({ listedBy: user._id, status:"active", deletedAt: null }),
  Property.aggregate([

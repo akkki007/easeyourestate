@@ -26,7 +26,7 @@ function SearchResults() {
 
 
  // Filters state from URL
- const city = searchParams.get("city") ||"Bangalore";
+ const city = searchParams.get("city") ||"Pune";
  const query = searchParams.get("query") ||"";
  const purpose = searchParams.get("purpose") || "sell";
 

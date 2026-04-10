@@ -3,7 +3,7 @@ import { dbConnect } from"@/lib/db/connection";
 import User from"@/lib/db/models/User";
 import { requireAuth } from"@/lib/auth/auth";
 
-const VALID_ROLES = ["buyer","tenant","owner","agent","builder"] as const;
+const VALID_ROLES = ["buyer","tenant","owner"] as const;
 
 // PUT /api/user/role — Set/update user role
 export async function PUT(req: NextRequest) {

@@ -102,8 +102,8 @@ export async function POST(req: NextRequest) {
 
     await dbConnect();
     const role = dbUser.role;
-    if (role !== "owner" && role !== "agent" && role !== "builder") {
-        return NextResponse.json({ error: "Only owners, agents, and builders can create listings." }, { status: 403 });
+    if (role !== "owner") {
+        return NextResponse.json({ error: "Only owners can create listings." }, { status: 403 });
     }
 
     // Owners can post only 1 property listing
@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
     const property = await Property.create({
         slug,
         listedBy: dbUser._id,
-        listingType: role as "owner" | "agent" | "builder",
+        listingType: "owner",
         purpose: data.purpose,
         category: data.category,
         propertyType: data.propertyType,
@@ -177,7 +177,7 @@ export async function POST(req: NextRequest) {
                 order: i,
             })),
         },
-        status: "draft",
+        status: "pending_review",
     });
 
 

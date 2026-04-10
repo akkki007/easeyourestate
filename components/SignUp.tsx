@@ -17,7 +17,7 @@ export default function Signup() {
  const [otp, setOtp] = useState("");
  const [name, setName] = useState("");
  const [email, setEmail] = useState("");
- const [selectedRole, setSelectedRole] = useState<"buyer"|"tenant"|"owner"|"agent"|"builder">("buyer");
+ const [selectedRole, setSelectedRole] = useState<"buyer"|"tenant"|"owner">("buyer");
  const [error, setError] = useState("");
  const [isLoading, setIsLoading] = useState(false);
  const [resendTimer, setResendTimer] = useState(0);
@@ -336,8 +336,6 @@ export default function Signup() {
  { value:"buyer", label:"Buyer", desc:"Looking to buy"},
  { value:"tenant", label:"Tenant", desc:"Looking to rent"},
  { value:"owner", label:"Owner", desc:"List my property"},
- { value:"agent", label:"Agent", desc:"Manage listings"},
- { value:"builder", label:"Builder", desc:"Manage projects"},
  ] as const).map((role) => (
  <button
  key={role.value}

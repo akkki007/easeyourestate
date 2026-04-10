@@ -9,8 +9,6 @@ const ROLE_OPTIONS = [
  { value:"buyer", label:"Buyer", description:"Looking to buy a property", icon:"M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"},
  { value:"tenant", label:"Tenant", description:"Looking to rent a property or PG", icon:"M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"},
  { value:"owner", label:"Property Owner", description:"List your property for sale or rent", icon:"M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"},
- { value:"agent", label:"Agent / Broker", description:"Manage listings and leads for clients", icon:"M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"},
- { value:"builder", label:"Builder / Developer", description:"Manage projects and construction listings", icon:"M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"},
 ];
 
 interface ProfileData {
@@ -23,22 +21,9 @@ interface ProfileData {
  createdAt: string;
 }
 
-interface AgentProfileData {
- slug: string;
- displayName: string;
- agencyName?: string;
- bio?: string;
- experienceYears?: number;
- serviceAreas?: string[];
- specialties?: string[];
- languages?: string[];
- isPublic?: boolean;
-}
-
 export default function ProfilePage() {
  const { token, user, login } = useAuth();
  const [profile, setProfile] = useState<ProfileData | null>(null);
- const [agentProfile, setAgentProfile] = useState<AgentProfileData | null>(null);
  const [loading, setLoading] = useState(true);
  const [saving, setSaving] = useState(false);
  const [editMode, setEditMode] = useState(false);
@@ -50,14 +35,6 @@ export default function ProfilePage() {
  const [avatarUrl, setAvatarUrl] = useState("");
  const [selectedRole, setSelectedRole] = useState("");
  const [uploadingAvatar, setUploadingAvatar] = useState(false);
- const [agentDisplayName, setAgentDisplayName] = useState("");
- const [agencyName, setAgencyName] = useState("");
- const [agentBio, setAgentBio] = useState("");
- const [experienceYears, setExperienceYears] = useState("");
- const [serviceAreasInput, setServiceAreasInput] = useState("");
- const [specialtiesInput, setSpecialtiesInput] = useState("");
- const [languagesInput, setLanguagesInput] = useState("");
- const [isPublicAgentProfile, setIsPublicAgentProfile] = useState(true);
 
  const fetchProfile = useCallback(async () => {
  if (!token) return;
@@ -83,36 +60,6 @@ export default function ProfilePage() {
  useEffect(() => {
  fetchProfile();
  }, [fetchProfile]);
-
- useEffect(() => {
- const fetchAgentProfile = async () => {
- if (!token || selectedRole !=="agent") {
- setAgentProfile(null);
- return;
- }
-
- try {
- const res = await fetch("/api/agent/profile", {
- headers: { Authorization:`Bearer ${token}`},
- });
- if (!res.ok) throw new Error("Failed to load agent profile");
- const data = await res.json();
- setAgentProfile(data.profile);
- setAgentDisplayName(data.profile.displayName ||"");
- setAgencyName(data.profile.agencyName ||"");
- setAgentBio(data.profile.bio ||"");
- setExperienceYears(data.profile.experienceYears != null ? String(data.profile.experienceYears) :"");
- setServiceAreasInput(Array.isArray(data.profile.serviceAreas) ? data.profile.serviceAreas.join(", ") :"");
- setSpecialtiesInput(Array.isArray(data.profile.specialties) ? data.profile.specialties.join(", ") :"");
- setLanguagesInput(Array.isArray(data.profile.languages) ? data.profile.languages.join(", ") :"");
- setIsPublicAgentProfile(data.profile.isPublic ?? true);
- } catch {
- toast.error("Failed to load agent profile");
- }
- };
-
- fetchAgentProfile();
- }, [selectedRole, token]);
 
  const handleSaveProfile = async () => {
  if (!token || !firstName.trim()) {
@@ -157,53 +104,6 @@ export default function ProfilePage() {
  toast.success("Profile updated");
  } catch (err: unknown) {
  toast.error(err instanceof Error ? err.message :"Failed to update");
- } finally {
- setSaving(false);
- }
- };
-
- const handleSaveAgentProfile = async () => {
- if (!token) return;
-
- setSaving(true);
- try {
- const parsedExperience = experienceYears.trim() ===""? undefined : Number(experienceYears);
- const res = await fetch("/api/agent/profile", {
- method:"PUT",
- headers: {
-"Content-Type":"application/json",
- Authorization:`Bearer ${token}`,
- },
- body: JSON.stringify({
- displayName: agentDisplayName.trim() || `${firstName} ${lastName}`.trim() ||"Agent",
- agencyName: agencyName.trim(),
- bio: agentBio.trim(),
- experienceYears: parsedExperience,
- serviceAreas: serviceAreasInput,
- specialties: specialtiesInput,
- languages: languagesInput,
- isPublic: isPublicAgentProfile,
- }),
- });
-
- if (!res.ok) {
- const err = await res.json();
- throw new Error(err.error ||"Failed to update agent profile");
- }
-
- const data = await res.json();
- setAgentProfile(data.profile);
- setAgentDisplayName(data.profile.displayName ||"");
- setAgencyName(data.profile.agencyName ||"");
- setAgentBio(data.profile.bio ||"");
- setExperienceYears(data.profile.experienceYears != null ? String(data.profile.experienceYears) :"");
- setServiceAreasInput(Array.isArray(data.profile.serviceAreas) ? data.profile.serviceAreas.join(", ") :"");
- setSpecialtiesInput(Array.isArray(data.profile.specialties) ? data.profile.specialties.join(", ") :"");
- setLanguagesInput(Array.isArray(data.profile.languages) ? data.profile.languages.join(", ") :"");
- setIsPublicAgentProfile(data.profile.isPublic ?? true);
- toast.success("Agent profile updated");
- } catch (err: unknown) {
- toast.error(err instanceof Error ? err.message :"Failed to update agent profile");
  } finally {
  setSaving(false);
  }
@@ -445,146 +345,6 @@ export default function ProfilePage() {
   </p>
  </div>
 
- {selectedRole ==="agent"&& (
- <div className="bg-card rounded-2xl border border-border p-6">
- <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-5">
- <div>
- <h3 className="text-lg font-semibold text-primary mb-1">Agent Brand Profile</h3>
- <p className="text-sm text-muted-foreground">
- Manage the public-facing identity that buyers will see for your agent account.
- </p>
- </div>
- {agentProfile?.slug && (
- <a
- href={`/agents/${agentProfile.slug}`}
- target="_blank"
- rel="noreferrer"
- className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border text-sm text-muted-foreground hover:bg-hover transition-colors"
- >
- Preview Public Page
- </a>
- )}
- </div>
-
- {editMode ? (
- <div className="space-y-4">
- <div className="grid sm:grid-cols-2 gap-4">
- <div>
- <label className="block text-sm font-medium text-muted-foreground mb-1.5">Display Name</label>
- <input
- type="text"
- value={agentDisplayName}
- onChange={(e) => setAgentDisplayName(e.target.value)}
- className="w-full px-4 py-2.5 rounded-xl bg-input-bg border border-input-border focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10 text-sm text-primary"
- />
- </div>
- <div>
- <label className="block text-sm font-medium text-muted-foreground mb-1.5">Agency Name</label>
- <input
- type="text"
- value={agencyName}
- onChange={(e) => setAgencyName(e.target.value)}
- className="w-full px-4 py-2.5 rounded-xl bg-input-bg border border-input-border focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10 text-sm text-primary"
- />
- </div>
- </div>
-
- <div className="grid sm:grid-cols-2 gap-4">
- <div>
- <label className="block text-sm font-medium text-muted-foreground mb-1.5">Experience (Years)</label>
- <input
- type="number"
- min="0"
- value={experienceYears}
- onChange={(e) => setExperienceYears(e.target.value)}
- className="w-full px-4 py-2.5 rounded-xl bg-input-bg border border-input-border focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10 text-sm text-primary"
- />
- </div>
- <label className="flex items-center gap-3 pt-8">
- <input
- type="checkbox"
- checked={isPublicAgentProfile}
- onChange={(e) => setIsPublicAgentProfile(e.target.checked)}
- className="w-4 h-4 rounded border-border text-accent focus:ring-accent"
- />
- <span className="text-sm text-primary">Make my agent profile public</span>
- </label>
- </div>
-
- <div>
- <label className="block text-sm font-medium text-muted-foreground mb-1.5">Bio</label>
- <textarea
- value={agentBio}
- onChange={(e) => setAgentBio(e.target.value)}
- rows={4}
- className="w-full px-4 py-3 rounded-xl bg-input-bg border border-input-border focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10 text-sm text-primary"
- placeholder="Tell buyers about your market expertise, local knowledge, and service style."
- />
- </div>
-
- <div className="grid sm:grid-cols-3 gap-4">
- <div>
- <label className="block text-sm font-medium text-muted-foreground mb-1.5">Service Areas</label>
- <input
- type="text"
- value={serviceAreasInput}
- onChange={(e) => setServiceAreasInput(e.target.value)}
- placeholder="Baner, Wakad, Hinjewadi"
- className="w-full px-4 py-2.5 rounded-xl bg-input-bg border border-input-border focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10 text-sm text-primary"
- />
- </div>
- <div>
- <label className="block text-sm font-medium text-muted-foreground mb-1.5">Specialties</label>
- <input
- type="text"
- value={specialtiesInput}
- onChange={(e) => setSpecialtiesInput(e.target.value)}
- placeholder="Luxury homes, resale, rentals"
- className="w-full px-4 py-2.5 rounded-xl bg-input-bg border border-input-border focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10 text-sm text-primary"
- />
- </div>
- <div>
- <label className="block text-sm font-medium text-muted-foreground mb-1.5">Languages</label>
- <input
- type="text"
- value={languagesInput}
- onChange={(e) => setLanguagesInput(e.target.value)}
- placeholder="English, Hindi, Marathi"
- className="w-full px-4 py-2.5 rounded-xl bg-input-bg border border-input-border focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10 text-sm text-primary"
- />
- </div>
- </div>
-
- <div className="flex gap-3 pt-2">
- <button
- onClick={handleSaveAgentProfile}
- disabled={saving}
- className="px-6 py-2.5 rounded-xl bg-accent text-primary-foreground text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50"
- >
- {saving ?"Saving...":"Save Agent Profile"}
- </button>
- </div>
- </div>
- ) : (
- <div className="grid sm:grid-cols-2 gap-4">
- <InfoField label="Display Name"value={agentProfile?.displayName ||`${profile?.name?.first ||""} ${profile?.name?.last ||""}`.trim() ||"-"} />
- <InfoField label="Agency Name"value={agentProfile?.agencyName ||"-"} />
- <InfoField label="Experience"value={agentProfile?.experienceYears != null ? `${agentProfile.experienceYears} years` :"-"} />
- <InfoField label="Public Profile"value={agentProfile?.isPublic ? "Visible":"Hidden"} />
- <InfoField label="Service Areas"value={agentProfile?.serviceAreas?.length ? agentProfile.serviceAreas.join(", ") :"-"} />
- <InfoField label="Specialties"value={agentProfile?.specialties?.length ? agentProfile.specialties.join(", ") :"-"} />
- {agentProfile?.languages?.length ? <InfoField label="Languages"value={agentProfile.languages.join(", ")} /> : null}
- {agentProfile?.slug ? <InfoField label="Profile Slug"value={agentProfile.slug} /> : null}
- {agentProfile?.bio ? (
- <div className="sm:col-span-2">
- <p className="text-xs font-medium text-tertiary uppercase tracking-wider mb-1">Bio</p>
- <p className="text-sm text-primary leading-6">{agentProfile.bio}</p>
- </div>
- ) : null}
- </div>
- )}
- </div>
- )}
  </main>
  </>
  );

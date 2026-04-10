@@ -12,6 +12,8 @@ export async function GET(req: NextRequest) {
 
     const city = searchParams.get("city");
     const query = searchParams.get("query");
+    const lat = searchParams.get("lat");
+    const lng = searchParams.get("lng");
 
     const parsedQuery = query ? parseSearchQuery(query) : {};
 
@@ -58,6 +60,25 @@ export async function GET(req: NextRequest) {
     // CITY FILTER
     if (city) {
       filter["location.city"] = { $regex: new RegExp(escapeRegex(city), "i") };
+    }
+
+    // GEO-BASED FILTER — when lat/lng are passed from Google Places selection,
+    // find properties within ~20km radius using $geoWithin (compatible with .sort())
+    let hasGeoFilter = false;
+    if (lat && lng) {
+      const parsedLat = parseFloat(lat);
+      const parsedLng = parseFloat(lng);
+      if (!isNaN(parsedLat) && !isNaN(parsedLng)) {
+        filter["location.coordinates"] = {
+          $geoWithin: {
+            $centerSphere: [
+              [parsedLng, parsedLat], // GeoJSON: [lng, lat]
+              20 / 6378.1, // 20km radius in radians
+            ],
+          },
+        };
+        hasGeoFilter = true;
+      }
     }
 
     // PURPOSE
@@ -256,8 +277,9 @@ export async function GET(req: NextRequest) {
     }
 
     // GENERIC TEXT SEARCH (TITLE + DESCRIPTION ONLY)
+    // Skip when geo filter is active — coordinates already encode the location intent
 
-    if (query) {
+    if (query && !hasGeoFilter) {
       const cleanQuery = query
         .replace(/\d+\s*bhk/gi, "")
         .replace(/in\s+[a-zA-Z\s]+/gi, "")

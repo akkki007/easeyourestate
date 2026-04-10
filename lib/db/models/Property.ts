@@ -136,7 +136,7 @@ const propertySchema = new Schema(
   {
     slug: { type: String, required: true, unique: true },
     listedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    listingType: { type: String, enum: ["owner", "agent", "builder"], required: true },
+    listingType: { type: String, enum: ["owner"], required: true },
     purpose: { type: String, enum: ["sell", "rent", "lease", "pg"], required: true },
     category: { type: String, enum: ["residential", "commercial"], required: true },
     propertyType: {
@@ -185,7 +185,7 @@ export interface IProperty {
   _id: mongoose.Types.ObjectId;
   slug: string;
   listedBy: mongoose.Types.ObjectId;
-  listingType: "owner" | "agent" | "builder";
+  listingType: "owner";
   purpose: "sell" | "rent" | "lease" | "pg";
   category: "residential" | "commercial";
   propertyType: string;
