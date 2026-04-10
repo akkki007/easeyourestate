@@ -22,7 +22,7 @@ export default function CompareBridgePage() {
  return (
  <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
  <Loader2 className="w-10 h-10 animate-spin text-accent"/>
- <p className="text-secondary font-medium">Loading your comparison...</p>
+ <p className="text-muted-foreground font-medium">Loading your comparison...</p>
  </div>
  );
  }
@@ -33,7 +33,7 @@ export default function CompareBridgePage() {
  <LayoutGrid className="w-10 h-10 text-tertiary"/>
  </div>
  <h1 className="text-2xl font-bold mb-4">No properties selected for comparison</h1>
- <p className="text-secondary mb-8">
+ <p className="text-muted-foreground mb-8">
  Go to property listings and click"Add to Compare"on up to 3 properties to see them side-by-side.
  </p>
  <div className="flex flex-col sm:flex-row gap-4 justify-center">

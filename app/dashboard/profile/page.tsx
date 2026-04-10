@@ -253,12 +253,12 @@ export default function ProfilePage() {
  <h2 className="text-xl font-semibold text-primary">
  {profile?.name?.first} {profile?.name?.last}
  </h2>
- <p className="text-sm text-secondary">{profile?.email || profile?.phone}</p>
+ <p className="text-sm text-muted-foreground">{profile?.email || profile?.phone}</p>
  </div>
 
  <button
  onClick={() => setEditMode(!editMode)}
- className="px-4 py-2 rounded-xl text-sm font-medium border border-border text-secondary hover:bg-hover transition-colors"
+ className="px-4 py-2 rounded-xl text-sm font-medium border border-border text-muted-foreground hover:bg-hover transition-colors"
  >
  {editMode ?"Cancel":"Edit Profile"}
  </button>
@@ -269,7 +269,7 @@ export default function ProfilePage() {
  <div className="mt-6 space-y-4">
  <div className="grid sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-secondary mb-1.5">First Name *</label>
+ <label className="block text-sm font-medium text-muted-foreground mb-1.5">First Name *</label>
  <input
  type="text"
  value={firstName}
@@ -278,7 +278,7 @@ export default function ProfilePage() {
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-secondary mb-1.5">Last Name</label>
+ <label className="block text-sm font-medium text-muted-foreground mb-1.5">Last Name</label>
  <input
  type="text"
  value={lastName}
@@ -288,7 +288,7 @@ export default function ProfilePage() {
  </div>
  </div>
  <div>
- <label className="block text-sm font-medium text-secondary mb-1.5">Email</label>
+ <label className="block text-sm font-medium text-muted-foreground mb-1.5">Email</label>
  <input
  type="email"
  value={email}
@@ -297,12 +297,12 @@ export default function ProfilePage() {
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-secondary mb-1.5">Avatar</label>
+ <label className="block text-sm font-medium text-muted-foreground mb-1.5">Avatar</label>
  <div className="flex items-center gap-4">
  {avatarUrl && (
  <img src={avatarUrl} alt="Avatar preview"className="w-12 h-12 rounded-xl object-cover border border-border"/>
  )}
- <label className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium cursor-pointer hover:bg-hover transition-colors ${uploadingAvatar ?"opacity-50 pointer-events-none":"text-secondary"}`}>
+ <label className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-medium cursor-pointer hover:bg-hover transition-colors ${uploadingAvatar ?"opacity-50 pointer-events-none":"text-muted-foreground"}`}>
  <svg className="w-4 h-4"fill="none"viewBox="0 0 24 24"stroke="currentColor"strokeWidth="1.5">
  <path strokeLinecap="round"strokeLinejoin="round"d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
  </svg>
@@ -355,7 +355,7 @@ export default function ProfilePage() {
  {/* Phone (read-only) */}
  {profile?.phone && (
  <div>
- <label className="block text-sm font-medium text-secondary mb-1.5">Phone</label>
+ <label className="block text-sm font-medium text-muted-foreground mb-1.5">Phone</label>
  <input
  type="text"
  value={profile.phone}
@@ -382,7 +382,7 @@ export default function ProfilePage() {
  setEmail(profile?.email ||"");
  setAvatarUrl(profile?.avatar ||"");
  }}
- className="px-6 py-2.5 rounded-xl border border-border text-secondary text-sm font-medium hover:bg-hover transition-colors"
+ className="px-6 py-2.5 rounded-xl border border-border text-muted-foreground text-sm font-medium hover:bg-hover transition-colors"
  >
  Cancel
  </button>
@@ -414,7 +414,7 @@ export default function ProfilePage() {
  {/* Role Display (Read-only) */}
  <div className="bg-card rounded-2xl border border-border p-6">
   <h3 className="text-lg font-semibold text-primary mb-1">Role</h3>
-  <p className="text-sm text-secondary mb-5">
+  <p className="text-sm text-muted-foreground mb-5">
    Your current role determines your dashboard experience and available features.
   </p>
 
@@ -450,7 +450,7 @@ export default function ProfilePage() {
  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-5">
  <div>
  <h3 className="text-lg font-semibold text-primary mb-1">Agent Brand Profile</h3>
- <p className="text-sm text-secondary">
+ <p className="text-sm text-muted-foreground">
  Manage the public-facing identity that buyers will see for your agent account.
  </p>
  </div>
@@ -459,7 +459,7 @@ export default function ProfilePage() {
  href={`/agents/${agentProfile.slug}`}
  target="_blank"
  rel="noreferrer"
- className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border text-sm text-secondary hover:bg-hover transition-colors"
+ className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border text-sm text-muted-foreground hover:bg-hover transition-colors"
  >
  Preview Public Page
  </a>
@@ -470,7 +470,7 @@ export default function ProfilePage() {
  <div className="space-y-4">
  <div className="grid sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-secondary mb-1.5">Display Name</label>
+ <label className="block text-sm font-medium text-muted-foreground mb-1.5">Display Name</label>
  <input
  type="text"
  value={agentDisplayName}
@@ -479,7 +479,7 @@ export default function ProfilePage() {
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-secondary mb-1.5">Agency Name</label>
+ <label className="block text-sm font-medium text-muted-foreground mb-1.5">Agency Name</label>
  <input
  type="text"
  value={agencyName}
@@ -491,7 +491,7 @@ export default function ProfilePage() {
 
  <div className="grid sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium text-secondary mb-1.5">Experience (Years)</label>
+ <label className="block text-sm font-medium text-muted-foreground mb-1.5">Experience (Years)</label>
  <input
  type="number"
  min="0"
@@ -512,7 +512,7 @@ export default function ProfilePage() {
  </div>
 
  <div>
- <label className="block text-sm font-medium text-secondary mb-1.5">Bio</label>
+ <label className="block text-sm font-medium text-muted-foreground mb-1.5">Bio</label>
  <textarea
  value={agentBio}
  onChange={(e) => setAgentBio(e.target.value)}
@@ -524,7 +524,7 @@ export default function ProfilePage() {
 
  <div className="grid sm:grid-cols-3 gap-4">
  <div>
- <label className="block text-sm font-medium text-secondary mb-1.5">Service Areas</label>
+ <label className="block text-sm font-medium text-muted-foreground mb-1.5">Service Areas</label>
  <input
  type="text"
  value={serviceAreasInput}
@@ -534,7 +534,7 @@ export default function ProfilePage() {
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-secondary mb-1.5">Specialties</label>
+ <label className="block text-sm font-medium text-muted-foreground mb-1.5">Specialties</label>
  <input
  type="text"
  value={specialtiesInput}
@@ -544,7 +544,7 @@ export default function ProfilePage() {
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-secondary mb-1.5">Languages</label>
+ <label className="block text-sm font-medium text-muted-foreground mb-1.5">Languages</label>
  <input
  type="text"
  value={languagesInput}

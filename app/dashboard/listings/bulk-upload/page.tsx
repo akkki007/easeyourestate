@@ -126,7 +126,7 @@ export default function BulkUploadPage() {
             <FileText className="w-5 h-5" />
             How to use bulk upload
           </h3>
-          <ol className="space-y-2 text-sm text-secondary">
+          <ol className="space-y-2 text-sm text-muted-foreground">
             <li>1. Download the CSV template below</li>
             <li>2. Fill in your property details following the template format</li>
             <li>3. Save the file as CSV (comma-separated values)</li>
@@ -153,7 +153,7 @@ export default function BulkUploadPage() {
         >
           <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
           <p className="text-foreground font-medium mb-1">Drag and drop your CSV file here</p>
-          <p className="text-sm text-secondary mb-4">or click to select a file</p>
+          <p className="text-sm text-muted-foreground mb-4">or click to select a file</p>
           {file && <p className="text-sm text-accent font-medium">{file.name}</p>}
           <input
             ref={fileInputRef}
@@ -207,19 +207,19 @@ export default function BulkUploadPage() {
                   <h3 className="font-semibold text-foreground mb-2">{result.message}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
-                      <p className="text-secondary">Total Rows</p>
+                      <p className="text-muted-foreground">Total Rows</p>
                       <p className="font-bold text-foreground">{result.summary.total}</p>
                     </div>
                     <div>
-                      <p className="text-secondary">Valid</p>
+                      <p className="text-muted-foreground">Valid</p>
                       <p className="font-bold text-foreground">{result.summary.validRows}</p>
                     </div>
                     <div>
-                      <p className="text-secondary">Created</p>
+                      <p className="text-muted-foreground">Created</p>
                       <p className="font-bold text-success">{result.summary.created}</p>
                     </div>
                     <div>
-                      <p className="text-secondary">Failed</p>
+                      <p className="text-muted-foreground">Failed</p>
                       <p className="font-bold text-error">{result.summary.failed}</p>
                     </div>
                   </div>
@@ -235,10 +235,10 @@ export default function BulkUploadPage() {
                   <table className="w-full text-sm">
                     <thead className="border-b border-border">
                       <tr>
-                        <th className="text-left py-2 px-3 text-secondary font-medium">Row</th>
-                        <th className="text-left py-2 px-3 text-secondary font-medium">Field</th>
-                        <th className="text-left py-2 px-3 text-secondary font-medium">Value</th>
-                        <th className="text-left py-2 px-3 text-secondary font-medium">Error</th>
+                        <th className="text-left py-2 px-3 text-muted-foreground font-medium">Row</th>
+                        <th className="text-left py-2 px-3 text-muted-foreground font-medium">Field</th>
+                        <th className="text-left py-2 px-3 text-muted-foreground font-medium">Value</th>
+                        <th className="text-left py-2 px-3 text-muted-foreground font-medium">Error</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -246,14 +246,14 @@ export default function BulkUploadPage() {
                         <tr key={idx} className="border-b border-border">
                           <td className="py-2 px-3 text-error font-medium">{err.row}</td>
                           <td className="py-2 px-3 text-foreground">{err.field}</td>
-                          <td className="py-2 px-3 text-secondary text-xs">{String(err.value).slice(0, 30)}</td>
+                          <td className="py-2 px-3 text-muted-foreground text-xs">{String(err.value).slice(0, 30)}</td>
                           <td className="py-2 px-3 text-error text-xs">{err.error}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                   {result.validationErrors.length > 10 && (
-                    <p className="text-xs text-secondary mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                       ... and {result.validationErrors.length - 10} more errors
                     </p>
                   )}
@@ -272,7 +272,7 @@ export default function BulkUploadPage() {
                     </p>
                   ))}
                   {result.creationErrors.length > 5 && (
-                    <p className="text-xs text-secondary">
+                    <p className="text-xs text-muted-foreground">
                       ... and {result.creationErrors.length - 5} more errors
                     </p>
                   )}

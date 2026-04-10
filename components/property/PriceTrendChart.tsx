@@ -70,7 +70,7 @@ export default function PriceTrendChart({ localitySlug, localityName }: PriceTre
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h3 className="text-lg font-semibold text-primary">Price Trends</h3>
-                    <p className="text-sm text-secondary">Average price per sqft in {localityName}</p>
+                    <p className="text-sm text-muted-foreground">Average price per sqft in {localityName}</p>
                 </div>
                 {data.length >= 2 && (() => {
                     const first = data[0].price;

@@ -36,10 +36,10 @@ type SubscriptionData = {
 };
 
 const PLAN_COLORS: Record<string, { bg: string; text: string; badge: string }> = {
-  free: { bg: "bg-gray-50", text: "text-gray-900", badge: "bg-gray-200 text-gray-800" },
-  basic: { bg: "bg-blue-50", text: "text-blue-900", badge: "bg-blue-200 text-blue-800" },
-  pro: { bg: "bg-purple-50", text: "text-purple-900", badge: "bg-purple-200 text-purple-800" },
-  premium: { bg: "bg-yellow-50", text: "text-yellow-900", badge: "bg-yellow-200 text-yellow-800" },
+  free: { bg: "bg-muted", text: "text-foreground", badge: "bg-muted text-muted-foreground" },
+  basic: { bg: "bg-info/10", text: "text-foreground", badge: "bg-info/20 text-info" },
+  pro: { bg: "bg-accent/10", text: "text-foreground", badge: "bg-accent/20 text-accent" },
+  premium: { bg: "bg-warning/10", text: "text-foreground", badge: "bg-warning/20 text-warning" },
 };
 
 export default function SubscriptionPage() {
@@ -121,7 +121,7 @@ export default function SubscriptionPage() {
         <main className="p-6">
           <div className="bg-card rounded-2xl border border-error/30 p-8 text-center">
             <h3 className="text-lg font-semibold text-primary mb-2">Failed to load subscription</h3>
-            <p className="text-secondary text-sm">{error}</p>
+            <p className="text-muted-foreground text-sm">{error}</p>
           </div>
         </main>
       </>
@@ -133,7 +133,7 @@ export default function SubscriptionPage() {
       <>
         <DashboardHeader userName={userName} userEmail={userEmail} pageTitle="Subscription" />
         <main className="p-6">
-          <div className="text-center text-secondary">No subscription data</div>
+          <div className="text-center text-muted-foreground">No subscription data</div>
         </main>
       </>
     );
@@ -174,7 +174,7 @@ export default function SubscriptionPage() {
         <div className={`${colors.bg} rounded-2xl border-2 border-accent p-8`}>
           <div className="flex items-start justify-between mb-6">
             <div>
-              <p className="text-secondary text-sm font-medium">Current Plan</p>
+              <p className="text-muted-foreground text-sm font-medium">Current Plan</p>
               <h2 className="text-4xl font-bold text-foreground mt-1">{sub.planName}</h2>
             </div>
             <span className={`px-4 py-2 rounded-lg font-semibold text-sm ${colors.badge}`}>{sub.status.toUpperCase()}</span>
@@ -182,21 +182,21 @@ export default function SubscriptionPage() {
 
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
             <div>
-              <p className="text-secondary text-sm">Plan Started</p>
+              <p className="text-muted-foreground text-sm">Plan Started</p>
               <p className="text-foreground font-semibold">
                 {new Date(sub.startsAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </p>
             </div>
             {sub.endsAt && (
               <div>
-                <p className="text-secondary text-sm">Renewal Date</p>
+                <p className="text-muted-foreground text-sm">Renewal Date</p>
                 <p className="text-foreground font-semibold">
                   {new Date(sub.endsAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                 </p>
               </div>
             )}
             <div>
-              <p className="text-secondary text-sm">Auto-Renew</p>
+              <p className="text-muted-foreground text-sm">Auto-Renew</p>
               <p className="text-foreground font-semibold">{sub.autoRenew ? "Enabled" : "Disabled"}</p>
             </div>
           </div>
@@ -218,7 +218,7 @@ export default function SubscriptionPage() {
                       <Icon className="w-5 h-5 text-accent" />
                     </div>
                     <div>
-                      <p className="text-secondary text-sm font-medium">{feature.label}</p>
+                      <p className="text-muted-foreground text-sm font-medium">{feature.label}</p>
                       <p className="text-foreground font-semibold">
                         {feature.used}/{feature.limit}
                       </p>
@@ -238,7 +238,7 @@ export default function SubscriptionPage() {
                       style={{ width: `${Math.min(percentage, 100)}%` }}
                     />
                   </div>
-                  <p className="text-xs text-secondary">
+                  <p className="text-xs text-muted-foreground">
                     {feature.available} of {feature.limit} available
                   </p>
                 </div>
@@ -309,7 +309,7 @@ export default function SubscriptionPage() {
         {/* Plan Comparison CTA */}
         <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl border border-accent/20 p-8 text-center">
           <h3 className="text-lg font-semibold text-foreground mb-2">Ready to upgrade?</h3>
-          <p className="text-secondary text-sm mb-6">
+          <p className="text-muted-foreground text-sm mb-6">
             Unlock more listings, team members, and features with a premium plan.
           </p>
           <button className="px-6 py-2.5 rounded-lg bg-accent text-primary-foreground font-medium text-sm hover:bg-accent-hover transition-colors">

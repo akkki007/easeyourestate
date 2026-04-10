@@ -113,7 +113,7 @@ export default function PropertyMap({
                   <p className="text-xs text-muted-foreground">{p.locality}</p>
                   <a
                     href={`/property/${p.slug}`}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-purple-600 hover:text-purple-700 mt-1"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:text-accent-hover mt-1"
                   >
                     View Property
                     <svg

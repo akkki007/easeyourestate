@@ -130,7 +130,7 @@ export default function ListingsPage() {
  <main className="p-6">
  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
  <div>
- <p className="text-secondary text-sm">Manage your property listings</p>
+ <p className="text-muted-foreground text-sm">Manage your property listings</p>
  </div>
  <div className="flex items-center gap-3">
  <select
@@ -174,7 +174,7 @@ export default function ListingsPage() {
  ) : error ? (
  <div className="bg-card rounded-2xl border border-error/30 p-8 text-center">
  <h3 className="text-lg font-semibold text-primary mb-2">Couldn&apos;t load listings</h3>
- <p className="text-secondary text-sm">{error}</p>
+ <p className="text-muted-foreground text-sm">{error}</p>
  </div>
  ) : listings.length === 0 ? (
  <div className="bg-card rounded-2xl border border-border p-12 text-center">
@@ -182,7 +182,7 @@ export default function ListingsPage() {
  <Home className="w-8 h-8 text-tertiary"/>
  </div>
  <h3 className="text-lg font-semibold text-primary mb-2">No listings yet</h3>
- <p className="text-secondary text-sm mb-6 max-w-sm mx-auto">
+ <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
  Add your first property to start receiving inquiries from buyers and tenants.
  </p>
  <Link
@@ -203,7 +203,7 @@ export default function ListingsPage() {
  const statusColors: Record<string, string> = {
  draft: "bg-warning-bg text-warning",
  active: "bg-success-bg text-success",
- sold: "bg-secondary-bg text-secondary",
+ sold: "bg-secondary-bg text-muted-foreground",
  inactive: "bg-error/15 text-error",
  };
 
@@ -256,7 +256,7 @@ export default function ListingsPage() {
  <div className="flex items-center gap-2">
  <button
  title="Edit listing"
- className="p-2 rounded-lg hover:bg-hover text-secondary transition-colors"
+ className="p-2 rounded-lg hover:bg-hover text-muted-foreground transition-colors"
  >
  <Edit2 className="w-4 h-4"/>
  </button>

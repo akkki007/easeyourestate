@@ -493,7 +493,7 @@ export default function NewPropertyPage() {
             onChange={(e) => setNegotiable(e.target.checked)}
             className="rounded border-border"
           />
-          <label htmlFor="negotiable" className="text-sm text-secondary">Negotiable</label>
+          <label htmlFor="negotiable" className="text-sm text-muted-foreground">Negotiable</label>
         </div>
       </>
     ) : (
@@ -586,7 +586,7 @@ export default function NewPropertyPage() {
             onChange={(e) => setPetFriendly(e.target.checked)}
             className="rounded border-border"
           />
-          <label htmlFor="petFriendly" className="text-sm text-secondary">Pet Friendly</label>
+          <label htmlFor="petFriendly" className="text-sm text-muted-foreground">Pet Friendly</label>
         </div>
       </>
     )}
@@ -629,7 +629,7 @@ export default function NewPropertyPage() {
             onChange={(e) => setMealsIncluded(e.target.checked)}
             className="rounded border-border"
           />
-          <label htmlFor="mealsIncluded" className="text-sm text-secondary">Meals Included</label>
+          <label htmlFor="mealsIncluded" className="text-sm text-muted-foreground">Meals Included</label>
         </div>
       </>
     )}
@@ -873,7 +873,7 @@ export default function NewPropertyPage() {
  key={a}
  type="button"
  onClick={() => toggleAmenity(a)}
- className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${amenities.includes(a) ?"bg-accent text-primary-foreground":"bg-hover text-secondary hover:bg-active"}`}
+ className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${amenities.includes(a) ?"bg-accent text-primary-foreground":"bg-hover text-muted-foreground hover:bg-active"}`}
  >
  {a.replace(/_/g,"")}
  </button>
@@ -914,7 +914,7 @@ export default function NewPropertyPage() {
  <button
  type="button"
  onClick={() => router.back()}
- className="px-6 py-3 rounded-xl font-medium bg-hover text-secondary hover:bg-active"
+ className="px-6 py-3 rounded-xl font-medium bg-hover text-muted-foreground hover:bg-active"
  >
  Cancel
  </button>
@@ -934,7 +934,7 @@ export default function NewPropertyPage() {
 }
 
 function Label({ children }: { children: React.ReactNode }) {
- return <label className="block text-sm font-medium text-secondary mb-1.5">{children}</label>;
+ return <label className="block text-sm font-medium text-muted-foreground mb-1.5">{children}</label>;
 }
 
 function FieldError({ message }: { message?: string }) {

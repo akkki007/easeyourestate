@@ -105,7 +105,7 @@ function SearchResults() {
         {/* Results Area */}
         <div className="flex-1 space-y-6">
           {/* Transaction Tabs */}
-          <div className="flex bg-muted p-1 rounded-xl w-fit">
+          <div className="flex bg-muted p-1 w-fit">
             <button
               onClick={() => handleTabSwitch("sell")}
               className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${
@@ -163,14 +163,14 @@ function SearchResults() {
  <div className="flex gap-2">
  <button
  onClick={() => setViewMode("list")}
- className="px-3 py-1 border rounded bg-black text-primary-foreground"
+ className={`px-3 py-1 border border-border rounded text-sm font-medium transition-colors ${viewMode === "list" ? "bg-foreground text-background" : "bg-card text-muted-foreground hover:text-foreground"}`}
  >
  List
  </button>
 
  <button
  onClick={() => setViewMode("map")}
- className="px-3 py-1 border rounded bg-black text-primary-foreground"
+ className={`px-3 py-1 border border-border rounded text-sm font-medium transition-colors ${viewMode === "map" ? "bg-foreground text-background" : "bg-card text-muted-foreground hover:text-foreground"}`}
  >
  Map
  </button>

@@ -26,6 +26,17 @@
 scripts/
 .cursor
 
+# test results
+/playwright-report/
+/test-results/
+
+# claude code
+/.agents/
+skills-lock.json
+
+# uploads
+/public/uploads/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

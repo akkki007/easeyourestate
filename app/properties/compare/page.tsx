@@ -47,7 +47,7 @@ function CompareContent() {
         return (
             <div className="max-w-4xl mx-auto px-6 py-20 text-center">
                 <h1 className="text-3xl font-bold mb-4">No properties to compare</h1>
-                <p className="text-secondary mb-8">Select up to 3 properties from the search results to compare them side-by-side.</p>
+                <p className="text-muted-foreground mb-8">Select up to 3 properties from the search results to compare them side-by-side.</p>
                 <Link href="/search" className="btn-primary">
                     Go to Search
                 </Link>

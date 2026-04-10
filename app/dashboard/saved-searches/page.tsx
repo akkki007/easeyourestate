@@ -128,7 +128,7 @@ export default function SavedSearchesPage() {
  {filterLabels.map((label, i) => (
  <span
  key={i}
- className="inline-flex px-2 py-0.5 rounded-md bg-hover text-xs text-secondary capitalize"
+ className="inline-flex px-2 py-0.5 rounded-md bg-hover text-xs text-muted-foreground capitalize"
  >
  {label}
  </span>
@@ -149,7 +149,7 @@ export default function SavedSearchesPage() {
  </Link>
  <button
  onClick={() => handleDelete(search._id)}
- className="p-2 rounded-lg border border-border text-secondary hover:bg-hover hover:text-error transition-colors"
+ className="p-2 rounded-lg border border-border text-muted-foreground hover:bg-hover hover:text-error transition-colors"
  title="Delete saved search"
  >
  <svg className="w-4 h-4"fill="none"viewBox="0 0 24 24"stroke="currentColor"strokeWidth="1.5">

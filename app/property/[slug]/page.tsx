@@ -231,6 +231,15 @@ export default function PropertyDetailPage() {
             });
     }, [slug]);
 
+    // Log property view for authenticated users
+    useEffect(() => {
+        if (!property?._id || !token) return;
+        fetch(`/api/user/viewed-properties/${property._id}`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+        }).catch(() => {});
+    }, [property?._id, token]);
+
     const formatPrice = (n: number) => {
         if (n >= 1_00_00_000) return `${(n / 1_00_00_000).toFixed(2)} Cr`;
         if (n >= 1_00_000) return `${(n / 1_00_000).toFixed(2)} L`;

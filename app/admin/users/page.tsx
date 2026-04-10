@@ -154,7 +154,7 @@ export default function AdminUsersPage() {
  value={search}
  onChange={(e) => setSearch(e.target.value)}
  placeholder="Search name, email, phone..."
- className="px-4 py-2 rounded-lg bg-muted border border-border text-sm text-primary-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none w-64"
+ className="px-4 py-2 rounded-lg bg-input border border-border text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none w-64"
  />
  <select
  value={roleFilter}
@@ -300,15 +300,15 @@ export default function AdminUsersPage() {
  {roleModalUser && (
  <>
  <div className="fixed inset-0 bg-black/70 z-50"onClick={() => setRoleModalUser(null)} />
- <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-sm bg-muted border border-border rounded-2xl p-6">
- <h3 className="text-primary-foreground font-semibold mb-1">Change Role</h3>
+ <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-sm bg-card border border-border rounded-2xl p-6">
+ <h3 className="text-foreground font-semibold mb-1">Change Role</h3>
  <p className="text-sm text-muted-foreground mb-4">
  {roleModalUser.name.first} {roleModalUser.name.last}
  </p>
  <select
  value={newRole}
  onChange={(e) => setNewRole(e.target.value)}
- className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-sm text-primary-foreground mb-4 focus:border-accent focus:outline-none"
+ className="w-full px-3 py-2 rounded-lg bg-input border border-border text-sm text-foreground mb-4 focus:border-accent focus:outline-none"
  >
  {ROLES.filter(Boolean).map((r) => (
  <option key={r} value={r}>{r}</option>

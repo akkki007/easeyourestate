@@ -48,7 +48,7 @@ export default function Navbar() {
  className="w-0 h-0"
  style={{
  borderLeft:"16px solid transparent",
- borderTop:"16px solid #7c3aed",
+ borderTop:"16px solid #674188",
  }}
  />
  </div>
@@ -65,7 +65,7 @@ export default function Navbar() {
  <CreditCard className="w-4 h-4"/>
  Pay Rent
  </button>
- <button className="flex items-center gap-2 px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary transition-colors shadow-sm shadow-primary">
+ <button className="flex items-center gap-2 px-5 py-2 rounded-lg bg-primary  text-sm font-semibold hover:bg-primary transition-colors shadow-sm shadow-primary">
  <Building2 className="w-4 h-4"/>
  For Property Owners
  </button>

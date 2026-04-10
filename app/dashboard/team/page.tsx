@@ -179,7 +179,7 @@ export default function TeamPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <p className="text-secondary text-sm">Manage your team members and their permissions</p>
+            <p className="text-muted-foreground text-sm">Manage your team members and their permissions</p>
           </div>
           <button
             onClick={() => setShowInviteModal(true)}
@@ -246,7 +246,7 @@ export default function TeamPage() {
         {error ? (
           <div className="bg-card rounded-2xl border border-error/30 p-8 text-center">
             <h3 className="text-lg font-semibold text-primary mb-2">Failed to load team</h3>
-            <p className="text-secondary text-sm">{error}</p>
+            <p className="text-muted-foreground text-sm">{error}</p>
           </div>
         ) : members.length === 0 ? (
           <div className="bg-card rounded-2xl border border-border p-12 text-center">
@@ -254,7 +254,7 @@ export default function TeamPage() {
               <Mail className="w-8 h-8 text-tertiary" />
             </div>
             <h3 className="text-lg font-semibold text-primary mb-2">No team members yet</h3>
-            <p className="text-secondary text-sm mb-6 max-w-sm mx-auto">
+            <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
               Invite team members to collaborate on listings and leads management.
             </p>
             <button
@@ -271,18 +271,18 @@ export default function TeamPage() {
               <table className="w-full">
                 <thead className="bg-hover border-b border-border">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-secondary">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-secondary">Email</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-secondary">Role</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-secondary">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-secondary">Action</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">Email</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">Role</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {members.map((member) => (
                     <tr key={member.id} className="border-b border-border last:border-0">
                       <td className="px-6 py-4 text-sm text-foreground font-medium">{member.memberName}</td>
-                      <td className="px-6 py-4 text-sm text-secondary">{member.memberEmail}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{member.memberEmail}</td>
                       <td className="px-6 py-4 text-sm">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${roleLabels[member.role].color}`}
@@ -314,15 +314,15 @@ export default function TeamPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <p className="font-medium text-foreground text-sm">Viewer</p>
-              <p className="text-xs text-secondary mt-1">Can view listings and leads</p>
+              <p className="text-xs text-muted-foreground mt-1">Can view listings and leads</p>
             </div>
             <div>
               <p className="font-medium text-foreground text-sm">Editor</p>
-              <p className="text-xs text-secondary mt-1">Can edit listings and leads, manage notes</p>
+              <p className="text-xs text-muted-foreground mt-1">Can edit listings and leads, manage notes</p>
             </div>
             <div>
               <p className="font-medium text-foreground text-sm">Admin</p>
-              <p className="text-xs text-secondary mt-1">Full access including team management</p>
+              <p className="text-xs text-muted-foreground mt-1">Full access including team management</p>
             </div>
           </div>
         </div>

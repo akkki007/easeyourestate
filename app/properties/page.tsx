@@ -441,7 +441,7 @@ function SignUpModal({
  onClick={onClose}
  className="absolute top-4 right-4 w-8 h-8 rounded-full bg-muted hover:bg-accent flex items-center justify-center transition-colors z-20"
  >
- <svg width="14"height="14"viewBox="0 0 24 24"fill="none"stroke="#6b7280"strokeWidth="2.5"strokeLinecap="round">
+ <svg width="14"height="14"viewBox="0 0 24 24"fill="none"stroke="currentColor"strokeWidth="2.5"strokeLinecap="round">
  <line x1="18"y1="6"x2="6"y2="18"/>
  <line x1="6"y1="6"x2="18"y2="18"/>
  </svg>

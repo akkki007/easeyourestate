@@ -249,7 +249,7 @@ export default function DashboardPage() {
                         <div className="lg:col-span-2 bg-card rounded-2xl border border-border overflow-hidden">
                             <div className="px-6 py-4 border-b border-border flex items-center justify-between">
                                 <h3 className="font-semibold text-primary">Recent Activity</h3>
-                                <button className="text-sm text-secondary hover:text-primary">View all</button>
+                                <button className="text-sm text-muted-foreground hover:text-primary">View all</button>
                             </div>
                             <div className="p-6">
                                 <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -277,10 +277,10 @@ export default function DashboardPage() {
                                             href={action.href}
                                             className="flex items-center gap-3 p-3 rounded-xl hover:bg-hover transition-colors group"
                                         >
-                                            <div className="w-10 h-10 rounded-lg bg-hover flex items-center justify-center text-secondary group-hover:bg-active transition-colors">
+                                            <div className="w-10 h-10 rounded-lg bg-hover flex items-center justify-center text-muted-foreground group-hover:bg-active transition-colors">
                                                 <ActionIcon type={action.icon} />
                                             </div>
-                                            <span className="text-sm font-medium text-secondary group-hover:text-primary">
+                                            <span className="text-sm font-medium text-muted-foreground group-hover:text-primary">
                                                 {action.label}
                                             </span>
                                             <svg className="w-4 h-4 text-tertiary ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -372,7 +372,7 @@ function StatCard({
     return (
         <div className="bg-card rounded-2xl border border-border p-5">
             <div className="flex items-start justify-between mb-3">
-                <div className="w-10 h-10 rounded-lg bg-hover flex items-center justify-center text-secondary">
+                <div className="w-10 h-10 rounded-lg bg-hover flex items-center justify-center text-muted-foreground">
                     {icon}
                 </div>
                 <span

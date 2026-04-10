@@ -7,8 +7,6 @@ import {
  MapPin,
  ChevronDown,
  Building2,
- Truck,
- Tag,
 } from"lucide-react";
 
 
@@ -83,49 +81,51 @@ export default function Hero() {
 
 return (
  <>
- <section className="relative min-h-svh flex flex-col items-center justify-center overflow-hidden pt-20 sm:pt-24">
- {/* Background */}
- <div
- className="absolute inset-0 bg-cover bg-center bg-no-repeat"
- style={{
- backgroundImage:`url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1920&q=80')`,
- }}
- />
- <div className="absolute inset-0 bg-linear-to-br from-gray-900/80 via-gray-800/65 to-primary"/>
- <div
- className="absolute inset-0 opacity-[0.04]"
- style={{
- backgroundImage:`radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
- backgroundSize:"32px 32px",
- }}
- />
-
- {/* Hero content */}
- <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 w-full max-w-4xl mx-auto">
- {/* Badge */}
- <div className="flex items-center justify-center mb-6 mt-2 sm:mt-4">
- <div className="flex flex-wrap items-center justify-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-card/10 backdrop-blur border border-white/20 text-primary-foreground text-xs sm:text-sm font-medium">
- <Truck className="w-4 h-4 text-primary"/>
- <span className="text-primary-foreground/90">Packers And Movers</span>
- <div className="w-px h-4 bg-card/30"/>
- <Tag className="w-4 h-4 text-primary"/>
- <span className="text-primary-foreground/90">Lowest Prices</span>
- </div>
- </div>
-
- {/* Headline */}
- <h1 className="text-center text-3xl sm:text-5xl lg:text-6xl font-black text-primary-foreground leading-tight mb-3 tracking-tight drop-shadow-lg">
- More Comfortable.{""}
- <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-primary">
- More Classy.
+ <section className="bg-background pt-24 sm:pt-28 border-b border-border">
+ <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-28">
+ <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+ <div className="max-w-2xl">
+ <span className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-foreground bg-background border border-border rounded-[4px]">
+ Home for Better Living
+ </span>
+ <h1 className="mt-6 text-[clamp(2.2rem,5.5vw,4.5rem)] leading-[1.02] tracking-tight text-foreground">
+ <span className="block font-serif italic font-normal">
+ Explore your next
+ </span>
+ <span className="block font-medium">
+ living designed for modern lifestyles today.
  </span>
  </h1>
- <p className="text-primary-foreground/70 text-sm sm:text-lg mb-8 sm:mb-10 text-center">
- Find your perfect property — no brokers, zero commissions.
+ <p className="mt-4 max-w-xl text-sm sm:text-base text-muted-foreground">
+ Discover a new era of comfort and convenience. Next-level living designed to elevate your everyday lifestyle.
  </p>
+ </div>
 
- {/* Search card */}
- <div className="w-full max-w-3xl bg-card rounded-2xl shadow-2xl shadow-black/30 overflow-visible">
+ <div className="lg:pb-3">
+ <div className="flex items-center -space-x-3">
+ {["RK","AJ","MS","PK"].map((initials) => (
+ <div
+ key={initials}
+ className="h-10 w-10 rounded-full border-2 border-background bg-zinc-300 text-zinc-800 text-xs font-semibold flex items-center justify-center"
+ >
+ {initials}
+ </div>
+ ))}
+ </div>
+ <p className="mt-3 text-xs text-foreground font-medium underline underline-offset-2">
+ 250 Reviews 4.5/5 out of 5.0
+ </p>
+ </div>
+ </div>
+
+ <div className="relative mt-10">
+ <div
+ className="h-[330px] sm:h-[420px] lg:h-[470px] border border-border bg-cover bg-center"
+ style={{ backgroundImage:"url('/hero-sect.png')" }}
+ />
+
+ <div className="absolute left-1/2 -bottom-16 w-[94%] -translate-x-1/2 max-w-6xl">
+ <div className="w-full max-w-3xl bg-card rounded-2xl shadow-2xl shadow-black/30 overflow-visible mx-auto">
  {/* Tabs */}
  <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-border">
  {(["Buy","Rent","Commercial","PG"] as const).map((tab) => (
@@ -235,7 +235,7 @@ return (
  {/* Search button */}
  <button
  onClick={() => handleSearch()}
- className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:m-1 bg-primary hover:bg-primary text-primary-foreground text-sm font-semibold rounded-xl transition-colors shadow-sm shadow-primary"
+ className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:m-1 bg-primary hover:bg-primary  text-sm font-semibold rounded-xl transition-colors shadow-sm shadow-primary"
  >
  <Search className="w-4 h-4"/>
  Search
@@ -318,44 +318,11 @@ return (
  </div>
  )}
  </div>
-
- {/* Property owner CTA */}
- <div className="mt-8 flex flex-col items-center gap-3">
- <div className="flex items-center gap-3 w-full max-w-xs">
- <div className="flex-1 h-px bg-card/20"/>
- <span className="text-primary-foreground/70 text-sm font-medium whitespace-nowrap">
- Are you a Property Owner?
- </span>
- <div className="flex-1 h-px bg-card/20"/>
  </div>
- <button className="w-full sm:w-auto px-8 py-3 rounded-xl bg-primary hover:bg-primary text-primary-foreground font-semibold text-sm shadow-lg shadow-primary transition-all hover:scale-[1.02] active:scale-[0.98]">
- Post Free Property Ad
- </button>
- </div>
- </div>
-
- {/* Scroll indicator */}
- <div className="hidden sm:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-2 text-primary-foreground/50 animate-bounce">
- <ChevronDown className="w-5 h-5"/>
- </div>
- </section>
- <section className="bg-primary text-primary-foreground py-6">
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
- <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
- {[
- { value:"10 Lakh+", label:"Happy Customers"},
- { value:"5 Lakh+", label:"Active Listings"},
- { value:"35+", label:"Cities Covered"},
- { value:"Zero", label:"Brokerage"},
- ].map((stat) => (
- <div key={stat.label}>
- <div className="text-xl sm:text-2xl font-black">{stat.value}</div>
- <div className="text-primary-foreground/80 text-xs sm:text-sm mt-0.5">{stat.label}</div>
- </div>
- ))}
  </div>
  </div>
  </section>
+ <div className="h-24 sm:h-28 bg-background"/>
  </>
 );
 }

@@ -112,7 +112,7 @@ export default function AdminLoginPage() {
                   value={setupKey}
                   onChange={(e) => setSetupKey(e.target.value)}
                   placeholder="Enter ADMIN_SETUP_KEY"
-                  className="w-full px-4 py-2.5 rounded-xl bg-muted border border-border text-primary-foreground text-sm placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10"
+                  className="w-full px-4 py-2.5 rounded-xl bg-input border border-border text-foreground text-sm placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10"
                   autoFocus
                 />
               </div>
@@ -123,7 +123,7 @@ export default function AdminLoginPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Admin Name"
-                  className="w-full px-4 py-2.5 rounded-xl bg-muted border border-border text-primary-foreground text-sm placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10"
+                  className="w-full px-4 py-2.5 rounded-xl bg-input border border-border text-foreground text-sm placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10"
                 />
               </div>
             </>
@@ -135,7 +135,7 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@example.com"
-              className="w-full px-4 py-2.5 rounded-xl bg-muted border border-border text-primary-foreground text-sm placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10"
+              className="w-full px-4 py-2.5 rounded-xl bg-input border border-border text-foreground text-sm placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10"
               autoFocus={!isSetup}
             />
           </div>
@@ -146,7 +146,7 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={isSetup ? "Min 8 characters" : "••••••"}
-              className="w-full px-4 py-2.5 rounded-xl bg-muted border border-border text-primary-foreground text-sm placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10"
+              className="w-full px-4 py-2.5 rounded-xl bg-input border border-border text-foreground text-sm placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/10"
             />
           </div>
           <button

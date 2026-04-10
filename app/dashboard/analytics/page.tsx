@@ -107,7 +107,7 @@ export default function AnalyticsPage() {
         <main className="p-6">
           <div className="bg-card rounded-2xl border border-error/30 p-8 text-center">
             <h3 className="text-lg font-semibold text-primary mb-2">Failed to load analytics</h3>
-            <p className="text-secondary text-sm">{error}</p>
+            <p className="text-muted-foreground text-sm">{error}</p>
           </div>
         </main>
       </>
@@ -119,7 +119,7 @@ export default function AnalyticsPage() {
       <>
         <DashboardHeader userName={userName} userEmail={userEmail} pageTitle="Analytics" />
         <main className="p-6">
-          <div className="text-center text-secondary">No data available</div>
+          <div className="text-center text-muted-foreground">No data available</div>
         </main>
       </>
     );
@@ -168,7 +168,7 @@ export default function AnalyticsPage() {
               <div key={kpi.label} className="bg-card rounded-xl border border-border p-6 hover:border-accent/50 transition-colors">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-secondary text-sm font-medium">{kpi.label}</p>
+                    <p className="text-muted-foreground text-sm font-medium">{kpi.label}</p>
                     <p className="text-3xl font-bold text-foreground mt-2">{kpi.value}</p>
                   </div>
                   <div className={`${kpi.bgColor} rounded-lg p-3`}>
@@ -191,7 +191,7 @@ export default function AnalyticsPage() {
               {Object.entries(analytics.leadStatusDistribution).map(([status, count]) => (
                 <div key={status} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-secondary capitalize">{status.replace("_", " ")}</span>
+                    <span className="text-sm text-muted-foreground capitalize">{status.replace("_", " ")}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-24 bg-border rounded-full h-2 overflow-hidden">
@@ -227,14 +227,14 @@ export default function AnalyticsPage() {
                       <p className="text-sm font-medium text-foreground truncate">
                         {idx + 1}. {listing.title}
                       </p>
-                      <p className="text-xs text-secondary">
+                      <p className="text-xs text-muted-foreground">
                         {listing.views} views • {listing.inquiries} inquiries
                       </p>
                     </div>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-secondary">No listings yet</p>
+                <p className="text-sm text-muted-foreground">No listings yet</p>
               )}
             </div>
           </div>
@@ -248,7 +248,7 @@ export default function AnalyticsPage() {
             <div className="space-y-2">
               {analytics.trends.leadsTimeline.map((item) => (
                 <div key={item.date} className="flex items-center justify-between text-sm">
-                  <span className="text-secondary">{new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+                  <span className="text-muted-foreground">{new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
                   <div className="flex items-center gap-2">
                     <div className="w-32 bg-border rounded h-1.5 overflow-hidden">
                       <div
@@ -271,7 +271,7 @@ export default function AnalyticsPage() {
             <div className="space-y-2">
               {analytics.trends.viewsTimeline.map((item) => (
                 <div key={item.date} className="flex items-center justify-between text-sm">
-                  <span className="text-secondary">{new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+                  <span className="text-muted-foreground">{new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
                   <div className="flex items-center gap-2">
                     <div className="w-32 bg-border rounded h-1.5 overflow-hidden">
                       <div

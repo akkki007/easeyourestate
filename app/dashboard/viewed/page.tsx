@@ -77,7 +77,7 @@ export default function ViewedPropertiesPage() {
  <DashboardHeader userName={userName} userEmail={userEmail} pageTitle="Recently Viewed"/>
  <main className="p-6">
  <div className="flex items-center justify-between mb-6">
- <p className="text-sm text-secondary">
+ <p className="text-sm text-muted-foreground">
  {total} {total === 1 ?"property":"properties"} viewed
  </p>
  </div>
@@ -126,17 +126,17 @@ export default function ViewedPropertiesPage() {
  <button
  onClick={() => setPage((p) => Math.max(1, p - 1))}
  disabled={page === 1}
- className="px-4 py-2 rounded-lg border border-border text-sm text-secondary hover:bg-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+ className="px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:bg-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
  >
  Previous
  </button>
- <span className="text-sm text-secondary px-3">
+ <span className="text-sm text-muted-foreground px-3">
  Page {page} of {totalPages}
  </span>
  <button
  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
  disabled={page === totalPages}
- className="px-4 py-2 rounded-lg border border-border text-sm text-secondary hover:bg-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+ className="px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:bg-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
  >
  Next
  </button>

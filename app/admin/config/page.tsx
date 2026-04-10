@@ -153,7 +153,7 @@ export default function AdminConfigPage() {
  value={item.value as number}
  onChange={(e) => handleNumberChange(item.key, parseInt(e.target.value) || 0)}
  min={0}
- className="w-20 px-3 py-1.5 rounded-lg bg-muted border border-border text-primary-foreground text-sm text-center focus:border-accent focus:outline-none shrink-0"
+ className="w-20 px-3 py-1.5 rounded-lg bg-input border border-border text-foreground text-sm text-center focus:border-accent focus:outline-none shrink-0"
  />
  )}
  </div>

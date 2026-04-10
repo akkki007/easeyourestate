@@ -41,8 +41,8 @@ export default function PropertyCard({
 
   const statusBadge = (s: string) => {
     const styles: Record<string, string> = {
-      draft: "bg-muted text-secondary",
-      active: "bg-[#10b981] text-white shadow-sm",
+      draft: "bg-muted text-muted-foreground",
+      active: "bg-success text-white shadow-sm",
       pending_review: "bg-warning text-white shadow-sm",
       sold: "bg-muted text-muted-foreground",
       rented: "bg-muted text-muted-foreground",

@@ -41,7 +41,7 @@ export default function Footer() {
  className="w-0 h-0"
  style={{
  borderLeft:"12px solid transparent",
- borderTop:"12px solid #7c3aed",
+ borderTop:"12px solid #674188",
  }}
  />
  </div>
