@@ -71,6 +71,9 @@ export default function Footer() {
  <div>
  <h4 className="text-primary-foreground font-semibold text-sm mb-4">Quick Links</h4>
  <ul className="space-y-2.5 text-sm">
+ <li>
+ <a href="/about" className="hover:text-primary transition-colors">About Us</a>
+ </li>
  {["Buy Property","Rent Property","Commercial","PG / Hostel","Post Property Free","Home Loans"].map((link) => (
  <li key={link}>
  <a href="#"className="hover:text-primary transition-colors">{link}</a>

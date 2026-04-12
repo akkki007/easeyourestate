@@ -92,14 +92,21 @@ export default function PropertyMap({
               <div className="w-4 h-4 rounded-full bg-teal-500 border-2 border-white shadow-lg cursor-pointer hover:scale-125 transition-transform" />
             </MarkerContent>
             <MarkerPopup className="p-0 w-[240px]">
-              <div className="overflow-hidden rounded-lg">
+              <div className="overflow-hidden rounded-lg bg-card">
                 <img
                   src={
                     p.image ||
                     "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?w=400&q=80"
                   }
-                  alt={p.title}
-                  className="w-full h-[130px] object-cover"
+                  alt="Property image"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    const fallback = "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?w=400&q=80";
+                    if (target.src !== fallback) {
+                      target.src = fallback;
+                    }
+                  }}
+                  className="w-full h-[130px] object-cover bg-muted"
                 />
                 <div className="p-3 space-y-1.5">
                   <h3 className="font-semibold text-sm text-foreground line-clamp-1">

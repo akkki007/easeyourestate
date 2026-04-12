@@ -5,8 +5,8 @@ export default function Hero() {
         <>
             <section className="bg-background pt-24 sm:pt-28 border-b border-border">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
-                        <div className="max-w-2xl lg:flex-shrink-0">
+                    <div className="flex flex-col items-center text-center gap-8">
+                        <div className="max-w-3xl lg:flex-shrink-0">
                             <span className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-foreground bg-background border border-border rounded-[4px]">
                                 Home for Better Living
                             </span>
@@ -18,11 +18,11 @@ export default function Hero() {
                                     living designed for modern lifestyles today.
                                 </span>
                             </h1>
-                            <p className="mt-4 max-w-xl text-sm sm:text-base text-muted-foreground">
+                            <p className="mt-4 mx-auto max-w-xl text-sm sm:text-base text-muted-foreground">
                                 Discover a new era of comfort and convenience. Next-level living designed to elevate your everyday lifestyle.
                             </p>
 
-                            <div className="mt-6 flex items-center gap-4">
+                            <div className="mt-6 flex items-center justify-center gap-4">
                                 <div className="flex items-center -space-x-3">
                                     {["RK", "AJ", "MS", "PK"].map((initials) => (
                                         <div
@@ -39,8 +39,8 @@ export default function Hero() {
                             </div>
                         </div>
 
-                        {/* Search bar — right side beside hero text */}
-                        <div className="relative z-10 w-full lg:max-w-md xl:max-w-lg lg:mt-32">
+                        {/* Search bar — center */}
+                        <div className="relative z-10 w-full lg:max-w-3xl xl:max-w-4xl mt-4 lg:mt-8">
                             <SearchBar />
                         </div>
                     </div>

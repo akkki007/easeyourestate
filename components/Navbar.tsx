@@ -61,10 +61,12 @@ export default function Navbar() {
                         <div className="flex items-center gap-2">
                             {/* Desktop nav */}
                             <nav className="hidden md:flex items-center gap-1">
-                                <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-muted-foreground hover:bg-accent text-sm font-medium transition-colors">
-                                    <CreditCard className="w-4 h-4" />
-                                    Pay Rent
-                                </button>
+                                <Link
+                                    href="/about"
+                                    className="px-4 py-2 text-sm font-medium text-foreground transition-colors rounded-lg hover:bg-accent"
+                                >
+                                    About Us
+                                </Link>
                                 <button className="flex items-center gap-2 px-5 py-2 rounded-lg bg-primary  text-sm font-semibold hover:bg-primary transition-colors shadow-sm shadow-primary">
                                     <Building2 className="w-4 h-4" />
                                     For Property Owners
@@ -139,9 +141,6 @@ export default function Navbar() {
                 {/* Mobile menu */}
                 {mobileMenuOpen && (
                     <div className="md:hidden border-t border-border bg-background px-4 py-3 flex flex-col gap-2">
-                        <button className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-muted-foreground hover:bg-accent text-sm font-medium">
-                            <CreditCard className="w-4 h-4" /> Pay Rent
-                        </button>
                         <button className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold">
                             <Building2 className="w-4 h-4" /> For Property Owners
                         </button>
