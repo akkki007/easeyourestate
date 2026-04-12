@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, createContext, useContext } from"react";
 import { useRouter, usePathname } from"next/navigation";
 import Link from"next/link";
-import { useAuth } from"@/lib/auth/AuthContext";
+import { useAuth, getUserDisplayName } from"@/lib/auth/AuthContext";
 import { useAdminRealtime } from"@/lib/hooks/useAdminRealtime";
 
 // Context so child pages can subscribe to realtime events
@@ -165,7 +165,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
  A
  </div>
  <div className="flex-1 min-w-0">
- <p className="text-sm font-medium text-foreground truncate">{user?.name?.first || "Admin"}</p>
+ <p className="text-sm font-medium text-foreground truncate">{getUserDisplayName(user) || "Admin"}</p>
  <p className="text-xs text-muted-foreground truncate">{user?.email || "admin@easeyourestate.com"}</p>
  </div>
  </div>
