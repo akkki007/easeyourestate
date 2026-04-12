@@ -672,7 +672,7 @@ function PropertyCard({
  <span className="text-xs text-muted-foreground">{timeAgo(property.publishedAt)}</span>
  <button
  onClick={() => onGetOwnerDetails(property)}
- className="px-5 py-2.5 bg-primary hover:bg-primary text-primary-foreground text-sm font-semibold rounded-xl transition-colors shadow-sm"
+ className="px-5 py-2.5 bg-primary hover:bg-primary text-primary-foreground text-sm font-semibold rounded-xl transition-colors"
  >
  Get Owner Details
  </button>

@@ -25,3 +25,29 @@ Third refactor #3
 - Admin can create employees 
 - Can manage which sections are visible and which are not 
 Basically access rights
+
+Fourth refactor #4
+- Restructure property listing creation form and changes within it : 
+1. Listing type and classification
+2. Project name / Apartment name and Location ( In location ask address in 1 line,state,landmark,city,pincode )
+3. Specifications 
+    - Carpet area instead of super..
+    - No of balcony
+    - Facing direction ( Dropdown )
+    - No of floors
+    - Floor no ( on which the flat is )
+4. Pricing and terms ( For rent write rent (including maintaenance) and remove seperate maintaenance field )
+- In rent type in preferred tenants include dropdown having these 
+  - Bachelor ( Male or female ) then ( working or student )
+  - Family 
+5. Change the "Save as draft" button to "Submit" 
+- After submit a popup ( Standard UI ) saying 'Your property is under review and your listing will be livee in 24-48 hrs'
+
+
+Fifth Refactoring #5 - Admin
+- Admin can create employees 
+- Can manage which sections are visible and which are not 
+Basically access rights
+- Also admin should be able to see the properties detail before approving 
+- Also improvise the UI at the admin side as some theming issues are there 
+- Remove the subscriptions,reports section from admin

@@ -3,9 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { unlockOwnerDetail, MAX_UNLOCKS } from "@/store/creditSlice";
 import { useAuth } from "@/lib/auth/AuthContext";
 import {
     Loader2,
@@ -124,66 +121,66 @@ const amenityIcons: Record<string, string> = {
 export default function PropertyDetailPage() {
     const params = useParams();
     const router = useRouter();
-    const dispatch = useDispatch();
     const slug = params?.slug as string;
     const { token, user, isAuthenticated } = useAuth();
-
-    const ownerUnlocks = useSelector((state: RootState) => state.credits.ownerUnlocks);
-    const unlockedProperties = useSelector((state: RootState) => state.credits.unlockedProperties);
 
     const [property, setProperty] = useState<Property | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [similarProperties, setSimilarProperties] = useState<any[]>([]);
-    const [ownerDetails, setOwnerDetails] = useState<{ name: string; phone: string; email: string } | null>(null);
-    const [ownerLoading, setOwnerLoading] = useState(false);
-    const [ownerError, setOwnerError] = useState("");
-    const [showLimitPopup, setShowLimitPopup] = useState(false);
 
-    const isAlreadyUnlocked = unlockedProperties.includes(slug);
-    const remainingUnlocks = MAX_UNLOCKS - ownerUnlocks;
-    const canUnlock = remainingUnlocks > 0 || isAlreadyUnlocked;
+    // Contact request flow
+    const [showConsentModal, setShowConsentModal] = useState(false);
+    const [requestStatus, setRequestStatus] = useState<"none" | "pending" | "approved" | "rejected">("none");
+    const [requestLoading, setRequestLoading] = useState(false);
+    const [requestError, setRequestError] = useState("");
 
-    // Persist credits to localStorage
+    // Check existing request status on load
     useEffect(() => {
-        localStorage.setItem("ownerUnlocks", ownerUnlocks.toString());
-        localStorage.setItem("unlockedProperties", JSON.stringify(unlockedProperties));
-    }, [ownerUnlocks, unlockedProperties]);
+        if (!token || !slug) return;
+        fetch(`/api/contact-requests?propertySlug=${slug}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+            .then((r) => r.json())
+            .then((data) => {
+                if (data.request) setRequestStatus(data.request.status);
+            })
+            .catch(() => {});
+    }, [token, slug]);
 
-    const handleGetOwnerDetails = async () => {
+    const handleGetOwnerDetails = () => {
         if (!isAuthenticated) {
-            router.push("/login");
+            router.push(`/login?redirect=/property/${slug}`);
             return;
         }
+        setShowConsentModal(true);
+    };
 
-        if (!canUnlock) {
-            setShowLimitPopup(true);
-            return;
-        }
-
-        setOwnerLoading(true);
-        setOwnerError("");
-
+    const handleSubmitRequest = async () => {
+        setRequestLoading(true);
+        setRequestError("");
         try {
-            const res = await fetch(`/api/properties/${slug}/owner`, {
-                headers: { Authorization: `Bearer ${token}` },
+            const res = await fetch("/api/contact-requests", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ propertySlug: slug }),
             });
             const data = await res.json();
-
-            if (!res.ok) {
-                setOwnerError(data.error || "Failed to get owner details.");
+            if (!res.ok && res.status !== 200) {
+                setRequestError(data.error || "Failed to submit request.");
                 return;
             }
-
-            setOwnerDetails(data.owner);
-            if (!isAlreadyUnlocked) {
-                dispatch(unlockOwnerDetail(slug));
-            }
+            setRequestStatus(data.status || "pending");
+            setShowConsentModal(false);
+            toast.success(data.message || "Request submitted successfully!");
         } catch {
-            setOwnerError("Failed to get owner details.");
+            setRequestError("Something went wrong. Please try again.");
         } finally {
-            setOwnerLoading(false);
+            setRequestLoading(false);
         }
     };
 
@@ -546,70 +543,38 @@ export default function PropertyDetailPage() {
                                     </div>
                                 </div>
 
-                                {ownerDetails ? (
-                                    <div className="bg-success border border-success rounded-2xl p-5 space-y-3">
+                                {requestStatus === "pending" ? (
+                                    <div className="bg-warning/10 border border-warning/30 rounded-2xl p-5 space-y-2">
+                                        <div className="flex items-center gap-2 text-warning font-bold text-sm">
+                                            <Loader2 className="w-4 h-4" />
+                                            Request Under Review
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">
+                                            Your request has been submitted. Our team will verify and share the owner details via SMS shortly.
+                                        </p>
+                                    </div>
+                                ) : requestStatus === "approved" ? (
+                                    <div className="bg-success/10 border border-success/30 rounded-2xl p-5 space-y-2">
                                         <div className="flex items-center gap-2 text-success font-bold text-sm">
                                             <Check className="w-4 h-4" />
-                                            Owner Details Unlocked
+                                            Request Approved
                                         </div>
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-success flex items-center justify-center text-success">
-                                                    <Phone className="w-4 h-4" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-muted-foreground">Phone</p>
-                                                    <a href={`tel:${ownerDetails.phone}`} className="text-sm font-bold text-foreground hover:text-primary">
-                                                        {ownerDetails.phone}
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            {ownerDetails.email && (
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-lg bg-success flex items-center justify-center text-success">
-                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                            <rect x="2" y="4" width="20" height="16" rx="2" />
-                                                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                                                        </svg>
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-xs text-muted-foreground">Email</p>
-                                                        <a href={`mailto:${ownerDetails.email}`} className="text-sm font-bold text-foreground hover:text-primary">
-                                                            {ownerDetails.email}
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
+                                        <p className="text-xs text-muted-foreground">
+                                            Owner details have been sent to your registered mobile number via SMS.
+                                        </p>
                                     </div>
                                 ) : (
                                     <div className="space-y-2">
                                         <button
                                             onClick={handleGetOwnerDetails}
-                                            disabled={ownerLoading}
-                                            className="w-full py-5 bg-primary hover:bg-primary disabled:opacity-60 text-primary-foreground font-black rounded-2xl shadow-xl shadow-primary transition-all flex items-center justify-center gap-3 group"
+                                            className="w-full py-3 bg-primary hover:bg-primary text-primary-foreground font-black rounded-2xl transition-all flex items-center justify-center gap-3 group"
                                         >
-                                            {ownerLoading ? (
-                                                <Loader2 className="w-6 h-6 animate-spin" />
-                                            ) : !canUnlock ? (
-                                                <Lock className="w-6 h-6" />
-                                            ) : (
-                                                <Phone className="w-6 h-6 animate-pulse group-hover:animate-none" />
-                                            )}
-                                            {ownerLoading
-                                                ? "Loading..."
-                                                : `Get ${property.listingType === "owner" ? "Owner" : "Agent"} Details`}
+                                            <Phone className="w-6 h-6 animate-pulse group-hover:animate-none" />
+                                            Get Owner Details
                                         </button>
-                                        {!isAlreadyUnlocked && (
-                                            <p className="text-center text-xs text-muted-foreground">
-                                                {remainingUnlocks > 0
-                                                    ? `${remainingUnlocks} of ${MAX_UNLOCKS} free unlocks remaining`
-                                                    : "You've used all free unlocks"}
-                                            </p>
-                                        )}
-                                        {ownerError && (
-                                            <p className="text-center text-xs text-error">{ownerError}</p>
-                                        )}
+                                        <p className="text-center text-xs text-muted-foreground">
+                                            Our team will verify and share the details with you
+                                        </p>
                                     </div>
                                 )}
 
@@ -624,29 +589,39 @@ export default function PropertyDetailPage() {
                                     </div>
                                 )}
 
-                                {/* Limit reached popup */}
-                                {showLimitPopup && (
+                                {/* Consent Modal */}
+                                {showConsentModal && (
                                     <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-[9999]">
-                                        <div className="bg-card/95 p-8 rounded-2xl w-96 text-center shadow-2xl border border-border">
-                                            <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary flex items-center justify-center">
-                                                <Lock className="w-6 h-6 text-primary" />
+                                        <div className="bg-card p-8 rounded-2xl w-[420px] max-w-[95vw] shadow-2xl border border-border">
+                                            <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-primary/10 flex items-center justify-center">
+                                                <Phone className="w-7 h-7 text-primary" />
                                             </div>
-                                            <h2 className="text-lg font-semibold mb-2">Unlock Limit Reached</h2>
-                                            <p className="text-sm text-muted-foreground mb-6">
-                                                You have used all {MAX_UNLOCKS} free owner detail unlocks. Upgrade to premium for unlimited access.
+                                            <h2 className="text-lg font-bold text-foreground text-center mb-2">
+                                                Request Owner Details
+                                            </h2>
+                                            <p className="text-sm text-muted-foreground text-center mb-6 leading-relaxed">
+                                                By clicking &quot;Yes, I agree&quot;, you consent to share your contact details with the EaseYourEstate team. Our team will verify and contact you with the owner details shortly.
                                             </p>
+                                            {requestError && (
+                                                <p className="text-xs text-error text-center mb-4">{requestError}</p>
+                                            )}
                                             <div className="flex gap-3">
                                                 <button
-                                                    onClick={() => setShowLimitPopup(false)}
-                                                    className="flex-1 py-2.5 border border-border text-foreground rounded-lg hover:bg-accent text-sm font-medium transition"
+                                                    onClick={() => {
+                                                        setShowConsentModal(false);
+                                                        setRequestError("");
+                                                    }}
+                                                    className="flex-1 py-3 border border-border text-foreground rounded-xl hover:bg-muted text-sm font-medium transition"
                                                 >
-                                                    Close
+                                                    Cancel
                                                 </button>
                                                 <button
-                                                    onClick={() => setShowLimitPopup(false)}
-                                                    className="flex-1 py-2.5 bg-primary hover:bg-primary text-primary-foreground rounded-lg text-sm font-semibold transition"
+                                                    onClick={handleSubmitRequest}
+                                                    disabled={requestLoading}
+                                                    className="flex-1 py-3 bg-primary hover:bg-primary text-primary-foreground rounded-xl text-sm font-semibold transition disabled:opacity-60 flex items-center justify-center gap-2"
                                                 >
-                                                    Upgrade
+                                                    {requestLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                                                    Yes, I agree
                                                 </button>
                                             </div>
                                         </div>

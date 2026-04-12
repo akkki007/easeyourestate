@@ -144,7 +144,7 @@ export default function AdminListingsPage() {
  <main className="p-6">
  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
  <div>
- <h2 className="text-lg font-semibold text-primary-foreground">Listings</h2>
+ <h2 className="text-lg font-semibold text-foreground">Listings</h2>
  <p className="text-sm text-muted-foreground">{total} total listings</p>
  </div>
  </div>
@@ -193,10 +193,10 @@ export default function AdminListingsPage() {
  listings.map((l) => (
  <tr key={l._id} className="border-b border-border/50 hover:bg-accent/30">
  <td className="px-4 py-3">
- <p className="text-primary-foreground font-medium truncate max-w-[200px]">{l.title}</p>
+ <p className="text-foreground font-medium truncate max-w-[200px]">{l.title}</p>
  <p className="text-muted-foreground text-xs">{l.location.locality}, {l.location.city} &middot; {l.propertyType} &middot; For {l.purpose}</p>
  </td>
- <td className="px-4 py-3 text-primary-foreground font-medium">{formatPrice(l.price.amount)}</td>
+ <td className="px-4 py-3 text-foreground font-medium">{formatPrice(l.price.amount)}</td>
  <td className="px-4 py-3">
  {l.listedBy ? (
  <>
@@ -272,7 +272,7 @@ export default function AdminListingsPage() {
  <div className="flex gap-3">
  <button
  onClick={handleReject}
- className="flex-1 py-2 rounded-lg bg-error text-primary-foreground text-sm font-medium hover:bg-error transition-colors"
+ className="flex-1 py-2 rounded-lg bg-error text-foreground text-sm font-medium hover:bg-error transition-colors"
  >
  Reject
  </button>

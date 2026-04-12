@@ -1,6 +1,6 @@
 import mongoose, { Schema, model, models } from "mongoose";
 
-export type UserRole = "buyer" | "tenant" | "owner" | "admin";
+export type UserRole = "buyer" | "tenant" | "owner" | "employee" | "admin";
 
 const nameSchema = new Schema(
   { first: { type: String, required: true }, last: { type: String, default: "" } },
@@ -52,10 +52,12 @@ const userSchema = new Schema(
   },
     role: {
       type: String,
-      enum: ["buyer", "tenant", "owner", "admin"],
+      enum: ["buyer", "tenant", "owner", "employee", "admin"],
       required: true,
       default: "buyer",
     },
+    // Employee access rights — which admin sections they can see
+    accessSections: { type: [String], default: [] },
     onboardingData: { type: onboardingDataSchema, default: () => ({}) },
     preferences: { type: preferencesSchema, default: () => ({}) },
     meta: { type: metaSchema, default: () => ({}) },
@@ -75,6 +77,7 @@ export interface IUser {
   name: { first: string; last: string };
   avatar?: string;
   role: UserRole;
+  accessSections?: string[];
   onboardingData?: Record<string, string>;
   preferences?: {
     savedSearches?: Array<{ name: string; filters: object; alertEnabled: boolean; createdAt: Date }>;

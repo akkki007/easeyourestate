@@ -15,7 +15,7 @@ interface UserRow {
  createdAt: string;
 }
 
-const ROLES = ["","buyer","tenant","owner","admin"];
+const ROLES = ["","buyer","tenant","owner","employee","admin"];
 
 export default function AdminUsersPage() {
  const { token } = useAuth();

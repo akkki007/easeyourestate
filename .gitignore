@@ -11,7 +11,7 @@
 !.yarn/versions
 # testing
 /coverage
-
+AWS-S3-SETUP.md
 # next.js
 /.next/
 /out/
