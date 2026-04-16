@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import { Loader2, Upload, X } from "lucide-react";
+import { Loader2, Upload, X, ChevronDown } from "lucide-react";
 
 const PURPOSE_OPTIONS = [
   { value: "sell", label: "Sell" },
@@ -66,10 +66,59 @@ const PREFERRED_TENANT_OPTIONS = [
   { value: "family", label: "Family" },
 ];
 
-const AMENITIES_LIST = [
-  "power_backup", "lift", "security", "parking", "gym", "pool", "garden",
-  "clubhouse", "play_area", "water_supply", "gas_pipeline", "internet",
+const INDOOR_AMENITIES = [
+  { value: "power_backup", label: "Power Backup" },
+  { value: "lift", label: "Lift" },
+  { value: "security", label: "Security" },
+  { value: "gym", label: "Gym" },
+  { value: "gas_pipeline", label: "Gas Pipeline" },
+  { value: "internet", label: "Internet / Wi-Fi" },
+  { value: "water_supply", label: "24/7 Water Supply" },
 ];
+
+const OUTDOOR_AMENITIES = [
+  { value: "parking", label: "Parking" },
+  { value: "pool", label: "Swimming Pool" },
+  { value: "garden", label: "Garden" },
+  { value: "clubhouse", label: "Clubhouse" },
+  { value: "play_area", label: "Play Area" },
+];
+
+const INDIAN_STATES_CITIES: Record<string, string[]> = {
+  "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Tirupati", "Rajahmundry", "Kakinada", "Kadapa", "Anantapur"],
+  "Arunachal Pradesh": ["Itanagar", "Naharlagun", "Pasighat", "Tawang"],
+  "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Nagaon", "Tinsukia", "Tezpur"],
+  "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga", "Arrah"],
+  "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Korba", "Durg", "Rajnandgaon"],
+  "Delhi": ["New Delhi", "Central Delhi", "South Delhi", "North Delhi", "East Delhi", "West Delhi", "Dwarka", "Rohini"],
+  "Goa": ["Panaji", "Margao", "Vasco da Gama", "Mapusa", "Ponda"],
+  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Junagadh", "Gandhinagar", "Anand", "Navsari"],
+  "Haryana": ["Gurugram", "Faridabad", "Panipat", "Ambala", "Karnal", "Hisar", "Rohtak", "Sonipat", "Panchkula"],
+  "Himachal Pradesh": ["Shimla", "Dharamshala", "Mandi", "Solan", "Kullu", "Manali", "Kangra"],
+  "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro", "Hazaribagh", "Deoghar"],
+  "Karnataka": ["Bangalore", "Mysore", "Hubli", "Mangalore", "Belgaum", "Gulbarga", "Davangere", "Shimoga", "Udupi"],
+  "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Thrissur", "Kollam", "Palakkad", "Kannur", "Alappuzha"],
+  "Madhya Pradesh": ["Bhopal", "Indore", "Jabalpur", "Gwalior", "Ujjain", "Sagar", "Dewas", "Satna"],
+  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik", "Aurangabad", "Solapur", "Kolhapur", "Navi Mumbai", "Pimpri-Chinchwad"],
+  "Manipur": ["Imphal", "Thoubal", "Bishnupur"],
+  "Meghalaya": ["Shillong", "Tura", "Jowai"],
+  "Mizoram": ["Aizawl", "Lunglei", "Champhai"],
+  "Nagaland": ["Kohima", "Dimapur", "Mokokchung"],
+  "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur", "Puri"],
+  "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Mohali", "Pathankot"],
+  "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Bikaner", "Ajmer", "Bhilwara", "Alwar"],
+  "Sikkim": ["Gangtok", "Namchi", "Gyalshing"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli", "Erode", "Vellore"],
+  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Khammam", "Mahbubnagar", "Secunderabad"],
+  "Tripura": ["Agartala", "Udaipur", "Dharmanagar"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Agra", "Varanasi", "Meerut", "Prayagraj", "Bareilly", "Aligarh", "Moradabad", "Ghaziabad", "Noida", "Greater Noida"],
+  "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee", "Haldwani", "Rudrapur", "Rishikesh", "Nainital"],
+  "West Bengal": ["Kolkata", "Howrah", "Durgapur", "Asansol", "Siliguri", "Bardhaman", "Kharagpur"],
+  "Chandigarh": ["Chandigarh"],
+  "Puducherry": ["Puducherry", "Karaikal", "Yanam"],
+  "Jammu & Kashmir": ["Srinagar", "Jammu", "Anantnag", "Baramulla", "Kathua", "Udhampur"],
+  "Ladakh": ["Leh", "Kargil"],
+};
 
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 
@@ -78,12 +127,24 @@ export default function NewPropertyPage() {
   const [storedUser, setStoredUser] = useState<{ _id: string; name: { first: string; last: string } | string; email: string; role: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showTenantDropdown, setShowTenantDropdown] = useState(false);
+  const tenantDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const raw = localStorage.getItem("user");
     if (raw) {
       try { setStoredUser(JSON.parse(raw)); } catch { /* ignore */ }
     }
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (tenantDropdownRef.current && !tenantDropdownRef.current.contains(e.target as Node)) {
+        setShowTenantDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const [error, setError] = useState<string | null>(null);
@@ -94,9 +155,11 @@ export default function NewPropertyPage() {
   const [category, setCategory] = useState<string>("residential");
   const [propertyType, setPropertyType] = useState<string>("flat");
 
-  // Section 2 — Project name & Location
+  // Title & Description (now shown in last section)
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
+
+  // Location
   const [address, setAddress] = useState("");
   const [landmark, setLandmark] = useState("");
   const [locality, setLocality] = useState("");
@@ -104,7 +167,7 @@ export default function NewPropertyPage() {
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
 
-  // Section 3 — Specifications
+  // Specifications
   const [bedrooms, setBedrooms] = useState("");
   const [bathrooms, setBathrooms] = useState("");
   const [balconies, setBalconies] = useState("");
@@ -117,7 +180,7 @@ export default function NewPropertyPage() {
   const [parkingOpen, setParkingOpen] = useState(0);
   const [possessionStatus, setPossessionStatus] = useState("ready");
 
-  // Section 4 — Pricing & Terms
+  // Pricing & Terms
   const [priceAmount, setPriceAmount] = useState("");
   const [negotiable, setNegotiable] = useState(false);
   const [deposit, setDeposit] = useState("");
@@ -161,6 +224,13 @@ export default function NewPropertyPage() {
     setPreferredTenants((prev) =>
       prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val]
     );
+  };
+
+  const handleStateChange = (newState: string) => {
+    setState(newState);
+    setCity("");
+    clearFieldError("state");
+    setError(null);
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -458,6 +528,8 @@ export default function NewPropertyPage() {
   const userName = storedUser ? (typeof storedUser.name === "object" ? storedUser.name.first : storedUser.name) || "User" : "User";
   const userEmail = storedUser?.email ?? "";
 
+  const availableCities = state ? (INDIAN_STATES_CITIES[state] ?? []) : [];
+
   return (
     <>
       <DashboardHeader userName={userName} userEmail={userEmail} pageTitle="Add Property" />
@@ -468,6 +540,22 @@ export default function NewPropertyPage() {
               {error}
             </div>
           )}
+
+          {/* ── Project / Apartment Name ── */}
+          <section className="bg-card rounded-2xl border border-border p-6">
+            <Label>Project / Apartment Name</Label>
+            <input
+              type="text"
+              value={projectName}
+              onChange={(e) => { setProjectName(e.target.value); clearFieldError("projectName"); setError(null); }}
+              className={getFieldClass("projectName")}
+              placeholder="e.g. Godrej Infinity, Kumar Palmspring"
+              required
+              minLength={5}
+              maxLength={200}
+            />
+            <FieldError message={fieldErrors.projectName} />
+          </section>
 
           {/* ── Section 1: Listing Type & Classification ── */}
           <section className="bg-card rounded-2xl border border-border p-6">
@@ -504,39 +592,10 @@ export default function NewPropertyPage() {
             </div>
           </section>
 
-          {/* ── Section 2: Project / Apartment Name & Location ── */}
+          {/* ── Section 2: Location ── */}
           <section className="bg-card rounded-2xl border border-border p-6">
-            <h2 className="text-lg font-semibold text-primary mb-4">2. Project / Apartment Name & Location</h2>
+            <h2 className="text-lg font-semibold text-primary mb-4">2. Location</h2>
             <div className="space-y-4">
-              <div>
-                <Label>Project / Apartment Name</Label>
-                <input
-                  type="text"
-                  value={projectName}
-                  onChange={(e) => { setProjectName(e.target.value); clearFieldError("projectName"); setError(null); }}
-                  className={getFieldClass("projectName")}
-                  placeholder="e.g. Godrej Infinity, Kumar Palmspring"
-                  required
-                  minLength={5}
-                  maxLength={200}
-                />
-                <FieldError message={fieldErrors.projectName} />
-              </div>
-
-              <div>
-                <Label>Description (min 50 characters)</Label>
-                <textarea
-                  value={description}
-                  onChange={(e) => { setDescription(e.target.value); clearFieldError("description"); setError(null); }}
-                  className={`${getFieldClass("description")} min-h-28 resize-y`}
-                  placeholder="Describe the property, highlights, nearby facilities..."
-                  required
-                  minLength={50}
-                  maxLength={5000}
-                />
-                <FieldError message={fieldErrors.description} />
-              </div>
-
               <div>
                 <Label>Address</Label>
                 <input
@@ -577,28 +636,35 @@ export default function NewPropertyPage() {
 
               <div className="grid sm:grid-cols-3 gap-4">
                 <div>
-                  <Label>City</Label>
-                  <input
-                    type="text"
-                    value={city}
-                    onChange={(e) => { setCity(e.target.value); clearFieldError("city"); setError(null); }}
-                    className={getFieldClass("city")}
-                    placeholder="e.g. Pune"
+                  <Label>State</Label>
+                  <select
+                    value={state}
+                    onChange={(e) => handleStateChange(e.target.value)}
+                    className={fieldErrors.state ? `${selectClass.replace("border-border", "border-error").replace("focus:ring-accent/20", "focus:ring-error/20")}` : selectClass}
                     required
-                  />
-                  <FieldError message={fieldErrors.city} />
+                  >
+                    <option value="">Select State</option>
+                    {Object.keys(INDIAN_STATES_CITIES).sort().map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                  <FieldError message={fieldErrors.state} />
                 </div>
                 <div>
-                  <Label>State</Label>
-                  <input
-                    type="text"
-                    value={state}
-                    onChange={(e) => { setState(e.target.value); clearFieldError("state"); setError(null); }}
-                    className={getFieldClass("state")}
-                    placeholder="e.g. Maharashtra"
+                  <Label>City</Label>
+                  <select
+                    value={city}
+                    onChange={(e) => { setCity(e.target.value); clearFieldError("city"); setError(null); }}
+                    className={fieldErrors.city ? `${selectClass.replace("border-border", "border-error").replace("focus:ring-accent/20", "focus:ring-error/20")}` : selectClass}
                     required
-                  />
-                  <FieldError message={fieldErrors.state} />
+                    disabled={!state}
+                  >
+                    <option value="">{state ? "Select City" : "Select state first"}</option>
+                    {availableCities.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                  <FieldError message={fieldErrors.city} />
                 </div>
                 <div>
                   <Label>Pincode</Label>
@@ -747,7 +813,7 @@ export default function NewPropertyPage() {
               {purpose === "sell" ? (
                 <>
                   <div>
-                    <Label>Total Price (₹)</Label>
+                    <Label>Total Price (&#8377;)</Label>
                     <input
                       type="number"
                       value={priceAmount}
@@ -767,7 +833,7 @@ export default function NewPropertyPage() {
               ) : (
                 <>
                   <div>
-                    <Label>Rent (₹/month, including maintenance)</Label>
+                    <Label>Rent (&#8377;/month, including maintenance)</Label>
                     <input
                       type="number"
                       value={monthlyRent}
@@ -780,7 +846,7 @@ export default function NewPropertyPage() {
                     <FieldError message={fieldErrors.monthlyRent} />
                   </div>
                   <div>
-                    <Label>Security Deposit (₹)</Label>
+                    <Label>Security Deposit (&#8377;)</Label>
                     <input
                       type="number"
                       value={deposit}
@@ -812,23 +878,39 @@ export default function NewPropertyPage() {
                     <input type="checkbox" id="petFriendly" checked={petFriendly} onChange={(e) => setPetFriendly(e.target.checked)} className="rounded border-border" />
                     <label htmlFor="petFriendly" className="text-sm text-muted-foreground">Pet Friendly</label>
                   </div>
-                  <div className="sm:col-span-2">
+                  <div className="sm:col-span-2" ref={tenantDropdownRef}>
                     <Label>Preferred Tenants</Label>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {PREFERRED_TENANT_OPTIONS.map((opt) => (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          onClick={() => togglePreferredTenant(opt.value)}
-                          className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                            preferredTenants.includes(opt.value)
-                              ? "bg-accent text-primary-foreground"
-                              : "bg-hover text-muted-foreground hover:bg-active"
-                          }`}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowTenantDropdown((v) => !v)}
+                        className={`${selectClass} text-left flex items-center justify-between`}
+                      >
+                        <span className={preferredTenants.length > 0 ? "text-foreground" : "text-muted-foreground"}>
+                          {preferredTenants.length > 0
+                            ? preferredTenants.map((v) => PREFERRED_TENANT_OPTIONS.find((o) => o.value === v)?.label).join(", ")
+                            : "Select preferred tenants"}
+                        </span>
+                        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${showTenantDropdown ? "rotate-180" : ""}`} />
+                      </button>
+                      {showTenantDropdown && (
+                        <div className="absolute z-20 mt-1 w-full bg-card border border-border rounded-xl shadow-lg py-1 max-h-60 overflow-y-auto">
+                          {PREFERRED_TENANT_OPTIONS.map((opt) => (
+                            <label
+                              key={opt.value}
+                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-hover cursor-pointer transition-colors"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={preferredTenants.includes(opt.value)}
+                                onChange={() => togglePreferredTenant(opt.value)}
+                                className="rounded border-border"
+                              />
+                              <span className="text-sm text-foreground">{opt.label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </>
@@ -865,22 +947,60 @@ export default function NewPropertyPage() {
             </div>
           </section>
 
-          {/* ── Section 5: Amenities ── */}
+          {/* ── Section 5: Amenities (Indoor & Outdoor) ── */}
           <section className="bg-card rounded-2xl border border-border p-6">
-            <h2 className="text-lg font-semibold text-primary mb-4">5. Amenities</h2>
-            <div className="flex flex-wrap gap-2">
-              {AMENITIES_LIST.map((a) => (
-                <button
-                  key={a}
-                  type="button"
-                  onClick={() => toggleAmenity(a)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                    amenities.includes(a) ? "bg-accent text-primary-foreground" : "bg-hover text-muted-foreground hover:bg-active"
-                  }`}
-                >
-                  {a.replace(/_/g, " ")}
-                </button>
-              ))}
+            <h2 className="text-lg font-semibold text-primary mb-5">5. Amenities</h2>
+
+            <div className="mb-6">
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Indoor</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {INDOOR_AMENITIES.map((a) => (
+                  <label
+                    key={a.value}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-all ${
+                      amenities.includes(a.value)
+                        ? "border-accent bg-accent/5 shadow-sm"
+                        : "border-border hover:bg-hover"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={amenities.includes(a.value)}
+                      onChange={() => toggleAmenity(a.value)}
+                      className="rounded border-border accent-accent"
+                    />
+                    <span className={`text-sm font-medium ${amenities.includes(a.value) ? "text-foreground" : "text-muted-foreground"}`}>
+                      {a.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Outdoor</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {OUTDOOR_AMENITIES.map((a) => (
+                  <label
+                    key={a.value}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-all ${
+                      amenities.includes(a.value)
+                        ? "border-accent bg-accent/5 shadow-sm"
+                        : "border-border hover:bg-hover"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={amenities.includes(a.value)}
+                      onChange={() => toggleAmenity(a.value)}
+                      className="rounded border-border accent-accent"
+                    />
+                    <span className={`text-sm font-medium ${amenities.includes(a.value) ? "text-foreground" : "text-muted-foreground"}`}>
+                      {a.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
             </div>
           </section>
 
@@ -939,6 +1059,24 @@ export default function NewPropertyPage() {
                   <span className="text-xs text-tertiary mt-1">Add video</span>
                 </label>
               )}
+            </div>
+          </section>
+
+          {/* ── Section 7: Property Description ── */}
+          <section className="bg-card rounded-2xl border border-border p-6">
+            <h2 className="text-lg font-semibold text-primary mb-4">7. Property Description</h2>
+            <div>
+              <Label>Description (min 50 characters)</Label>
+                <textarea
+                  value={description}
+                  onChange={(e) => { setDescription(e.target.value); clearFieldError("description"); setError(null); }}
+                  className={`${getFieldClass("description")} min-h-28 resize-y`}
+                  placeholder="Describe the property, highlights, nearby facilities..."
+                  required
+                  minLength={50}
+                  maxLength={5000}
+                />
+                <FieldError message={fieldErrors.description} />
             </div>
           </section>
 

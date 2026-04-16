@@ -4,7 +4,12 @@ export default function Hero() {
     return (
         <>
             <section className="bg-background pt-24 sm:pt-28 border-b border-border">
+                
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+                    {/* Search bar — center */}
+                        <div className="relative z-10 w-full lg:max-w-3xl pb-4 lg:ml-40 xl:max-w-4xl mt-4 lg:mt-8">
+                            <SearchBar />
+                        </div>
                     <div className="flex flex-col items-center text-center gap-8">
                         <div className="max-w-3xl lg:flex-shrink-0">
                             <span className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-foreground bg-background border border-border rounded-[4px]">
@@ -39,10 +44,7 @@ export default function Hero() {
                             </div>
                         </div>
 
-                        {/* Search bar — center */}
-                        <div className="relative z-10 w-full lg:max-w-3xl xl:max-w-4xl mt-4 lg:mt-8">
-                            <SearchBar />
-                        </div>
+                        
                     </div>
 
                     <div className="mt-6">
