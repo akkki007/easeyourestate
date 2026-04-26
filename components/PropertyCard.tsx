@@ -81,9 +81,9 @@ export default function PropertyCard({
  </div>
  )}
   <SavedPropertyButton propertyId={id} />
-  {(status || purpose) && (
+  {status && (
     <div className="absolute top-3 left-3">
-      {statusBadge(status || (purpose === "Rent" ? "active" : "pending_review"))}
+      {statusBadge(status)}
     </div>
   )}
   </div>

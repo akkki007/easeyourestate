@@ -67,7 +67,7 @@ export default function Navbar() {
                                 >
                                     About Us
                                 </Link>
-                                <button className="flex items-center gap-2 px-5 py-2 rounded-lg bg-primary  text-sm font-semibold hover:bg-primary transition-colors shadow-sm shadow-primary">
+                                <button className="flex items-center gap-2 px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-accent-hover transition-colors shadow-sm">
                                     <Building2 className="w-4 h-4" />
                                     For Property Owners
                                 </button>

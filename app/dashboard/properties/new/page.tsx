@@ -120,7 +120,8 @@ const INDIAN_STATES_CITIES: Record<string, string[]> = {
   "Ladakh": ["Leh", "Kargil"],
 };
 
-const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+const MAX_IMAGE_SIZE_BYTES = 70 * 1024 * 1024;
+const MAX_VIDEO_SIZE_BYTES = 70 * 1024 * 1024;
 
 export default function NewPropertyPage() {
   const router = useRouter();
@@ -154,6 +155,18 @@ export default function NewPropertyPage() {
   const [purpose, setPurpose] = useState<string>("sell");
   const [category, setCategory] = useState<string>("residential");
   const [propertyType, setPropertyType] = useState<string>("flat");
+
+  // Residential sub-types that are essentially "open spaces" without rooms.
+  const isResidential = category === "residential";
+  const isCommercial = category === "commercial";
+  const isPlot = isResidential && propertyType === "plot";
+  // Show bedroom/bathroom/balcony/furnishing/facing/floor only for residential dwellings
+  const showResidentialSpecs = isResidential && !isPlot;
+  // Tenant preference + pet-friendly only make sense for residential rent/lease
+  const showResidentialTenantPrefs =
+    isResidential && (purpose === "rent" || purpose === "lease");
+  // PG only applies to residential category
+  const isPg = purpose === "pg";
 
   // Title & Description (now shown in last section)
   const [projectName, setProjectName] = useState("");
@@ -254,7 +267,7 @@ export default function NewPropertyPage() {
         break;
       }
       if (file.size > MAX_IMAGE_SIZE_BYTES) {
-        const message = "Each image must be 5MB or smaller.";
+        const message = "Each image must be 70MB or smaller.";
         setError(message);
         setFieldErrors((prev) => ({ ...prev, images: message }));
         toast.error(message);
@@ -304,8 +317,8 @@ export default function NewPropertyPage() {
         toast.error("Only video files are allowed.");
         break;
       }
-      if (file.size > 50 * 1024 * 1024) {
-        toast.error("Each video must be 50MB or smaller.");
+      if (file.size > MAX_VIDEO_SIZE_BYTES) {
+        toast.error("Each video must be 70MB or smaller.");
         break;
       }
       const formData = new FormData();
@@ -687,43 +700,78 @@ export default function NewPropertyPage() {
           <section className="bg-card rounded-2xl border border-border p-6">
             <h2 className="text-lg font-semibold text-primary mb-4">3. Specifications</h2>
             <div className="grid sm:grid-cols-2 gap-4">
+              {showResidentialSpecs && (
+                <>
+                  <div>
+                    <Label>Bedrooms (BHK)</Label>
+                    <input
+                      type="number"
+                      value={bedrooms}
+                      onChange={(e) => { setBedrooms(e.target.value); clearFieldError("bedrooms"); setError(null); }}
+                      className={getFieldClass("bedrooms")}
+                      min={0}
+                      placeholder="e.g. 3"
+                    />
+                    <FieldError message={fieldErrors.bedrooms} />
+                  </div>
+                  <div>
+                    <Label>Bathrooms</Label>
+                    <input
+                      type="number"
+                      value={bathrooms}
+                      onChange={(e) => { setBathrooms(e.target.value); clearFieldError("bathrooms"); setError(null); }}
+                      className={getFieldClass("bathrooms")}
+                      min={0}
+                    />
+                    <FieldError message={fieldErrors.bathrooms} />
+                  </div>
+                  <div>
+                    <Label>Balconies</Label>
+                    <input
+                      type="number"
+                      value={balconies}
+                      onChange={(e) => { setBalconies(e.target.value); clearFieldError("balconies"); setError(null); }}
+                      className={getFieldClass("balconies")}
+                      min={0}
+                      placeholder="e.g. 2"
+                    />
+                    <FieldError message={fieldErrors.balconies} />
+                  </div>
+                </>
+              )}
+
+              {isCommercial && (
+                <div>
+                  <Label>Cabins / Rooms</Label>
+                  <input
+                    type="number"
+                    value={bedrooms}
+                    onChange={(e) => { setBedrooms(e.target.value); clearFieldError("bedrooms"); setError(null); }}
+                    className={getFieldClass("bedrooms")}
+                    min={0}
+                    placeholder="e.g. 4"
+                  />
+                  <FieldError message={fieldErrors.bedrooms} />
+                </div>
+              )}
+
+              {isCommercial && (
+                <div>
+                  <Label>Washrooms</Label>
+                  <input
+                    type="number"
+                    value={bathrooms}
+                    onChange={(e) => { setBathrooms(e.target.value); clearFieldError("bathrooms"); setError(null); }}
+                    className={getFieldClass("bathrooms")}
+                    min={0}
+                    placeholder="e.g. 2"
+                  />
+                  <FieldError message={fieldErrors.bathrooms} />
+                </div>
+              )}
+
               <div>
-                <Label>Bedrooms (BHK)</Label>
-                <input
-                  type="number"
-                  value={bedrooms}
-                  onChange={(e) => { setBedrooms(e.target.value); clearFieldError("bedrooms"); setError(null); }}
-                  className={getFieldClass("bedrooms")}
-                  min={0}
-                  placeholder="e.g. 3"
-                />
-                <FieldError message={fieldErrors.bedrooms} />
-              </div>
-              <div>
-                <Label>Bathrooms</Label>
-                <input
-                  type="number"
-                  value={bathrooms}
-                  onChange={(e) => { setBathrooms(e.target.value); clearFieldError("bathrooms"); setError(null); }}
-                  className={getFieldClass("bathrooms")}
-                  min={0}
-                />
-                <FieldError message={fieldErrors.bathrooms} />
-              </div>
-              <div>
-                <Label>Balconies</Label>
-                <input
-                  type="number"
-                  value={balconies}
-                  onChange={(e) => { setBalconies(e.target.value); clearFieldError("balconies"); setError(null); }}
-                  className={getFieldClass("balconies")}
-                  min={0}
-                  placeholder="e.g. 2"
-                />
-                <FieldError message={fieldErrors.balconies} />
-              </div>
-              <div>
-                <Label>Carpet Area (sqft)</Label>
+                <Label>{isPlot ? "Plot Area (sqft)" : "Carpet Area (sqft)"}</Label>
                 <input
                   type="number"
                   value={carpetArea}
@@ -734,6 +782,7 @@ export default function NewPropertyPage() {
                 />
                 <FieldError message={fieldErrors.carpetArea} />
               </div>
+
               <div>
                 <Label>Facing Direction</Label>
                 <select value={facing} onChange={(e) => setFacing(e.target.value)} className={selectClass}>
@@ -742,38 +791,47 @@ export default function NewPropertyPage() {
                   ))}
                 </select>
               </div>
-              <div>
-                <Label>Total Floors in Building</Label>
-                <input
-                  type="number"
-                  value={totalFloors}
-                  onChange={(e) => { setTotalFloors(e.target.value); clearFieldError("totalFloors"); setError(null); }}
-                  className={getFieldClass("totalFloors")}
-                  min={0}
-                  placeholder="e.g. 12"
-                />
-                <FieldError message={fieldErrors.totalFloors} />
-              </div>
-              <div>
-                <Label>Floor No. (your flat is on)</Label>
-                <input
-                  type="number"
-                  value={floorNumber}
-                  onChange={(e) => { setFloorNumber(e.target.value); clearFieldError("floorNumber"); setError(null); }}
-                  className={getFieldClass("floorNumber")}
-                  min={0}
-                  placeholder="e.g. 4"
-                />
-                <FieldError message={fieldErrors.floorNumber} />
-              </div>
-              <div>
-                <Label>Furnishing</Label>
-                <select value={furnishing} onChange={(e) => setFurnishing(e.target.value)} className={selectClass}>
-                  {FURNISHING_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
-              </div>
+
+              {!isPlot && (
+                <>
+                  <div>
+                    <Label>Total Floors in Building</Label>
+                    <input
+                      type="number"
+                      value={totalFloors}
+                      onChange={(e) => { setTotalFloors(e.target.value); clearFieldError("totalFloors"); setError(null); }}
+                      className={getFieldClass("totalFloors")}
+                      min={0}
+                      placeholder="e.g. 12"
+                    />
+                    <FieldError message={fieldErrors.totalFloors} />
+                  </div>
+                  <div>
+                    <Label>{isCommercial ? "Floor No. (your unit is on)" : "Floor No. (your flat is on)"}</Label>
+                    <input
+                      type="number"
+                      value={floorNumber}
+                      onChange={(e) => { setFloorNumber(e.target.value); clearFieldError("floorNumber"); setError(null); }}
+                      className={getFieldClass("floorNumber")}
+                      min={0}
+                      placeholder="e.g. 4"
+                    />
+                    <FieldError message={fieldErrors.floorNumber} />
+                  </div>
+                </>
+              )}
+
+              {!isPlot && (
+                <div>
+                  <Label>Furnishing</Label>
+                  <select value={furnishing} onChange={(e) => setFurnishing(e.target.value)} className={selectClass}>
+                    {FURNISHING_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div>
                 <Label>Possession</Label>
                 <select value={possessionStatus} onChange={(e) => setPossessionStatus(e.target.value)} className={selectClass}>
@@ -782,6 +840,7 @@ export default function NewPropertyPage() {
                   ))}
                 </select>
               </div>
+
               <div>
                 <Label>Parking (covered / open)</Label>
                 <div className="flex gap-2">
@@ -874,10 +933,13 @@ export default function NewPropertyPage() {
                     />
                     <FieldError message={fieldErrors.availableFrom} />
                   </div>
-                  <div className="flex items-center gap-2 pt-8">
-                    <input type="checkbox" id="petFriendly" checked={petFriendly} onChange={(e) => setPetFriendly(e.target.checked)} className="rounded border-border" />
-                    <label htmlFor="petFriendly" className="text-sm text-muted-foreground">Pet Friendly</label>
-                  </div>
+                  {showResidentialTenantPrefs && (
+                    <div className="flex items-center gap-2 pt-8">
+                      <input type="checkbox" id="petFriendly" checked={petFriendly} onChange={(e) => setPetFriendly(e.target.checked)} className="rounded border-border" />
+                      <label htmlFor="petFriendly" className="text-sm text-muted-foreground">Pet Friendly</label>
+                    </div>
+                  )}
+                  {showResidentialTenantPrefs && (
                   <div className="sm:col-span-2" ref={tenantDropdownRef}>
                     <Label>Preferred Tenants</Label>
                     <div className="relative">
@@ -913,6 +975,7 @@ export default function NewPropertyPage() {
                       )}
                     </div>
                   </div>
+                  )}
                 </>
               )}
 
@@ -1009,7 +1072,7 @@ export default function NewPropertyPage() {
             <h2 className="text-lg font-semibold text-primary mb-4">6. Photos & Videos</h2>
 
             {/* Photos */}
-            <p className="text-sm font-medium text-muted-foreground mb-2">Photos (max 20, up to 5MB each)</p>
+            <p className="text-sm font-medium text-muted-foreground mb-2">Photos (max 20, up to 70MB each — auto-compressed)</p>
             <div className="flex flex-wrap gap-4 mb-6">
               {images.map((img, i) => (
                 <div key={img.publicId} className="relative w-28 h-28 rounded-xl overflow-hidden bg-hover border border-border group">
@@ -1037,7 +1100,7 @@ export default function NewPropertyPage() {
             <FieldError message={fieldErrors.images} />
 
             {/* Videos */}
-            <p className="text-sm font-medium text-muted-foreground mb-2">Videos (max 3, up to 50MB each — MP4, WebM, MOV)</p>
+            <p className="text-sm font-medium text-muted-foreground mb-2">Videos (max 3, up to 70MB each — MP4, WebM, MOV)</p>
             <div className="flex flex-wrap gap-4">
               {videos.map((vid, i) => (
                 <div key={vid.publicId} className="relative w-44 h-28 rounded-xl overflow-hidden bg-hover border border-border group">
