@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { type Mongoose } from "mongoose";
 
 interface MongooseCache {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
+  conn: Mongoose | null;
+  promise: Promise<Mongoose> | null;
 }
 
 declare global {
@@ -10,20 +10,41 @@ declare global {
   var mongooseCache: MongooseCache | undefined;
 }
 
-const cached = global.mongooseCache ?? { conn: null, promise: null };
-if (process.env.NODE_ENV !== "production") global.mongooseCache = cached;
+const cached: MongooseCache = global.mongooseCache ?? { conn: null, promise: null };
+if (!global.mongooseCache) global.mongooseCache = cached;
 
-export async function dbConnect(): Promise<typeof mongoose> {
+export async function dbConnect(): Promise<Mongoose> {
   if (cached.conn) return cached.conn;
-  if (cached.promise) return cached.promise;
 
-  const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
-  if (!uri) {
-    throw new Error("Please set MONGODB_URI in .env");
+  if (!cached.promise) {
+    const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
+    if (!uri) {
+      throw new Error("Please set MONGODB_URI in environment variables");
+    }
+
+    cached.promise = mongoose
+      .connect(uri, {
+        bufferCommands: false,
+        maxPoolSize: 10,
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+        family: 4,
+      })
+      .then((m) => {
+        if (process.env.NODE_ENV !== "production") {
+          console.log("✅ MongoDB connected");
+        }
+        return m;
+      });
   }
 
-  cached.promise = mongoose.connect(uri);
-  cached.conn = await cached.promise;
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
+
   return cached.conn;
 }
 

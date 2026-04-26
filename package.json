@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "node dist/server.js",
     "lint": "eslint",
+    "type-check": "tsc --noEmit",
     "test": "npx playwright test",
     "test:ui": "npx playwright test --ui",
     "test:headed": "npx playwright test --headed"
