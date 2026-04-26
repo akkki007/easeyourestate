@@ -59,9 +59,9 @@ export default function Footer() {
  <a
  key={i}
  href="#"
- className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center hover:bg-primary transition-colors"
+ className="group w-8 h-8 rounded-lg bg-muted flex items-center justify-center hover:bg-primary transition-colors"
  >
- <Icon className="w-4 h-4 text-muted-foreground hover:text-primary-foreground transition-colors"/>
+ <Icon className="w-4 h-4 text-muted-foreground group-hover:text-primary-foreground transition-colors"/>
  </a>
  ))}
  </div>

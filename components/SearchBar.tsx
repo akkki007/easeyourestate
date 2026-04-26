@@ -58,9 +58,18 @@ export default function SearchBar() {
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  // Client-side caches — keyed by `${city}::${normalized query}`.
+  // Repeat queries (back-deletes, paste, switching cities back) are served
+  // synchronously from memory so the dropdown is instant.
+  const predictionsCacheRef = useRef<Map<string, PlacePrediction[]>>(new Map());
+  const dbCacheRef = useRef<Map<string, typeof dbSuggestions>>(new Map());
+
+  const cacheKey = (q: string, city: string) => `${city.toLowerCase()}::${q.trim().toLowerCase()}`;
+
   // Fetch Google Places autocomplete predictions
   const fetchPlacePredictions = useCallback(async (query: string, city: string) => {
-    if (query.length < 2) {
+    const trimmed = query.trim();
+    if (trimmed.length < 2) {
       setPredictions([]);
       return;
     }
@@ -76,7 +85,7 @@ export default function SearchBar() {
 
     try {
       const coords = CITY_COORDS[city];
-      const params = new URLSearchParams({ query });
+      const params = new URLSearchParams({ query: trimmed });
       if (coords) {
         params.set("lat", String(coords.lat));
         params.set("lng", String(coords.lng));
@@ -86,7 +95,9 @@ export default function SearchBar() {
         signal: controller.signal,
       });
       const data = await res.json();
-      setPredictions(data.predictions || []);
+      const next: PlacePrediction[] = data.predictions || [];
+      predictionsCacheRef.current.set(cacheKey(trimmed, city), next);
+      setPredictions(next);
     } catch (err: any) {
       if (err.name !== "AbortError") {
         console.error("Places autocomplete failed:", err);
@@ -98,25 +109,55 @@ export default function SearchBar() {
 
   // Fetch DB-based suggestions (existing properties) as secondary results
   const fetchDbSuggestions = useCallback(async (query: string, city: string) => {
-    if (query.length < 2) {
+    const trimmed = query.trim();
+    if (trimmed.length < 2) {
       setDbSuggestions([]);
       return;
     }
     try {
-      const res = await fetch(`/api/localities?city=${city}&query=${query}`);
+      const res = await fetch(`/api/localities?city=${encodeURIComponent(city)}&query=${encodeURIComponent(trimmed)}`);
       const data = await res.json();
-      setDbSuggestions(data.suggestions || []);
+      const next = data.suggestions || [];
+      dbCacheRef.current.set(cacheKey(trimmed, city), next);
+      setDbSuggestions(next);
     } catch (err) {
       console.error("Failed to fetch DB suggestions", err);
     }
   }, []);
 
-  // Debounced fetch on query change
+  // Live, debounced fetch on query change.
+  // 1. Hydrate from cache synchronously so the dropdown updates instantly.
+  // 2. Fire the network request after a short debounce (120ms) — feels live
+  //    while still coalescing rapid keystrokes into a single Google call.
   useEffect(() => {
+    const trimmed = searchQuery.trim();
+    if (trimmed.length < 2) {
+      setPredictions([]);
+      setDbSuggestions([]);
+      setLoadingPlaces(false);
+      return;
+    }
+
+    const key = cacheKey(trimmed, selectedCity);
+    const cachedPredictions = predictionsCacheRef.current.get(key);
+    const cachedDb = dbCacheRef.current.get(key);
+
+    if (cachedPredictions) setPredictions(cachedPredictions);
+    if (cachedDb) setDbSuggestions(cachedDb);
+
+    // If both caches hit, skip the network entirely.
+    if (cachedPredictions && cachedDb) {
+      setLoadingPlaces(false);
+      return;
+    }
+
+    // Show loading indicator immediately while the debounce timer runs —
+    // user feels feedback without waiting for the request to fire.
+    setLoadingPlaces(true);
     const timer = setTimeout(() => {
-      fetchPlacePredictions(searchQuery, selectedCity);
-      fetchDbSuggestions(searchQuery, selectedCity);
-    }, 300);
+      fetchPlacePredictions(trimmed, selectedCity);
+      fetchDbSuggestions(trimmed, selectedCity);
+    }, 120);
     return () => clearTimeout(timer);
   }, [searchQuery, selectedCity, fetchPlacePredictions, fetchDbSuggestions]);
 
@@ -361,7 +402,7 @@ export default function SearchBar() {
           {/* Search button */}
           <button
             onClick={() => handleSearch()}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:m-1 bg-primary hover:bg-primary text-sm font-semibold rounded-xl transition-colors shadow-sm shadow-primary"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:m-1 bg-primary text-primary-foreground hover:bg-accent-hover text-sm font-semibold rounded-xl transition-colors shadow-sm"
           >
             <Search className="w-4 h-4" />
             Search
